@@ -1,0 +1,1953 @@
+cve_id,published,last_modified,cvss_score,severity,attack_vector,attack_complexity,privileges_required,user_interaction,cwe,exploited,description,date,month,week
+CVE-2026-31153,2026-04-06 15:17:09.670,2026-08-27 06:16:57.730,5.4,MEDIUM,NETWORK,LOW,LOW,REQUIRED,CWE-79,False,"A stored cross-site scripting (XSS) vulnerability in Bynder v0.1.394 allows attackers to execute arbitrary web scripts or HTML via a crafted payload. NOTE: this is disputed by the Supplier because v0.1.394 was never a valid version number, and because there is no available information on what v0.1.394 system or environment may have been used for this XSS finding.",2026-04-06,2026-04,2026-04-06
+CVE-2026-41992,2026-06-29 12:16:29.940,2026-08-27 06:16:59.663,7.5,HIGH,NETWORK,LOW,NONE,NONE,CWE-126,False,"GNU gzip contains a global buffer overflow vulnerability in the LZH decompression logic caused by improper reuse of shared global state between different decompression formats within a single execution. GNU gzip maintains a global array that is shared across the LZ77, LZW, and LZH decompression routines and is not reinitialized between files processed in the same invocation.
+By decompressing a specially crafted LZW file followed by a specially crafted LZH file in a single gzip -d command, an attacker can poison the shared global state and subsequently trigger an out‑of‑bounds read in the LZH decoder. The LZH decompression logic follows stale values left in the shared array, causing reads past the end of the allocated global buffer.
+
+This issue has been fixed in the commit 63dbf6b3b9e6e781df1a6a64e609b10e23969681",2026-06-29,2026-06,2026-06-29
+CVE-2026-8452,2026-06-30 13:19:33.450,2026-08-27 04:18:00.787,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,CWE-119,True,"Memory overflow vulnerability NetScaler ADC and NetScaler Gateway leading to unpredictable or erroneous behavior and Denial of Service if the appliance is configured as a Gateway (SSL VPN, ICA Proxy, CVPN, RDP Proxy) or AAA virtual server",2026-06-30,2026-06,2026-06-29
+CVE-2026-64631,2026-08-04 17:16:58.093,2026-08-04 18:16:56.297,,,,,,,CWE-89,False,A vulnerability allowing a low-privileged user to inject SQL and extract database contents.,2026-08-04,2026-08,2026-08-03
+CVE-2026-10090,2026-08-05 09:18:14.667,2026-08-27 04:16:39.793,9.0,CRITICAL,NETWORK,LOW,HIGH,NONE,CWE-267,False,"A flaw was found in the Application Subscription controller (multicluster-operators-subscription) of Red Hat Advanced Cluster Management for Kubernetes (ACM). A user with namespace-scoped ""edit"" privileges in an ACM hub namespace can create a Channel resource pointing to a Helm repository they control and a Subscription resource referencing it. The app-subscription controller fetches and applies the Helm chart contents with its own elevated authority, without verifying whether the subscription creator holds the ""open-cluster-management:subscription-admin"" role and without restricting applied resources to the subscription namespace. This allows the attacker to include cluster-scoped resources in the Helm chart, such as a ClusterRoleBinding granting the attacker's ServiceAccount the ""cluster-admin"" ClusterRole. Successful exploitation results in full cluster-admin privilege escalation. This contradicts the ACM documentation which states that non-subscription-admin users should have resources deployed into the subscription namespace only.",2026-08-05,2026-08,2026-08-03
+CVE-2026-66297,2026-08-05 20:17:11.743,2026-08-10 15:17:10.363,8.0,HIGH,NETWORK,LOW,LOW,REQUIRED,CWE-78,False,"Improper Neutralization of Special Elements used in an OS Command (OS Command Injection) vulnerability in livebook-dev livebook allows command injection into generated deployment setup commands.
+
+LivebookWeb.Hub.Teams.DeploymentGroupAgentComponent.docker_instructions/2 and LivebookWeb.Hub.Teams.DeploymentGroupAgentComponent.fly_instructions/4 in lib/livebook_web/live/hub/teams/deployment_group_agent_component.ex interpolate deployment group environment variable values into the generated Docker and Fly.io setup commands without shell escaping. The values originate from the deployment group configuration and reach the sinks through Livebook.Hubs.Dockerfile.online_docker_info/3.
+
+Both sinks place the value inside a double-quoted shell word, so a value containing a command substitution such as $(...) or backticks is evaluated by the shell without any need to break out of the quoting, and a literal double quote terminates the quoted word and allows arbitrary further tokens. The generated command is displayed in the Livebook web interface with a copy button, so a user who copies it and runs it without reviewing it first executes the injected commands on their own machine, under their own account.
+
+An attacker requires privileges sufficient to set deployment group environment variables, while the resulting code execution occurs on the machine of whoever runs the generated command. The Kubernetes instructions are not affected, because they render the same values into a YAML manifest with escaping rather than into a shell command.
+
+This issue affects livebook: from 0.13.0 before 0.18.7 and from 0.19.0 before 0.19.9.",2026-08-05,2026-08,2026-08-03
+CVE-2026-71468,2026-08-11 20:18:45.410,2026-08-27 04:16:47.107,5.3,MEDIUM,NETWORK,HIGH,LOW,NONE,CWE-266,False,"A flaw was found in acm-search-v2-api-rhel9. When the `getFederationConfig` function refreshes its cache, it improperly reuses a user's bearer token for all subsequent federated requests until the cache expires. This allows other authenticated users to gain unauthorized access to remote managed hub search results, leading to information disclosure.",2026-08-11,2026-08,2026-08-10
+CVE-2026-71474,2026-08-11 20:18:45.547,2026-08-27 04:16:48.150,6.3,MEDIUM,NETWORK,HIGH,LOW,NONE,CWE-532,False,"A flaw was found in insights-client. When the application receives a non-200 response, it logs the request headers, which can include the cloud.openshift.com pull-secret token. A local user with access to pod logs on the hub could read this long-lived credential. This information disclosure could grant unauthorized access to Red Hat cloud services.",2026-08-11,2026-08,2026-08-10
+CVE-2026-71475,2026-08-11 20:18:45.673,2026-08-27 04:16:48.370,5.0,MEDIUM,NETWORK,LOW,LOW,NONE,CWE-22,False,"A flaw was found in insights-client. A compromised managed cluster, referred to as a 'spoke', can inject unencoded data into the Insights API URL path. This occurs because the ClusterID, which is controlled by the spoke, is used directly in the request path without proper validation or URL encoding. This vulnerability allows a malicious spoke to redirect authenticated requests to unintended API endpoints, potentially leading to information disclosure or unauthorized access.",2026-08-11,2026-08,2026-08-10
+CVE-2026-71845,2026-08-11 20:18:45.800,2026-08-27 04:16:48.523,6.3,MEDIUM,NETWORK,HIGH,LOW,NONE,CWE-532,False,"A flaw was found in insights-client. The setDefault() function logs the value of every environment variable it processes, including CCX_TOKEN, a bearer credential used in disconnected cluster deployments. When glog verbosity is set to level 2 or higher, the token is written in clear text to the pod log on every startup. An attacker with access to pod logs or centralized logging could obtain the credential, leading to unauthorized access to the CCX API.",2026-08-11,2026-08,2026-08-10
+CVE-2026-64927,2026-08-12 02:16:37.780,2026-08-27 04:16:44.953,6.4,MEDIUM,NETWORK,LOW,LOW,NONE,CWE-639,False,"A flaw was found in the multicloud-operators-channel component. This vulnerability allows a user with specific permissions to manipulate how the system handles sensitive information, known as Secrets, across different parts of the system (namespaces). By exploiting this, an attacker can modify these Secrets in unauthorized areas. This could lead to unauthorized access to information or elevated privileges within the system.",2026-08-12,2026-08,2026-08-10
+CVE-2026-66878,2026-08-12 02:16:37.937,2026-08-27 04:16:46.223,7.7,HIGH,NETWORK,LOW,LOW,NONE,CWE-639,False,"A flaw was found in multicloud-operators-subscription. A privileged user, specifically a namespace administrator capable of creating Channel and Subscription resources, can exploit this vulnerability. By manipulating the Channel.Spec.SecretRef.Namespace field, the user can cause the system to copy sensitive Secret contents from other namespaces into their own, leading to information disclosure.",2026-08-12,2026-08,2026-08-10
+CVE-2026-70398,2026-08-12 02:16:38.060,2026-08-27 04:16:46.563,9.6,CRITICAL,NETWORK,LOW,LOW,NONE,CWE-441,False,"A flaw was found in multicloud-integrations, a component of Red Hat Advanced Cluster Management (RHACM). This vulnerability allows an authenticated user, referred to as a tenant, to manipulate the GitOpsCluster controller. By exploiting this, a tenant can redirect sensitive spoke cluster bearer tokens from secure locations to a namespace they control. This unauthorized access to tokens can lead to the disclosure of critical information and bypass security policies within ArgoCD AppProjects.",2026-08-12,2026-08,2026-08-10
+CVE-2026-72526,2026-08-12 02:16:38.200,2026-08-27 04:16:49.017,9.9,CRITICAL,NETWORK,LOW,LOW,NONE,CWE-441,False,"A flaw was found in the multicloud-integrations component. The Application propagation controller processes the `ocm-managed-cluster` annotation from an Application Custom Resource (CR) without proper validation. A tenant with permissions to create Applications on the hub cluster can exploit this to target arbitrary managed clusters. This can force ArgoCD on the spoke clusters to synchronize attacker-controlled manifests, leading to arbitrary code execution or privilege escalation on those clusters.",2026-08-12,2026-08,2026-08-10
+CVE-2026-73122,2026-08-12 02:16:38.330,2026-08-27 04:16:49.163,7.7,HIGH,NETWORK,LOW,LOW,NONE,CWE-269,False,"A flaw was found in the multicloud-operators-channel component of Red Hat Advanced Cluster Management (RHACM). This vulnerability allows a compromised agent from a managed cluster to gain unauthorized access to sensitive information. Specifically, the agent can read all Secrets and ConfigMaps within any Channel namespace on the hub, potentially exposing credentials for other tenants' Git and Helm repositories. This could lead to significant information disclosure.",2026-08-12,2026-08,2026-08-10
+CVE-2026-72508,2026-08-12 20:17:49.650,2026-08-27 04:16:48.833,9.9,CRITICAL,NETWORK,LOW,LOW,NONE,CWE-250,False,"A flaw was found in the multicloud-operators-subscription component of Red Hat Advanced Cluster Management (RHACM). This vulnerability allows a namespace-admin tenant to perform a confused-deputy attack by creating Subscription Custom Resources (CRs) that leverage a highly privileged ServiceAccount (SA). This enables the tenant to deploy arbitrary cluster-scoped resources, leading to privilege escalation and potential arbitrary code execution across the cluster.",2026-08-12,2026-08,2026-08-10
+CVE-2026-71469,2026-08-12 22:17:15.760,2026-08-27 04:16:47.273,7.5,HIGH,NETWORK,LOW,NONE,NONE,CWE-770,False,"A flaw was found in search-v2-api. An unauthenticated attacker can exploit this by sending requests with unique random bearer tokens. Each unique token creates a permanent entry in the unbounded tokenReviews cache, which is not properly cleared. This can lead to memory exhaustion of the search-api pod, resulting in a Denial of Service (DoS).",2026-08-12,2026-08,2026-08-10
+CVE-2026-71471,2026-08-12 22:17:15.890,2026-08-27 04:16:47.630,9.0,CRITICAL,NETWORK,LOW,HIGH,NONE,CWE-829,False,"A flaw was found in acm-search-v2-rhel9. An attacker with administrative privileges on the hub cluster, specifically with patch access to the Search Custom Resource (CR), could exploit a vulnerability in the `Collector.ImageOverride` field. This allows the attacker to deploy an arbitrary container image across all managed clusters. The consequence is remote code execution (RCE), enabling the attacker to execute commands and potentially access sensitive information across the entire fleet of managed clusters.",2026-08-12,2026-08,2026-08-10
+CVE-2026-71473,2026-08-12 22:17:16.020,2026-08-27 04:16:47.980,8.5,HIGH,NETWORK,LOW,LOW,NONE,CWE-915,False,"A flaw was found in the `search-v2-operator` component. A user with specific administrative permissions on a managed cluster can exploit a vulnerability that allows them to inject arbitrary configuration data. This manipulation can override critical settings, leading to the replacement of container images. This ultimately results in container image injection on the managed cluster, potentially compromising its integrity.",2026-08-12,2026-08,2026-08-10
+CVE-2026-71846,2026-08-12 22:17:16.143,2026-08-27 04:16:48.680,6.5,MEDIUM,LOCAL,LOW,LOW,NONE,CWE-250,False,"A flaw was found in insights-client. The component's ServiceAccount is bound to a ClusterRole granting cluster-wide secrets get, list, and watch permissions, while the code only requires access to a single specific Secret. This excessive privilege means that a compromise of the insights-client pod or ServiceAccount token would grant an attacker read access to all Secrets across the hub cluster, including managed-cluster kubeconfigs and other sensitive credentials.",2026-08-12,2026-08,2026-08-10
+CVE-2026-66792,2026-08-17 19:16:34.237,2026-08-27 04:16:45.790,9.9,CRITICAL,NETWORK,LOW,LOW,NONE,CWE-863,False,"A flaw was found in the multicloud-operators-subscription component. This vulnerability allows a user on a managed cluster to escalate their privileges by creating a Subscription with specific, crafted annotations. Successful exploitation grants the attacker the ability to deploy resources into any namespace with the elevated permissions of the controller's Service Account, potentially leading to unauthorized access and control over cluster resources.",2026-08-17,2026-08,2026-08-17
+CVE-2026-70495,2026-08-17 20:16:45.653,2026-08-27 04:16:46.723,8.8,HIGH,LOCAL,LOW,LOW,NONE,CWE-269,False,"A flaw was found in search-v2-operator. This component's `search-serviceaccount` has overly broad permissions, allowing it to impersonate users and groups across the entire cluster. If an attacker gains access to any of the pods running under this service account, they could exploit this to achieve `system:masters` access, granting them full control over the cluster.",2026-08-17,2026-08,2026-08-17
+CVE-2026-71472,2026-08-17 20:16:45.777,2026-08-27 04:16:47.807,9.1,CRITICAL,NETWORK,LOW,HIGH,NONE,CWE-78,False,"A flaw was found in acm-search-v2-rhel9. This vulnerability allows an authenticated attacker, such as a hub administrator or a Search Custom Resource (CR) editor, to inject malicious shell commands or SQL statements. This occurs because the WORK_MEM string provided in the Search CR is not properly validated before being used in a bash script and an SQL query. Successful exploitation could lead to arbitrary code execution within the privileged postgres pod, potentially compromising the system.",2026-08-17,2026-08,2026-08-17
+CVE-2026-66793,2026-08-18 15:17:00.140,2026-08-27 04:16:46.047,8.8,HIGH,NETWORK,LOW,LOW,NONE,CWE-20,False,"A flaw was found in the governance-policy-addon-controller component of Red Hat Advanced Cluster Management for Kubernetes. A user with permissions to annotate the namespaced ManagedClusterAddOn resource can override the governance-policy container image. This allows an attacker to run a controlled image with cluster-admin privileges on the managed cluster, leading to arbitrary code execution and privilege escalation.",2026-08-18,2026-08,2026-08-17
+CVE-2026-73834,2026-08-18 16:18:17.493,2026-08-27 04:16:49.480,5.5,MEDIUM,LOCAL,LOW,LOW,NONE,CWE-312,False,"A flaw was found in the must-gather component of Red Hat Advanced Cluster Management for Kubernetes. Certain ACM wrapper Custom Resources that embed Secret data are collected without redaction. When an administrator runs must-gather, credentials and tokens are captured in cleartext in the resulting archive, potentially exposing sensitive information to anyone with access to the archive.",2026-08-18,2026-08,2026-08-17
+CVE-2026-75485,2026-08-18 16:18:20.743,2026-08-27 04:16:49.637,5.5,MEDIUM,LOCAL,LOW,LOW,NONE,CWE-532,False,"A flaw was found in the must-gather component of Red Hat Advanced Cluster Management for Kubernetes. The cluster Proxy object is dumped in raw form, bypassing the oc inspect redaction that would normally sanitize sensitive fields. This exposes proxy basic-auth credentials in the must-gather archive, potentially disclosing sensitive authentication information to anyone with access to the archive.",2026-08-18,2026-08,2026-08-17
+CVE-2026-66781,2026-08-18 17:17:00.580,2026-08-27 04:16:45.617,6.5,MEDIUM,LOCAL,LOW,LOW,NONE,CWE-312,False,"A flaw was found in the Submariner operator. The Submariner Custom Resource (CR), used for configuring network connectivity, stores the IPsec pre-shared key (PSK) in an unencrypted format. This key, which is critical for securing communication between Kubernetes clusters, can be accessed by unauthorized parties. Such access enables an attacker to passively decrypt network traffic flowing between any two clusters in the mesh, resulting in sensitive information disclosure.",2026-08-18,2026-08,2026-08-17
+CVE-2026-66780,2026-08-18 18:19:23.940,2026-08-27 04:16:45.450,9.9,CRITICAL,NETWORK,LOW,LOW,NONE,CWE-284,False,"A flaw was found in the submariner-operator component. The `submariner-k8s-broker-cluster` Role, which is assigned to joined clusters, possesses excessive permissions. This allows a compromised cluster to alter network configurations, specifically by overwriting other clusters' endpoint information. Consequently, an attacker can redirect inter-cluster tunnel traffic, enabling a Man-in-the-Middle (MITM) attack across the entire cluster mesh.",2026-08-18,2026-08,2026-08-17
+CVE-2026-71470,2026-08-19 17:20:57.063,2026-08-27 04:16:47.460,9.1,CRITICAL,NETWORK,LOW,HIGH,NONE,CWE-913,False,"A flaw was found in the search-v2-operator. This vulnerability allows a privileged user, specifically a Custom Resource (CR) editor, to manipulate Search CR fields such as imageOverride, arguments, and environment variables without proper validation. By exploiting this, an attacker can mount arbitrary secrets into a search container's environment or replace the container image with an attacker-controlled one. This leads to privilege escalation and can result in a full cluster compromise due to the ServiceAccount's extensive impersonation permissions.",2026-08-19,2026-08,2026-08-17
+CVE-2026-18874,2026-08-19 18:16:36.080,2026-08-27 04:16:42.003,6.2,MEDIUM,NETWORK,HIGH,HIGH,NONE,CWE-94,False,"A flaw was found in volsync-addon-controller. This vulnerability allows an attacker to inject malicious YAML (Yet Another Markup Language) code into the OpenShift Lifecycle Manager (OLM) Subscription resource. This is due to improper escaping of annotation values when they are rendered into YAML. Successful exploitation could lead to unauthorized modification or control over OLM Subscription configurations, potentially impacting software management within the cluster. This issue primarily affects systems where the 'volsync-addon-deploy-type: olm' annotation is explicitly enabled.",2026-08-19,2026-08,2026-08-17
+CVE-2026-70496,2026-08-19 19:17:23.230,2026-08-27 04:16:46.923,9.9,CRITICAL,NETWORK,LOW,LOW,NONE,CWE-250,False,"A flaw was found in search-v2-operator. The operator's ClusterRole has permissions equivalent to a cluster administrator, allowing it to impersonate other entities, write Role-Based Access Control (RBAC) configurations, approve Certificate Signing Requests (CSRs), and manage ManifestWork. This grants excessive privileges beyond what is necessary for the operator's intended function, potentially leading to privilege escalation within the cluster.",2026-08-19,2026-08,2026-08-17
+CVE-2026-76139,2026-08-19 21:17:38.070,2026-08-27 04:16:49.787,8.0,HIGH,NETWORK,HIGH,HIGH,NONE,CWE-829,False,"A flaw was found in acm-operator-bundle. The build process for this component downloads and runs a script from a remote source without verifying its authenticity or integrity. This script gains access to sensitive credentials, such as GitHub access tokens and registry passwords, used in the build environment. A remote attacker could exploit this vulnerability to inject malicious code, leading to unauthorized access to build resources and potential compromise of the resulting operator bundle.",2026-08-19,2026-08,2026-08-17
+CVE-2026-76827,2026-08-19 21:17:39.227,2026-08-27 04:16:49.923,6.8,MEDIUM,NETWORK,LOW,HIGH,NONE,CWE-693,False,A flaw was found in search-indexer. This vulnerability allows a registered and authenticated managed cluster to tamper with or delete another cluster's indexed search data. This is possible because the delta-sync write paths in search-indexer do not properly restrict UPDATE/DELETE operations to data owned by the calling cluster. An attacker could exploit this by crafting specific user identifiers (UIDs) with a different cluster's prefix.,2026-08-19,2026-08,2026-08-17
+CVE-2026-67567,2026-08-20 21:17:07.403,2026-08-27 04:16:46.383,9.9,CRITICAL,NETWORK,LOW,LOW,NONE,CWE-441,False,"A flaw was found in the multicloud-operators-subscription component. This vulnerability allows a tenant, who has the ability to create HelmRelease custom resources (CRs), to bypass existing security controls. The system's HelmRelease controller processes Helm chart templates using its own elevated ServiceAccount privileges without proper validation. This enables the tenant to deploy arbitrary resources across the entire cluster, leading to a significant security compromise.",2026-08-20,2026-08,2026-08-17
+CVE-2026-73137,2026-08-20 21:17:09.270,2026-08-27 04:16:49.320,7.7,HIGH,NETWORK,LOW,LOW,NONE,CWE-200,False,"A flaw was found in the multicloud-operators-subscription component of Red Hat Advanced Cluster Management (RHACM). A tenant with HelmRelease create permissions can exploit this vulnerability by manipulating the `secretRef.Namespace` field. This allows the `GetSecret()` function in the HelmRelease controller to fetch sensitive credentials from any namespace, which are then sent to an attacker-controlled Helm repository. This can lead to the exfiltration of credentials from arbitrary namespace Secrets, resulting in information disclosure.",2026-08-20,2026-08,2026-08-17
+CVE-2026-50222,2026-08-21 09:16:38.280,2026-08-27 00:37:58.200,7.5,HIGH,NETWORK,LOW,NONE,NONE,CWE-200,False,"Missing Authorization, Exposure of Sensitive Information to an Unauthorized Actor vulnerability in Apache CloudStack's Userdata reference APIs.
+
+Several userdata-related APIs in Apache CloudStack, including deleteUserData, linkUserDataToTemplate, resetUserDataForVirtualMachine, deployVirtualMachine, and updateVirtualMachine, exhibit missing or insufficient access control validation, potentially allowing cross-tenant/cross-account access to userdata resources that belong to other tenants.
+
+This issue affects Apache CloudStack: from 4.18.0.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+The deleteCniConfiguration API, introduced in 4.21.0.0, also exhibits similar behaviour and lacks access validation.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1 or later, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-59085,2026-08-21 09:16:38.410,2026-08-27 00:38:57.177,9.1,CRITICAL,NETWORK,LOW,NONE,NONE,CWE-918,False,"Server-Side Request Forgery (SSRF) vulnerability in Apache CloudStack's webhook module, exploitable via webhook delivery requests.
+
+This issue affects Apache CloudStack: from 4.20.0.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1 or later, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-59655,2026-08-21 09:16:38.533,2026-08-27 00:34:11.930,7.5,HIGH,NETWORK,LOW,NONE,NONE,CWE-200,False,"Exposure of Sensitive Information to an Unauthorized Actor vulnerability in Apache CloudStack's OAuth authentication plugin while listing OAuth providers.
+
+This issue affects Apache CloudStack: from 4.19.0.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1 or later, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-59657,2026-08-21 09:16:38.657,2026-08-27 00:30:51.337,7.5,HIGH,NETWORK,LOW,NONE,NONE,CWE-312,False,"Cleartext Storage of Sensitive Information vulnerability in Apache CloudStack with AsyncJob storage in the database.
+
+This issue affects Apache CloudStack: from 4.0.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1 or later, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-59780,2026-08-21 09:16:38.770,2026-08-27 00:29:15.070,7.5,HIGH,NETWORK,LOW,NONE,NONE,CWE-200,False,"Exposure of Sensitive Information to an Unauthorized Actor vulnerability in Apache CloudStack's LDAP authentication plugin while listing LDAP providers.
+
+
+
+
+
+
+
+
+
+
+
+LDAP configurations can be listed by any authenticated user with access to the listLdapConfigurations API. By default, this API is available to all default roles.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+This issue affects Apache CloudStack: from 4.2.0.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1 or later, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-59799,2026-08-21 09:16:38.890,2026-08-27 00:24:58.477,8.8,HIGH,NETWORK,LOW,LOW,NONE,CWE-269,False,"Improper Privilege Management vulnerability in Apache CloudStack's Two-factor authentication plugin allowing bypass of the two-factor authentication disable flow.
+
+This issue affects Apache CloudStack: from 4.18.0.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1 or later, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-61397,2026-08-21 09:16:39.363,2026-08-27 00:21:49.233,7.5,HIGH,NETWORK,LOW,NONE,NONE,CWE-200,False,"Exposure of Sensitive Information to an Unauthorized Actor vulnerability in Apache CloudStack's OAuth2 authentication plugin and Google OAuth integration.
+
+This issue affects Apache CloudStack: from 4.19.0.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-61398,2026-08-21 09:16:39.480,2026-08-27 00:20:29.263,9.1,CRITICAL,NETWORK,LOW,NONE,NONE,CWE-116,False,"Improper Encoding or Escaping of Output vulnerability in Apache CloudStack's UI while using Instance Reset Password functionality.
+
+This issue affects Apache CloudStack: from 4.15.1.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1 or later, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-61399,2026-08-21 09:16:39.603,2026-08-27 00:19:27.430,4.8,MEDIUM,NETWORK,LOW,HIGH,REQUIRED,CWE-116,False,"Improper Encoding or Escaping of Output vulnerability in Apache CloudStack's UI while using Lock User Functionality.
+
+This issue affects Apache CloudStack: from 4.20.0.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1 or later, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-59654,2026-08-21 13:18:17.767,2026-08-27 01:41:35.170,7.5,HIGH,NETWORK,LOW,NONE,NONE,CWE-772,False,"Missing Release of Resource after Effective Lifetime vulnerability in Apache CloudStack's scoped global configuration functionality. It affects different modules and plugins of the CloudStack management server, including Quota, Host-HA, etc., and may lead to eventual denial of service (DoS) scenario for the management server.
+
+This issue affects Apache CloudStack: from 4.7.0 through 4.20.3.0 and from 4.21.0.0 through 4.22.1.0.
+
+Users are recommended to upgrade to version 4.20.3.1 or 4.22.1.1 or later, which fixes the issue.",2026-08-21,2026-08,2026-08-17
+CVE-2026-66152,2026-08-25 20:17:01.147,2026-08-27 04:16:45.137,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-29,False,A Path traversal vulnerability in OPSWAT tarball in the SonicWall NetExtender Linux client allows an attacker to write arbitrary file as root.,2026-08-25,2026-08,2026-08-24
+CVE-2026-66153,2026-08-25 20:17:01.270,2026-08-27 04:16:45.300,7.0,HIGH,LOCAL,HIGH,LOW,NONE,CWE-59,False,The NEService auto-upgrade process insecurely handles temporary files in SonicWall NetExtender Linux client which allows an attacker to manipulate file paths.,2026-08-25,2026-08,2026-08-24
+CVE-2026-78891,2026-08-25 21:17:46.390,2026-08-27 04:16:50.980,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-122,False,Buffer overflow in WebRTC in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78899,2026-08-25 21:17:47.290,2026-08-27 04:16:51.177,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in V8 in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78900,2026-08-25 21:17:47.410,2026-08-27 04:16:51.357,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-20,False,Improper input validation in Media in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78901,2026-08-25 21:17:47.520,2026-08-27 04:16:51.547,7.5,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-362,False,Race condition in V8 in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78904,2026-08-25 21:17:47.747,2026-08-27 04:16:51.743,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-843,False,Type confusion in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78905,2026-08-25 21:17:47.877,2026-08-27 04:16:51.920,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-843,False,Type confusion in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78906,2026-08-25 21:17:48.010,2026-08-27 04:16:52.073,7.5,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-362,False,Race condition in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78909,2026-08-25 21:17:48.363,2026-08-27 04:16:52.233,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Views in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78910,2026-08-25 21:17:48.473,2026-08-27 04:16:52.387,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-121,False,Buffer overflow in V8 in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78911,2026-08-25 21:17:48.590,2026-08-27 04:16:52.587,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-863,False,Incorrect authorization in USB in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process and leveraged social engineering to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78913,2026-08-25 21:17:48.813,2026-08-27 04:16:52.840,8.1,HIGH,NETWORK,HIGH,NONE,NONE,CWE-416,False,Use after free in Chromoting in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via crafted network traffic. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78915,2026-08-25 21:17:49.047,2026-08-27 04:16:54.360,7.5,HIGH,ADJACENT_NETWORK,HIGH,NONE,NONE,CWE-362,False,Race condition in Enterprise in Google Chrome on on Windows prior to 152.0.7977.65 allowed an adjacent attacker to potentially execute arbitrary code outside the sandbox via crafted network traffic. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-78934,2026-08-25 21:17:49.160,2026-08-27 04:16:57.130,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-362,False,Race condition in ReadAloud in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78935,2026-08-25 21:17:49.270,2026-08-27 04:16:59.157,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-457,False,Use of uninitialized variable in Mobile in Google Chrome on on iOS prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-78937,2026-08-25 21:17:49.500,2026-08-27 04:17:01.503,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Search in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78938,2026-08-25 21:17:49.610,2026-08-27 04:17:01.707,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-843,False,Type confusion in V8 in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78939,2026-08-25 21:17:49.723,2026-08-27 04:17:01.943,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Chromecast in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78944,2026-08-25 21:17:50.297,2026-08-27 04:17:04.620,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in DevTools in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code inside the sandbox via a crafted Chrome extension. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78945,2026-08-25 21:17:50.410,2026-08-27 04:17:05.310,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Views in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78948,2026-08-25 21:17:50.743,2026-08-27 04:17:05.767,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-122,False,Buffer overflow in WebGL in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78950,2026-08-25 21:17:50.963,2026-08-27 04:17:06.060,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-190,False,Integer overflow in WebRTC in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-78951,2026-08-25 21:17:51.080,2026-08-27 04:17:06.893,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in ServiceWorker in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78952,2026-08-25 21:17:51.187,2026-08-27 04:17:07.127,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-787,False,Out of bounds write in Crashpad in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78956,2026-08-25 21:17:51.627,2026-08-27 04:17:07.447,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-843,False,Type confusion in V8 in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-78963,2026-08-25 21:17:52.400,2026-08-27 04:17:07.830,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-20,False,Improper input validation in Media in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78964,2026-08-25 21:17:52.507,2026-08-27 04:17:08.323,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Sync in Google Chrome on on iOS prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-78978,2026-08-25 21:17:54.207,2026-08-27 04:17:08.657,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-125,False,Out of bounds read in ANGLE in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78983,2026-08-25 21:17:54.647,2026-08-27 04:17:09.037,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-416,False,Use after free in Views in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78985,2026-08-25 21:17:54.863,2026-08-27 04:17:10.083,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-706,False,Incorrect reference resolution in FileSystem in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78989,2026-08-25 21:17:55.200,2026-08-27 04:17:10.333,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-125,False,Out of bounds read in ANGLE in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-78990,2026-08-25 21:17:55.313,2026-08-27 04:17:10.513,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Compositing in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-78999,2026-08-25 21:17:55.530,2026-08-27 04:17:10.883,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-269,False,Improper privilege management in Navigation in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process and leveraged social engineering to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79008,2026-08-25 21:17:56.537,2026-08-27 04:17:11.067,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-20,False,Improper input validation in GPU in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79012,2026-08-25 21:17:56.973,2026-08-27 04:17:11.917,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Safebrowsing in Google Chrome on on Mac prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-79019,2026-08-25 21:17:57.747,2026-08-27 04:17:12.270,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-787,False,Out of bounds write in ANGLE in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79023,2026-08-25 21:17:58.210,2026-08-27 01:07:54.810,6.5,MEDIUM,NETWORK,LOW,NONE,REQUIRED,CWE-863,False,Incorrect authorization in Editing in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to obtain sensitive information via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79024,2026-08-25 21:17:58.350,2026-08-27 01:07:14.977,6.5,MEDIUM,NETWORK,LOW,NONE,REQUIRED,CWE-200,False,Information leak in ServiceWorker in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to obtain sensitive information via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79026,2026-08-25 21:17:58.580,2026-08-27 04:17:12.547,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Extensions in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to potentially execute arbitrary code outside the sandbox via a crafted Chrome extension. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79027,2026-08-25 21:17:58.690,2026-08-27 04:17:12.703,8.1,HIGH,NETWORK,HIGH,NONE,NONE,CWE-416,False,Use after free in WebRTC in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via crafted network traffic. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79030,2026-08-25 21:17:58.917,2026-08-27 00:51:07.157,5.3,MEDIUM,NETWORK,HIGH,NONE,REQUIRED,CWE-203,False,Observable discrepancy in Autofill in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to obtain sensitive information via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79033,2026-08-25 21:17:59.243,2026-08-27 04:17:12.853,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-691,False,Insufficient control flow management in DevTools in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to potentially execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79034,2026-08-25 21:17:59.360,2026-08-27 00:49:52.630,3.1,LOW,NETWORK,HIGH,NONE,REQUIRED,CWE-200,False,Information leak in CORS in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to leak cross-origin data via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79038,2026-08-25 21:17:59.470,2026-08-27 00:47:28.243,6.5,MEDIUM,NETWORK,LOW,NONE,REQUIRED,CWE-863,False,Incorrect authorization in WebProtect in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to obtain sensitive information via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79039,2026-08-25 21:17:59.580,2026-08-27 04:17:13.013,8.1,HIGH,NETWORK,HIGH,NONE,NONE,CWE-416,False,Use after free in Mobile in Google Chrome on on iOS prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via crafted network traffic. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79041,2026-08-25 21:17:59.800,2026-08-27 00:42:26.683,4.3,MEDIUM,NETWORK,LOW,NONE,REQUIRED,CWE-862,False,Missing authorization in Browser in Google Chrome on on Mac prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to bypass web origin policy into a privileged page via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-79043,2026-08-25 21:18:00.023,2026-08-27 04:17:13.180,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-787,False,Out of bounds write in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79044,2026-08-25 21:18:00.133,2026-08-27 01:29:44.230,5.3,MEDIUM,NETWORK,HIGH,NONE,REQUIRED,CWE-862,False,Missing authorization in WebAppInstalls in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to obtain sensitive information via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79045,2026-08-25 21:18:00.247,2026-08-27 01:28:08.550,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-843,False,Type confusion in V8 in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to read memory inside the sandbox via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-79047,2026-08-25 21:18:00.473,2026-08-27 04:17:13.343,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Views in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79048,2026-08-25 21:18:00.583,2026-08-27 04:17:13.817,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-787,False,Out of bounds write in ANGLE in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79052,2026-08-25 21:18:01.030,2026-08-27 04:17:14.600,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Aura in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-79054,2026-08-25 21:18:01.263,2026-08-27 04:17:15.823,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-416,False,Use after free in Chromecast in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-79056,2026-08-25 21:18:01.487,2026-08-27 04:17:16.413,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in ServiceWorker in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-79057,2026-08-25 21:18:01.593,2026-08-27 04:17:17.333,8.1,HIGH,LOCAL,HIGH,NONE,NONE,CWE-367,False,Race condition in Start in Google Chrome on on Android prior to 152.0.7977.65 allowed a local attacker leveraging social engineering to potentially execute arbitrary code outside the sandbox via a co-installed app. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79064,2026-08-25 21:18:02.030,2026-08-27 04:17:18.430,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Network in Google Chrome on on Mac prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via a crafted Chrome extension. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79069,2026-08-25 21:18:02.590,2026-08-27 04:17:18.913,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-119,False,Memory corruption in Tint in Google Chrome on on Mac prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79071,2026-08-25 21:18:02.807,2026-08-27 04:17:20.083,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-367,False,Race condition in GPU in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79073,2026-08-25 21:18:03.037,2026-08-27 04:17:20.990,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-754,False,Improper state validation in Parser in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79078,2026-08-25 21:18:03.623,2026-08-27 04:17:22.187,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in FedCM in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79083,2026-08-25 21:18:03.850,2026-08-27 04:17:23.063,7.5,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-841,False,Improper enforcement of behavioral workflow in Media in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79091,2026-08-25 21:18:04.763,2026-08-27 04:17:23.220,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Bluetooth in Google Chrome on on Mac prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79097,2026-08-25 21:18:05.227,2026-08-27 04:17:23.403,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in V8 in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79109,2026-08-25 21:18:06.213,2026-08-27 04:17:23.580,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-20,False,Improper input validation in Printing in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79111,2026-08-25 21:18:06.433,2026-08-27 04:17:23.777,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-20,False,Improper input validation in Dawn in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79119,2026-08-25 21:18:06.990,2026-08-27 04:17:24.253,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in PDF in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted PDF file. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-79121,2026-08-25 21:18:07.210,2026-08-27 04:17:24.740,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-20,False,Improper input validation in Chromecast in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-79122,2026-08-25 21:18:07.320,2026-08-27 01:21:57.670,5.9,MEDIUM,NETWORK,HIGH,NONE,NONE,CWE-200,False,Information leak in SignIn in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to obtain sensitive information via crafted network traffic. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79123,2026-08-25 21:18:07.433,2026-08-27 01:20:33.300,6.5,MEDIUM,NETWORK,LOW,NONE,REQUIRED,CWE-20,False,Improper input validation in NTP Footer in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to bypass web origin policy via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-79124,2026-08-25 21:18:07.540,2026-08-27 01:17:09.633,6.5,MEDIUM,NETWORK,LOW,NONE,REQUIRED,CWE-200,False,Information leak in Intents in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker to leak sensitive information via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-79127,2026-08-25 21:18:07.873,2026-08-27 04:17:25.293,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-787,False,Out of bounds write in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79128,2026-08-25 21:18:07.987,2026-08-27 04:17:28.460,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Views in Google Chrome on on Mac prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79129,2026-08-25 21:18:08.093,2026-08-27 04:17:31.970,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Sessions in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via UI Interaction. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79130,2026-08-25 21:18:08.203,2026-08-27 04:17:36.283,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-122,False,Buffer overflow in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79131,2026-08-25 21:18:08.337,2026-08-27 04:17:37.877,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-787,False,Out of bounds write in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79132,2026-08-25 21:18:08.467,2026-08-27 04:17:38.113,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-20,False,Improper input validation in Input in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79138,2026-08-25 21:18:09.057,2026-08-27 04:17:38.357,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-787,False,Out of bounds write in ANGLE in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79139,2026-08-25 21:18:09.160,2026-08-27 04:17:38.603,7.5,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-20,False,Improper input validation in Media in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79140,2026-08-25 21:18:09.273,2026-08-27 04:17:38.830,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Views in Google Chrome on on Mac prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79142,2026-08-25 21:18:09.500,2026-08-27 04:17:39.063,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-122,False,Buffer overflow in ANGLE in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79149,2026-08-25 21:18:10.160,2026-08-27 04:17:39.293,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79150,2026-08-25 21:18:10.270,2026-08-27 04:17:39.530,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Views in Google Chrome on on Mac prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-79155,2026-08-25 21:18:10.713,2026-08-27 04:17:39.857,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-367,False,Race condition in FileSystem in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79175,2026-08-25 21:18:11.040,2026-08-27 04:17:40.083,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-843,False,Type confusion in Accessibility in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79182,2026-08-25 21:18:11.813,2026-08-27 04:17:40.313,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-20,False,Improper input validation in Media in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79183,2026-08-25 21:18:11.927,2026-08-27 04:17:40.840,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Accessibility in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via UI Interaction. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79187,2026-08-25 21:18:12.380,2026-08-27 04:17:41.320,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in WebRTC in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79188,2026-08-25 21:18:12.483,2026-08-27 04:17:42.067,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-787,False,Out of bounds write in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79189,2026-08-25 21:18:12.597,2026-08-27 04:17:42.673,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-787,False,Out of bounds write in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79194,2026-08-25 21:18:13.140,2026-08-27 04:17:43.127,8.1,HIGH,NETWORK,HIGH,NONE,NONE,CWE-416,False,Use after free in Chromoting in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via crafted network traffic. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79195,2026-08-25 21:18:13.250,2026-08-27 04:17:43.540,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Script in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79197,2026-08-25 21:18:13.490,2026-08-27 04:17:43.707,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in V8 in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-79198,2026-08-25 21:18:13.603,2026-08-27 04:17:44.443,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Platform in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79200,2026-08-25 21:18:13.827,2026-08-27 04:17:45.230,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Aura in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-79202,2026-08-25 21:18:14.047,2026-08-27 04:17:45.410,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Chromecast in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79209,2026-08-25 21:18:14.820,2026-08-27 04:17:47.047,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-843,False,Type confusion in Animation in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79210,2026-08-25 21:18:14.930,2026-08-27 04:17:48.397,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-416,False,Use after free in Audio in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79215,2026-08-25 21:18:15.537,2026-08-27 04:17:49.563,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-190,False,Integer overflow in WebGL in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79216,2026-08-25 21:18:15.650,2026-08-27 04:17:50.387,7.5,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-122,False,Buffer overflow in Blink in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79218,2026-08-25 21:18:15.867,2026-08-27 04:17:50.557,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-863,False,Incorrect authorization in Sandbox in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79219,2026-08-25 21:18:15.977,2026-08-27 04:17:50.873,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Bluetooth in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via a crafted Chrome extension. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79224,2026-08-25 21:18:16.530,2026-08-27 04:17:51.133,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-416,False,Use after free in Chromecast in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-79227,2026-08-25 21:18:16.857,2026-08-27 04:17:51.433,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-843,False,Type confusion in DevTools in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79230,2026-08-25 21:18:17.183,2026-08-27 04:17:51.793,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-20,False,Improper input validation in ANGLE in Google Chrome on on Mac prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79231,2026-08-25 21:18:17.297,2026-08-27 04:17:51.983,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-122,False,Buffer overflow in Media in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79232,2026-08-25 21:18:17.413,2026-08-27 04:17:52.153,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Aura in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79235,2026-08-25 21:18:17.747,2026-08-27 04:17:53.000,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in WebGL in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79236,2026-08-25 21:18:17.853,2026-08-27 04:17:53.790,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-843,False,Type confusion in V8 in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79240,2026-08-25 21:18:18.283,2026-08-27 04:17:54.157,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-787,False,Out of bounds write in ANGLE in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker to potentially execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79244,2026-08-25 21:18:18.763,2026-08-27 04:17:54.337,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Animation in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-79245,2026-08-25 21:18:18.887,2026-08-27 04:17:54.523,7.7,HIGH,LOCAL,HIGH,NONE,REQUIRED,CWE-416,False,Use after free in UI in Google Chrome prior to 152.0.7977.65 allowed a local attacker who had compromised the renderer process to execute arbitrary code outside the sandbox via a local program. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79247,2026-08-25 21:18:19.107,2026-08-27 04:17:54.730,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-416,False,Use after free in Chromoting in Google Chrome on on Windows prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to execute arbitrary code outside the sandbox via crafted network traffic. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79256,2026-08-25 21:18:20.117,2026-08-27 04:17:54.880,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-610,False,Externally controlled reference in WebView in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79257,2026-08-25 21:18:20.230,2026-08-27 04:17:56.010,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Views in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79263,2026-08-25 21:18:20.887,2026-08-27 04:17:56.910,8.1,HIGH,NETWORK,HIGH,NONE,NONE,CWE-367,False,Race condition in Extensions in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code inside the sandbox via crafted network traffic. (Chromium security severity: Low),2026-08-25,2026-08,2026-08-24
+CVE-2026-79266,2026-08-25 21:18:21.213,2026-08-27 04:17:57.083,8.8,HIGH,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in DevTools in Google Chrome prior to 152.0.7977.65 allowed a remote attacker leveraging social engineering to execute arbitrary code inside the sandbox via a crafted Chrome extension. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79275,2026-08-25 21:18:22.090,2026-08-27 04:17:58.200,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in ANGLE in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-79282,2026-08-25 21:18:22.307,2026-08-27 04:17:58.410,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in ANGLE in Google Chrome on on Android prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-79286,2026-08-25 21:18:22.747,2026-08-27 04:17:58.997,7.4,HIGH,LOCAL,HIGH,NONE,NONE,CWE-862,False,Missing authorization in CustomTabs in Google Chrome on on Android prior to 152.0.7977.65 allowed a local attacker to potentially execute arbitrary code outside the sandbox via a co-installed app. (Chromium security severity: Medium),2026-08-25,2026-08,2026-08-24
+CVE-2026-79290,2026-08-25 21:18:23.197,2026-08-27 04:17:59.530,9.6,CRITICAL,NETWORK,LOW,NONE,REQUIRED,CWE-416,False,Use after free in Aura in Google Chrome prior to 152.0.7977.65 allowed a remote attacker to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical),2026-08-25,2026-08,2026-08-24
+CVE-2026-79292,2026-08-25 21:18:23.417,2026-08-27 04:17:59.697,8.3,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-190,False,Integer overflow in Chromecast in Google Chrome prior to 152.0.7977.65 allowed a remote attacker who had compromised the renderer process to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High),2026-08-25,2026-08,2026-08-24
+CVE-2026-41707,2026-08-25 23:16:59.933,2026-08-27 04:16:42.180,7.4,HIGH,NETWORK,HIGH,NONE,NONE,CWE-294,False,"Authentication Bypass by Capture-replay vulnerability in Spring Spring Security allows Spring Security's DPoPProofJwtDecoderFactory contains a cache-based replay attack vulnerability. The internal cache storing JWT ID claims has a strict size limit, allowing attackers to evict legitimate entries by flooding the server with dummy requests, then replay intercepted valid DPoP proofs.
+
+This issue affects Spring Security: 7.1.0, from 7.0.0 through 7.0.6, and from 6.5.0 through 6.5.11.",2026-08-25,2026-08,2026-08-24
+CVE-2026-58090,2026-08-26 05:18:12.217,2026-08-27 04:16:42.473,7.8,HIGH,LOCAL,LOW,LOW,NONE,CWE-416,False,"The SOCK_STREAM receive path in the unix socket implementation failed to fully detach control messages from the socket buffer before processing them.  Some error paths would free those messages, leaving freed data mbufs in the receive socket buffer.
+
+An unprivileged local user can exploit this use-after-free to escalate privileges.",2026-08-26,2026-08,2026-08-24
+CVE-2026-58091,2026-08-26 05:18:12.337,2026-08-27 04:16:42.790,7.8,HIGH,LOCAL,LOW,LOW,NONE,CWE-416,False,"The implementation of this ioctl attempts to acquire locks on all channels in a sync group.  If locking a channel would block, it releases the sync group list lock and sleeps.  Upon reawakening, it is possible that the sync group structure is freed, but the implementation did not handle this possibility.
+
+ On a system with a multiple audio devices, an unprivileged local user can exploit this use-after-free to escalate privileges.",2026-08-26,2026-08,2026-08-24
+CVE-2026-58092,2026-08-26 05:18:12.453,2026-08-27 04:16:43.843,5.4,MEDIUM,NETWORK,LOW,LOW,NONE,CWE-288,False,"In FreeBSD 15.0, the kernel structure used to represent user credentials changed: previously the primary group ID was stored in the first element of the array containing the list of supplementary group IDs, whereas now the primary group ID is stored in a dedicated field.  This change was largely internal to the kernel and not user-visible.
+
+One function, group_is_primary(), was not properly updated as a part of this transition.  This function is used by mac_do to determine the primary group ID of the credential after applying a transition rule, used when the rule target does not explicitly specify a group.
+
+As a result, with certain mac_do rules, it is possible for a credential switch to incorrectly set the primary group ID to the ID stored in the first element of the original credential's supplementary group array.
+
+If the list of supplementary groups is empty, this value will be 0, corresponding to the ""wheel"" group.  For example, a rule such as ""uid=1001>uid=1002"" can be abused to set the primary group ID to 0 even if the process did not originally belong to group 0.
+
+
+
+Certain mac_do rules can be abused to set a process' group ID to 0.  Note however, that the rule must apply to the caller in order for the bug to be triggered, e.g., given the ruleset ""uid=1001>uid=1002"", the user must have user ID 1001 in order to trigger the bug.
+
+Further, logged-in users will in general have a non-empty supplementary group list, in which case the bug can at worst be used to set the credential's first supplementary group ID as its primary group ID.  Processes must explicitly remove themselves from all supplementary groups, using the privileged setgroups(2) system call, in order to exploit the bug to set 0 as the primary group ID.
+
+Since membership in group 0 is often used to enable controlled privilege escalation, the bug might be further exploitable to obtain root privileges, depending on the system configuration.  For instance, a ruleset such as the following could be exploited by a process running as user 1001 and with an empty supplementary group list: ""uid=1001>uid=1002;gid=0>uid=0"".",2026-08-26,2026-08,2026-08-24
+CVE-2026-58093,2026-08-26 06:16:26.227,2026-08-27 04:16:44.040,7.0,HIGH,LOCAL,HIGH,LOW,NONE,CWE-362,False,"The TIOCSCTTY ioctl handler drops the tty lock in order to acquire the process tree lock.  After reacquiring the tty lock, the handler did not revalidate the state of the terminal, and could proceed to link a terminal that was concurrently being destroyed to the calling process' session.
+
+An unprivileged local user can exploit this race condition to escalate privileges.",2026-08-26,2026-08,2026-08-24
+CVE-2026-58094,2026-08-26 06:16:26.350,2026-08-27 04:16:44.223,7.8,HIGH,LOCAL,LOW,LOW,NONE,CWE-367,False,"The FIOSSHMLPGCNF ioctl(2) operation configures the page size for a largepage shared memory object.  This is intended to be used immediately after creating the object, before any memory is allocated for the object.  The handler checked whether a page size had already been configured without holding the rangelock.  Two concurrent callers could both observe an unconfigured object and set conflicting page sizes, leaving the object in an inconsistent state.
+
+An unprivileged local user can exploit this race to escalate privileges.",2026-08-26,2026-08,2026-08-24
+CVE-2026-58095,2026-08-26 06:16:26.460,2026-08-27 04:16:44.407,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,CWE-122,False,"mp_Enddisc() used incorrect length calculations when formatting endpoint discriminator addresses for display, allowing a received endpoint option to overflow a global result buffer.
+
+A malicious PPP peer can crash ppp(8) or potentially execute arbitrary code as root.",2026-08-26,2026-08,2026-08-24
+CVE-2026-58096,2026-08-26 06:16:26.577,2026-08-27 04:16:44.573,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,CWE-130,False,"LcpDecodeConfig() did not validate the length of received endpoint discriminator options against the minimum required by RFC 1717.  Undersized options would trigger an out-of-bounds write.
+
+A malicious PPP peer can exploit CVE-2026-58095 and CVE-2026-58096 to crash ppp(8) or potentially execute arbitrary code as root.",2026-08-26,2026-08,2026-08-24
+CVE-2026-58097,2026-08-26 06:16:26.700,2026-08-27 04:16:44.743,7.8,HIGH,LOCAL,LOW,LOW,NONE,CWE-122,False,"mp_SetEnddisc() copied a user-supplied PSN endpoint value without length validation, allowing a buffer overflow via the ppp(8) command interface.
+
+A local user with access to the ppp(8) command interface can crash ppp(8) or potentially execute arbitrary code as root.",2026-08-26,2026-08,2026-08-24
+CVE-2026-16444,2026-08-26 10:16:39.940,2026-08-27 04:16:40.453,7.5,HIGH,NETWORK,HIGH,NONE,REQUIRED,CWE-73,False,"Improper
+neutralization of path traversal sequences in TeamViewer Desktop Clients prior
+Version 15.81.5 allows an authenticated remote session participant to write files
+to unintended locations on the local file system via file transfer or virtual
+file clipboard mechanisms. An attacker can leverage this behavior to achieve
+arbitrary file write and potentially execute code with the privileges of the
+affected user.",2026-08-26,2026-08,2026-08-24
+CVE-2026-77534,2026-08-26 10:16:41.173,2026-08-27 04:16:50.077,9.9,CRITICAL,NETWORK,LOW,LOW,NONE,CWE-284,False,A malicious actor with access to the network and low privileges could exploit an Improper Access Control vulnerability found in certain devices running UniFi OS to escalate privileges within such UniFi OS devices or instances.,2026-08-26,2026-08,2026-08-24
+CVE-2026-77536,2026-08-26 10:16:41.417,2026-08-27 04:16:50.217,9.9,CRITICAL,NETWORK,LOW,LOW,NONE,CWE-284,False,A malicious actor with access to the network and low privileges could exploit an Improper Access Control vulnerability found in certain devices running UniFi OS to escalate privileges within such UniFi OS devices or instances.,2026-08-26,2026-08,2026-08-24
+CVE-2026-77539,2026-08-26 10:16:41.783,2026-08-27 04:16:50.343,9.1,CRITICAL,NETWORK,LOW,HIGH,NONE,CWE-20,False,A malicious actor with access to the network and high privileges could exploit an Improper Input Validation vulnerability found in UniFi OS Server to execute a Command Injection on the host device.,2026-08-26,2026-08,2026-08-24
+CVE-2026-77540,2026-08-26 10:16:41.920,2026-08-27 04:16:50.453,9.1,CRITICAL,NETWORK,LOW,HIGH,NONE,CWE-20,False,A malicious actor with access to the network and high privileges could exploit an Improper Input Validation vulnerability found in UniFi OS Server to execute a Command Injection on the host device.,2026-08-26,2026-08,2026-08-24
+CVE-2026-77545,2026-08-26 10:16:42.407,2026-08-27 04:16:50.577,9.0,CRITICAL,NETWORK,LOW,LOW,REQUIRED,CWE-489,False,"A malicious actor with access to the network, low privileges and under certain conditions could exploit an Active Debug Code vulnerability found in certain devices running UniFi OS to escalate privileges within such UniFi OS devices or instances.",2026-08-26,2026-08,2026-08-24
+CVE-2026-77549,2026-08-26 11:16:38.807,2026-08-27 04:16:50.707,9.0,CRITICAL,NETWORK,HIGH,NONE,NONE,CWE-93,False,A malicious actor with access to the network and under certain conditions could exploit an Improper Neutralization of CRLF Sequences vulnerability found in certain devices running UniFi OS to bypass authentication to such UniFi OS devices or instances.,2026-08-26,2026-08,2026-08-24
+CVE-2026-77550,2026-08-26 11:16:38.930,2026-08-27 04:16:50.850,10.0,CRITICAL,NETWORK,LOW,NONE,NONE,CWE-93,False,A malicious actor with access to the network could exploit an Improper Neutralization of CRLF Sequences vulnerability found in certain devices running UniFi OS to bypass authentication to such UniFi OS devices or instances.,2026-08-26,2026-08,2026-08-24
+CVE-2026-18252,2026-08-26 14:17:08.000,2026-08-27 04:16:41.857,7.3,HIGH,NETWORK,LOW,LOW,REQUIRED,CWE-829,False,"GitLab has remediated an issue in GitLab EE affecting all versions from 18.9 before 19.1.7, 19.2 before 19.2.5, and 19.3 before 19.3.1 that, under certain conditions, an authenticated user with developer-role permissions could have executed arbitrary commands in a CI context, due to the Claude agent processing configuration from a user-controlled source.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74736,2026-08-26 15:16:52.173,2026-08-27 06:17:22.650,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+net/sched: cls_bpf: reject dev-bound programs bound to a different device
+
+cls_bpf_prog_from_efd() obtained a SCHED_CLS program via
+bpf_prog_get_type_dev() but never verified that a device-bound (offloaded)
+program's bound netdev matches the TC netdev the classifier is being
+attached to. This let a program loaded with prog_ifindex for device A be
+attached via cls_bpf + skip_sw to device B; deleting device A then
+destroyed the program's offload state while it was still attached to
+device B, triggering a netdevsim WARN (panic with panic_on_warn=1).
+
+Mirror the XDP attach path (net/core/dev.c) and reject the attach with
+-EINVAL when a dev-bound program's bound device does not match the
+target device.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74737,2026-08-26 15:16:52.313,2026-08-27 06:17:22.950,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+net: ethernet: ti: am65-cpsw-nuss: Fix port_id extraction from SRC TAG
+
+On the packet reception path, the ID of the MAC Port on which the packet
+was received, is embedded in the RX DMA Descriptor's metadata. The ID is
+extracted using the helper function cppi5_desc_get_tags_ids() which fills
+in the 16-bit Source Tag into the 'port_id' variable. However, it is only
+the lower 8-bits of the 16-bit Source Tag that represent the MAC Port ID,
+while the upper 8-bits are Hardware-Reserved and carry an arbitrary value.
+With the existing logic, sporadic kernel crash is observed due to the
+subsequent driver code accessing out-of-bound memory because of an invalid
+port_id.
+
+Hence, fix the port_id extraction logic to use only the lower 8-bits of the
+Source Tag as the MAC Port ID.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74739,2026-08-26 15:16:52.603,2026-08-27 06:17:23.220,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+net/sched: cls_u32: skip hash tables in u32_bind_class()
+
+u32_walk() enumerates both struct tc_u_hnode and struct tc_u_knode
+through the walker callback. u32_bind_class() unconditionally casts the
+passed fh to tc_u_knode and accesses &n->res, so when fh is actually a
+tc_u_hnode, which has no tcf_result member, this results in a
+slab-out-of-bounds read of res->classid in tc_cls_bind_class().
+
+The issue can be reproduced with the following commands:
+
+    tc qdisc add dev lo root handle 1: hfsc
+    tc class add dev lo parent 1: classid 1:1 hfsc sc rate 1000kbit
+    tc filter add dev lo parent 1:1 protocol ip prio 1 u32 match u32 0 0 flowid 1:1
+    tc class add dev lo parent 1: classid 1:2 hfsc sc rate 2000kbit
+
+Fix this by skipping hash tables via the TC_U32_KEY(handle) check.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74741,2026-08-26 15:16:52.867,2026-08-27 06:17:23.583,7.5,HIGH,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+net: ngbe: fix NULL pointer dereference in non-MSI-X interrupt enabling
+
+In non-MSI-X mode (such as legacy INTx or single MSI), wx->msix_entry is
+not allocated or initialized. Calling NGBE_INTR_MISC(wx) dereferences
+wx->msix_entry->entry, leading to a NULL pointer dereference crash.
+
+This issue was introduced by fixing the IRQ vector when the number of
+VFs is 7. Fix the issue by explicitly checking `pdev->msix_enabled` to
+determine the correct vector index.
+
+Additionally, as a side fix, set the interrupt mask to BIT(0) for the
+non-MSI-X fallback. In MSI/INTx mode, the MISC and queue interrupts
+share vector 0, and the WX_PX_MISC_IVAR register is only valid in the
+MSI-X case. Thus, BIT(0) is the correct mask for the miscellaneous cause
+when MSI-X is disabled.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74742,2026-08-26 15:16:52.990,2026-08-27 06:17:23.867,7.5,HIGH,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+veth: fix queue index used to wake the peer txq in veth_poll
+
+veth_poll() derives the index of the peer TX queue to wake from
+rq->xdp_rxq.queue_index. That field is only initialized by
+xdp_rxq_info_reg() in veth_enable_xdp_range(), which runs only when an
+XDP program is attached. On the plain GRO/NAPI path
+(veth_napi_enable_range()) xdp_rxq_info_reg() is never called, so
+queue_index stays 0 for every queue, as priv->rq is zero-allocated.
+
+So in a multi-queue setup with GRO enabled and no XDP program attached,
+every NAPI instance looks at the peer's TX queue 0. If veth_xmit() stops
+peer TX queue 1 because the ptr_ring is full (NETDEV_TX_BUSY), nothing
+ever wakes it again: the poller draining queue 1 wakes queue 0 instead.
+veth implements no ndo_tx_timeout, so the netdev watchdog does not kick
+in either, and the queue stays stopped indefinitely.
+
+Derive the index from the position of the rq within priv->rq instead,
+which is correct regardless of whether XDP was ever enabled.
+
+Scripts to reproduce the stall are available at
+https://github.com/netoptimizer/veth-backpressure-performance-testing",2026-08-26,2026-08,2026-08-24
+CVE-2026-74743,2026-08-26 15:16:53.113,2026-08-27 06:17:24.113,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+macvlan: inherit needed_headroom and needed_tailroom from lowerdev
+
+macvlan devices inherit hard_header_len from lowerdev during macvlan_init(),
+but leave needed_headroom and needed_tailroom set to 0.
+
+When the underlying lowerdev requires extra headroom or tailroom for
+headers/trailers (e.g. macsec, ipsec, wireguard, tunnels, or veth with rx
+headroom), upper layers calculating packet headroom and tailroom fail to
+reserve sufficient space.
+
+This can result in reallocation overhead, skb headroom underflows, or KASAN
+slab-use-after-free crashes when dev_hard_header() / macvlan_hard_header()
+prepends header data or when lower devices append tailroom.
+
+Fix this by:
+1. Inheriting needed_headroom and needed_tailroom from lowerdev in macvlan_init().
+2. Propagating needed_headroom and needed_tailroom updates to attached macvlans
+   in macvlan_device_event() when receiving NETDEV_FEAT_CHANGE events.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74744,2026-08-26 15:16:53.250,2026-08-27 06:17:24.440,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+ipvlan: inherit needed_headroom and needed_tailroom from phy_dev
+
+ipvlan devices inherit hard_header_len from phy_dev during ipvlan_init(),
+but leave needed_headroom and needed_tailroom set to 0.
+
+When the underlying phy_dev (or stacked lower device) requires extra headroom
+or tailroom for headers/trailers (e.g. macsec, ipsec, wireguard, tunnels, or
+veth with rx headroom), upper layers calculating packet headroom and tailroom
+fail to reserve sufficient space.
+
+This can result in reallocation overhead, skb headroom underflows, or KASAN
+slab-use-after-free crashes when dev_hard_header() / ipvlan_hard_header()
+prepends header data or when lower devices append tailroom.
+
+Fix this by:
+1. Inheriting needed_headroom and needed_tailroom from phy_dev in ipvlan_init().
+2. Propagating needed_headroom and needed_tailroom updates to attached ipvlans
+   in ipvlan_device_event() when receiving NETDEV_FEAT_CHANGE events.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74745,2026-08-26 15:16:53.387,2026-08-27 06:17:24.793,7.5,HIGH,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+eth: bnxt: avoid deadlock when canceling IRQ affinity notifier
+
+Unregistering IRQ affinity notifiers waits for the callback synchronously.
+bnxt takes the netdev instance lock in the notifier (to restart the queue)
+and cancels the work under the same lock. This may obviously deadlock.
+
+Move the restart to the async service task. The queue restart isn't
+super time sensitive. Store the new TPH tag, schedule the task.
+Safely canceling the service task is already ironed out.
+
+In bnxt_request_irq() the order of registering notifier, affinity and
+initial TPH programming has to be inverted. I think it was racy
+previously since user may trigger an update as soon as notifier
+is installed.
+
+There's a small known gap - if pcie_tph_get_cpu_st() fails at init
+and the target tag is 0 we may miss programming the entry.
+This does not seem worth fixing, the code has skip-on-failure
+all over the place, anyway.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74746,2026-08-26 15:16:53.503,2026-08-27 06:17:25.033,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+netfilter: flowtable: publish GC-visible tuple last
+
+nf_flow_table_iterate() only treats original-direction tuple nodes as
+owning entries. Publishing the original node first lets GC observe and
+free a flow while flow_offload_add() is still inserting the reply node.
+Publish the reply node first and the original node last so GC never
+sees a partially installed flow.
+
+KASAN can trigger slab-use-after-free read and write reports in the
+flowtable/rhashtable path (rht_deferred_worker, jhash, flow_offload_del,
+flow_offload_lookup, etc.).",2026-08-26,2026-08,2026-08-24
+CVE-2026-74747,2026-08-26 15:16:53.657,2026-08-27 06:17:25.410,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+ipvs: revalidate ihl to prevent out-of-bounds access
+
+While the outer IP header is already pulled into the skb head,
+we must be careful and revalidate the embedded headers after
+reading them from the skb frags to prevent out-of-bounds
+access.
+
+One such place reported by Sashiko is ip_vs_nat_icmp() where
+local process can change the ihl field and after
+skb_ensure_writable() we can see larger value which is a
+problem for the ip_send_check(cih) calls.
+
+Add check to drop the packet if the ihl field is changed.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74748,2026-08-26 15:16:53.770,2026-08-27 06:17:25.680,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+netfilter: ipset: fix refcount race between list:set GC and swap
+
+__ip_set_put_byindex() resolved the index to a set pointer under RCU,
+then took ip_set_ref_lock in __ip_set_put() to decrement set->ref.
+ip_set_swap() holds that same lock while swapping both the ip_set_list
+slots and the two sets' ref counters, so it can interleave between the
+dereference and the lock acquisition, leaving the caller to decrement a
+set whose reference already moved to the other index and hit
+BUG_ON(set->ref == 0). list_set_gc() reaches this from timer softirq,
+which the nfnl mutex does not serialize against swap: an expiring
+list:set member calls list_set_del() -> ip_set_put_byindex() while
+IPSET_CMD_SWAP runs on the referenced sets.
+
+Resolve the index and decrement under ip_set_ref_lock, as ip_set_swap()
+already does, keeping the refcount tied to the index rather than to a
+stale set pointer.
+
+  kernel BUG at net/netfilter/ipset/ip_set_core.c:685!
+  Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
+  RIP: 0010:ip_set_put_byindex (net/netfilter/ipset/ip_set_core.c:870)
+  Call Trace:
+   <IRQ>
+   list_set_del (net/netfilter/ipset/ip_set_list_set.c:159)
+   set_cleanup_entries (net/netfilter/ipset/ip_set_list_set.c:181)
+   list_set_gc (net/netfilter/ipset/ip_set_list_set.c:578)
+   call_timer_fn (kernel/time/timer.c:1748)
+   __run_timers (kernel/time/timer.c:1799 kernel/time/timer.c:2374)
+   run_timer_softirq (kernel/time/timer.c:2405)
+   </IRQ>
+  Kernel panic - not syncing: Fatal exception in interrupt",2026-08-26,2026-08,2026-08-24
+CVE-2026-74750,2026-08-26 15:16:54.050,2026-08-27 06:17:26.000,7.5,HIGH,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+ovpn: defer key slot crypto freeing to workqueue
+
+Key slots are released through a kref and the existing release path
+frees the AEAD transforms from an RCU callback. That is not safe for all
+crypto implementations: crypto_free_aead can sleep, for example when an
+async or hardware implementation has teardown work to complete.
+
+Use queue_rcu_work for key-slot release. This keeps the RCU grace period
+needed by lockless key-slot readers, but runs the actual crypto teardown
+from workqueue context where sleeping is allowed. Once the rcu_work
+callback runs, pre-existing RCU readers are gone, and the final kref put
+already proves that no transform user remains, so the worker can release
+the AEAD transforms and free the slot directly.
+
+The previous patch drains ovpn_wq during module exit, so queued key-slot
+teardown work cannot outlive module text.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74751,2026-08-26 15:16:54.160,2026-08-27 06:17:26.247,9.4,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+riscv: lib: Fix ZBB strnlen reading past count boundary
+
+The ZBB-optimized strnlen loop loads one word ahead before checking the
+aligned boundary:
+
+    REG_L   t1, SZREG(t0)       // load next word
+    addi    t0, t0, SZREG       // advance
+    orc.b   t1, t1
+    bgeu    t0, t4, 4f          // boundary check AFTER load
+
+where t4 = (s + count) & -SZREG.  When s is aligned and count is a
+multiple of SZREG, t4 equals s + count and the loop loads a full word
+starting at exactly s + count.  If s + count falls on a page boundary
+with the next page unmapped, this faults.
+
+Fix by computing the aligned boundary from the last valid byte
+(s + count - 1) instead of s + count.  This makes the loop stop at the
+word containing the last valid byte rather than potentially loading the
+word after it.  The count == 0 case is already handled by the beqz
+early exit.
+
+Also add a pre-loop guard (bgeu t0, t4) for the case where all valid
+bytes fit within the first word.  With the adjusted boundary, t4 can
+equal t0, and entering the loop with stale register state from the
+first-word processing would produce incorrect results.
+
+The final minu clamp ensures the result is still correct when the last
+loaded word extends past s + count - 1 within the same aligned word.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74752,2026-08-26 15:16:54.270,2026-08-27 06:17:26.440,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+sctp: validate cookie AUTH state before use
+
+When cookie authentication is disabled, COOKIE_ECHO restores fixed-size
+AUTH fields directly from peer-controlled cookie bytes.  A forged RANDOM
+length, HMAC list, or CHUNKS list can then reach association consumers
+with lengths or identifiers that were never validated against the local
+backing arrays.
+
+A forged RANDOM length can cause out-of-bounds reads during key-vector
+construction.  A forged HMAC identifier also caused a 32-byte write past
+a zero-length AUTH chunk, providing a primitive for a local privilege
+escalation chain.
+
+Validate the cookie's RANDOM, HMACS, and CHUNKS parameters at the cookie
+trust boundary before copying them into the association.  Reject invalid
+types, malformed lengths, unsupported HMAC identifiers, HMAC lists
+without SHA1, and forbidden chunk ids.",2026-08-26,2026-08,2026-08-24
+CVE-2026-74753,2026-08-26 15:16:54.387,2026-08-27 06:17:26.637,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+perf: Reject exited events as group leaders
+
+perf_event_remove_on_exec() sets remove-on-exec events to the EXIT state
+and detaches their group relationships.  The event's file descriptor can
+remain open, however, and perf_event_open() currently accepts that event
+as a group leader because its early validation rejects only REVOKED and
+DEAD events.
+
+A new sibling can consequently be linked to the detached leader.  When
+the leader is closed, perf_group_detach() observes that its
+PERF_ATTACH_GROUP bit is already clear and skips the new sibling.  The
+sibling then retains a group_leader pointer to the freed event.
+
+Reject group leaders in the EXIT state.  Perform the check while holding
+the shared context mutex so that an exec in the target task cannot detach
+the leader between validation and group attachment.
+
+[peterz: make the earlier test fully consistent]",2026-08-26,2026-08,2026-08-24
+CVE-2026-80519,2026-08-26 15:17:05.420,2026-08-27 06:17:30.167,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+ovpn: finish crypto callback cleanup before peer release
+
+Crypto completion callbacks hold both key-slot and peer references. The
+peer reference pins the netdev, and dropping the last peer reference can
+let netdev unregistration and module removal make progress.
+
+Do not release that peer reference before the callback has finished its
+own cleanup. If ovpn_crypto_key_slot_put runs after ovpn_peer_put, it can
+schedule an RCU callback backed by module text after ovpn_cleanup
+rcu_barrier has already run. The TX error path also freed the remaining
+skb after ovpn_peer_put, leaving callback cleanup outside the peer/netdev
+lifetime window.
+
+Release the key slot and free any remaining skb first, then drop the peer
+reference as the last callback action.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80520,2026-08-26 15:17:05.553,2026-08-27 06:17:30.450,7.5,HIGH,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+ovpn: fix NULL dereference when killing missing key
+
+ovpn_crypto_kill_key assumes both crypto slots are populated and
+dereferences each slot before checking it. That is not guaranteed: a
+peer can have only one installed key, and the kill path may be asked to
+remove a key that is not present.
+
+Read each slot once while holding the crypto state lock, check for NULL
+before looking at key_id, and only replace the slot that actually
+matches.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80521,2026-08-26 15:17:05.677,2026-08-27 06:17:30.780,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+af_unix: Unlink scc_entry in unix_del_edge().
+
+Kyle Zeng reported that GC could free a dead SCC partially.
+
+The scenario is as follows:
+
+   1) Create two SCCs:
+
+       X -.   A <-> B
+       ^--'
+
+   2) Run the following concurrently:
+
+      2-1) send() sk-B to sk-B from sk-X
+      2-2) close() both A and B
+
+At 2-1), there is a small window where unix_add_edges()
+publishes a new edge (B <-> B) to GC but its skb is not queued
+by skb_queue_tail().
+
+If 2-2) completes before skb_queue_tail() and GC is triggered,
+it judges A <-> B as dead, but B is not freed because GC cannot
+collect the not-yet-queued skb holding the B <-> B edge.
+
+       X -.   A <-> B -. This edge is visible
+       ^--'         ^..'  but skb is not
+
+This itself is not a problem since the next GC run will judge
+B as dead as well and free it finally.
+
+       X -.   A <.> B -.
+       ^--'         ^--'
+
+However, X's SCC forces the next GC to call unix_walk_scc_fast(),
+and it iterates over A through B's scc_entry.
+
+Let's unlink scc_entry before freeing the vertex in unix_del_edge().",2026-08-26,2026-08,2026-08-24
+CVE-2026-80522,2026-08-26 15:17:05.800,2026-08-27 06:17:31.137,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+crypto: tegra - fix rctx->cryptlen calculation in tegra_gcm_do_one_req()
+
+Perform rctx->cryptlen calculation in tegra_gcm_do_one_req() the same way
+it is done in tegra_ccm_crypt_init(). The current formulae may lead to a
+crash if a caller does not call tegra_gcm_setauthsize() and so ctx->authsize
+remains zero. Then a decrypt operation with incorrect rctx->cryptlen will
+lead to a write beyound rctx->dst_sg buffer.
+
+As a follow-up cleanup delete struct tegra_aead_ctx->authsize field since
+it appears to be completely unused. Also simplify tegra_ccm_setauthsize()
+and tegra_gcm_setauthsize() functions respectively.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80523,2026-08-26 15:17:05.940,2026-08-27 06:17:31.467,7.1,HIGH,LOCAL,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+clk: spacemit: k3: set hdma clock as critical
+
+HDMA clock is responsible for the internal TCM access path of X100 RISC-V
+core, so set the clock flag as critical to prevent it from being shut off,
+otherwise the Linux system will hang, for example in the case of a vector
+instruction access generates a page fault.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80526,2026-08-26 15:17:06.350,2026-08-27 06:17:31.797,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+ASoC: tas2562: Validate values for volume writes
+
+tas2562_volume_control_put() does not do any validation of the control
+value written by userspace, it uses it to look up a value in a fixed
+size array which can easily be overflowed and then writes whatever value
+it gets back to the device.  Add validation that we are loading a value
+we have in the array.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80527,2026-08-26 15:17:06.490,2026-08-27 06:17:32.233,7.5,HIGH,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+ceph: fix hanging __ceph_get_caps() with stale mds_wanted
+
+A reader can hang forever in __ceph_get_caps() when the client no
+longer holds `FILE_RD`, but local cap state still says that the
+capability is already wanted (via `mds_wanted`).
+
+One way to trigger this is through MDS cap revocation.  If another
+client performs a conflicting operation, the MDS can revoke `FILE_RD`
+from the reader; the next read then has to reacquire `FILE_RD`.  If
+the cap update that should request `FILE_RD` never reaches the MDS
+after `cap->mds_wanted` was raised, the reader is left holding only
+non-file caps while local `mds_wanted` still includes the file read
+caps.
+
+In that state, try_get_cap_refs() sees `need <= mds_wanted` and
+returns 0, so __ceph_get_caps() just waits on `i_cap_wq`.  If the cap
+update that was supposed to request `FILE_RD never reaches the MDS
+after `cap->mds_wanted was` raised, no further request is sent and the
+waiter can sleep indefinitely until unrelated cap traffic happens to
+wake it up.
+
+The ordering issue is that `cap->mds_wanted` is updated in
+__prep_cap() before the `CEPH_MSG_CLIENT_CAPS message` is actually
+queued for send.  That makes one field serve two different meanings at
+once: what this client wants, and what the client believes the MDS
+already knows it wants.
+
+A proper fix would be to split those states and track whether a cap
+update is actually in flight or has been observed by the MDS.
+However, simply moving the `cap->mds_wanted assignment` later would
+not be sufficient: queueing the message in the messenger does not
+guarantee that the MDS processed that specific wanted set, and
+reconnect or message loss can still invalidate that assumption.
+Fixing that properly would require a larger rework of the cap state
+machine.
+
+To allow simpler backports to stable kernels, this patch implements a
+simpler workaround:
+
+- stop waiting forever in __ceph_get_caps(); after a bounded wait,
+  fall back to the renew path
+
+- make ceph_renew_caps() issue a synchronous `OPEN` request whenever
+  the inode still does not actually hold the wanted caps, instead of
+  only calling ceph_check_caps()
+
+The extra issued-vs-wanted check in ceph_renew_caps() is necessary
+because the previous test only checked whether the inode still had any
+real caps at all.  That is not enough after revocation: the client can
+still hold something like `pLs` and yet be missing `FILE_RD`
+completely.  In that case, falling back to ceph_check_caps() is not
+sufficient, because it still trusts `cap->mds_wanted` and may resend
+nothing.  By requiring `(issued & wanted) == wanted` before taking the
+asynchronous path, the code only uses ceph_check_caps() when the
+`wanted caps` are already actually issued.  Otherwise, it sends the
+synchronous `OPEN` renew.
+
+This preserves the existing asynchronous fast path when the wanted
+caps are already issued, avoids changing cap-state semantics, and
+fixes the hang by guaranteeing that a stalled waiter eventually
+retries through a path that does not rely on the stale `mds_wanted`
+state.
+
+[ idryomov: move CEPH_GET_CAPS_WAIT_TIMEOUT from libceph.h to
+  mds_client.h, formatting ]",2026-08-26,2026-08,2026-08-24
+CVE-2026-80528,2026-08-26 15:17:06.667,2026-08-27 06:17:32.740,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+ceph: avoid fs reclaim while using current->journal_info
+
+handle_reply() stores a `ceph_mds_request` pointer in
+`current->journal_info` while filling the inode and dentry cache from
+an MDS reply.
+
+An allocation in this section can enter direct reclaim and prune
+dentries from another filesystem.  If this dirties an ext4 inode, ext4
+starts a JBD2 transaction.  JBD2 interprets the Ceph request in
+`current->journal_info` as a journal handle and dereferences the
+request's `r_tid` as `h_transaction`, causing a kernel crash, e.g.:
+
+ Unable to handle kernel paging request at virtual address 00000000077b4818
+ [...]
+ Internal error: Oops: 0000000096000004 [#1]  SMP
+ Modules linked in:
+ CPU: 6 UID: 0 PID: 2699135 Comm: kworker/6:3 Tainted: G        W           6.18.38-i3 #1113 NONE
+ [...]
+ Workqueue: ceph-msgr ceph_con_workfn
+ pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ pc : jbd2__journal_start+0x2c/0x208
+ lr : __ext4_journal_start_sb+0x100/0x178
+ [...]
+ Call trace:
+  jbd2__journal_start+0x2c/0x208 (P)
+  __ext4_journal_start_sb+0x100/0x178
+  ext4_dirty_inode+0x3c/0x90
+  __mark_inode_dirty+0x58/0x400
+  iput.part.0+0x2b0/0x370
+  iput+0x18/0x30
+  dentry_unlink_inode+0xc0/0x158
+  __dentry_kill+0x80/0x250
+  shrink_dentry_list+0x90/0x130
+  prune_dcache_sb+0x60/0x98
+  super_cache_scan+0xe8/0x190
+  do_shrink_slab+0x174/0x388
+  shrink_slab+0xd8/0x4c0
+  shrink_node+0x31c/0x908
+  do_try_to_free_pages+0xd0/0x508
+  try_to_free_pages+0x11c/0x238
+  __alloc_frozen_pages_noprof+0x4d0/0xdd0
+  __folio_alloc_noprof+0x18/0x70
+  __filemap_get_folio+0x248/0x440
+  ceph_readdir_prepopulate+0x570/0x9e8
+  mds_dispatch+0x1424/0x1ba0
+  ceph_con_process_message+0x74/0xa0
+  ceph_con_v1_try_read+0x3a0/0x1510
+  ceph_con_workfn+0x260/0x460
+
+Enter a scoped NOFS allocation context and leave it after clearing
+`journal_info`.  This prevents filesystem reclaim from recursing into
+another filesystem while the field contains Ceph-private data.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80530,2026-08-26 15:17:06.990,2026-08-27 06:17:33.150,7.1,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+xfs: fix exchange-range reflink flag clearing issue with INO1_WRITTEN
+
+When exchanging two full-file ranges, xmi_can_exchange_reflink_flags()
+can move the reflink inode flag from the file that currently has it to
+the other file, as long as exactly one side is marked.  This assumes
+that the file contents, and therefore all shared extents, are exchanged.
+
+That assumption is not true when XFS_EXCHMAPS_INO1_WRITTEN is set.
+xfs_exchmaps_can_skip_mapping() can skip hole and unwritten mappings
+from file1, so an exchange can complete without moving every mapping
+that the earlier flag-swap decision accounted for.  In that case the
+post-operation cleanup can clear the reflink flag from an inode that
+still owns shared written extents.  Later writes then take the
+non-reflink write path and may update blocks that should still have
+been protected by CoW, which shows up as data corruption between
+reflink-related files.
+
+Fix this by disabling the reflink flag exchange whenever
+XFS_EXCHMAPS_INO1_WRITTEN is requested.  The contents exchange can still
+proceed; the conservative outcome is that both inodes keep the reflink
+flag.  The regular reflink flag cleanup path can drop the extra flag
+later once the inode no longer has shared extents.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80531,2026-08-26 15:17:07.140,2026-08-27 06:17:33.500,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+xfs: avoid UAF on sc->tempip in xrep_tempfile_create
+
+LOLLM noticed a potential UAF if the tempfile creation code fails after
+it set sc->tempip.  Fix that.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80536,2026-08-26 15:17:07.777,2026-08-27 06:17:33.847,8.4,HIGH,LOCAL,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+xfs: bounds-check buffer log item's dirty bitmap
+
+xlog_recover_do_reg_buffer() replays each dirty region described by a
+buffer log item's bitmap into the buffer read for that item:
+
+	memcpy(xfs_buf_offset(bp, (uint)bit << XFS_BLF_SHIFT),
+		item->ri_buf[i].iov_base,
+		nbits << XFS_BLF_SHIFT);
+
+The destination offset (bit/nbits, from the logged dirty bitmap) and the
+buffer size (from the logged blf_len) are both attacker-controlled and
+otherwise unrelated, yet the only thing bounding the copy is an ASSERT(),
+which compiles away on production kernels. A crafted image logging a
+small blf_len together with a bitmap bit past the end of that buffer
+drives the memcpy() past the buffer's allocation, corrupting adjacent
+kernel heap during mount-time log recovery. This is reachable by anyone
+who can get a crafted image mounted -- the malicious-filesystem threat
+model XFS already guards against elsewhere.
+
+Turn the ASSERT() into a real XFS_IS_CORRUPT() check that aborts recovery
+of the buffer with -EFSCORRUPTED, consistent with the validate-and-fail
+idiom already used in xlog_recover_do_inode_buffer() and
+xfs_dquot_item_recover.c. xlog_recover_do_reg_buffer() therefore becomes
+STATIC int and its three callers propagate the error.
+
+Found and confirmed with KASAN on a CONFIG_XFS_DEBUG=n build: the crafted
+image trips a slab-out-of-bounds write before this change and fails
+recovery cleanly with -EFSCORRUPTED after it.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80537,2026-08-26 15:17:07.890,2026-08-27 06:17:34.210,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+xfs: fix off-by-one in rtrefcount btree root level validation
+
+xfs_rtrefcountbt_compute_maxlevels() sets
+
+	mp->m_rtrefc_maxlevels = min(d_maxlevels, r_maxlevels) + 1;
+
+where the trailing ""+ 1"" already accounts for the inode-root level, so the
+deepest valid on-disk root level is m_rtrefc_maxlevels - 1 and a cursor must
+satisfy bc_nlevels <= bc_maxlevels (= m_rtrefc_maxlevels).
+
+The two on-disk validation paths, xfs_rtrefcountbt_verify() and
+xfs_iformat_rtrefcount(), check the root level with "">"" instead of "">="", so a
+crafted rtreflink (metadir + realtime + reflink) image whose
+/rtgroups/N.refcount inode has bb_level == m_rtrefc_maxlevels is accepted on
+mount. xfs_rtrefcountbt_init_cursor() then sets bc_nlevels = bb_level + 1,
+exceeding bc_maxlevels by one. Since the xfs_rtrefcountbt_cur slab object is
+sized for exactly bc_maxlevels entries, the first btree op on such a cursor
+indexes bc_levels[m_rtrefc_maxlevels] past the end of the object. This is
+reached by the first rtrefcount cursor built after mount, via log/CoW
+recovery (xfs_reflink_recover_cow() during xfs_mountfs()) or an
+FS_IOC_GETFSMAP over the realtime device.
+
+Reject a root level equal to m_rtrefc_maxlevels, matching the "">="" form
+already used by the sibling data-device refcount/rmap verifiers and the
+in-memory rtrmap verifier.
+
+  BUG: KASAN: slab-out-of-bounds in xfs_btree_lookup (fs/xfs/libxfs/xfs_btree.c:2101)
+  Write of size 2 at addr ffff888018391658 by task exploit/144
+   xfs_btree_lookup (fs/xfs/libxfs/xfs_btree.c:2101)
+   xfs_btree_query_range (fs/xfs/libxfs/xfs_btree.c:5308)
+   xfs_refcount_recover_cow_leftovers (fs/xfs/libxfs/xfs_refcount.c:2113)
+   xfs_reflink_recover_cow (fs/xfs/xfs_reflink.c:1085)
+   xlog_recover_finish (fs/xfs/xfs_log_recover.c:3551)
+   xfs_mountfs (fs/xfs/xfs_mount.c:1158)
+   xfs_fs_fill_super (fs/xfs/xfs_super.c:1940)
+   get_tree_bdev_flags (fs/super.c:1634)
+   vfs_get_tree (fs/super.c:1694)
+   path_mount (fs/namespace.c:4161)
+   __x64_sys_mount (fs/namespace.c:4367)
+   entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:121)
+  The buggy address belongs to the cache xfs_rtrefcountbt_cur of size 216
+  The buggy address is located 8 bytes to the right of
+   allocated 216-byte region [ffff888018391578, ffff888018391650)
+  Kernel panic - not syncing: Fatal exception",2026-08-26,2026-08,2026-08-24
+CVE-2026-80538,2026-08-26 15:17:08.017,2026-08-27 06:17:34.550,7.1,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+xfs: propagate errors from xfs_rtginode_load
+
+xfs_rtginode_ensure() treats every xfs_rtginode_load() error other than
+-ENOENT as success.  This can leave the realtime group inode unset after an
+I/O, allocation, or corruption error.  Growfs then continues as though the
+inode had been loaded.
+
+Only -ENOENT means that the inode needs to be created.  Return all other
+errors to the growfs caller.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80540,2026-08-26 15:17:08.257,2026-08-27 06:17:34.813,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+drm/amdgpu: Fix UVD decode image min size calculation
+
+This needs to use pitch instead of width. Also reject pitch
+over 4096 to avoid overflow.
+
+(cherry picked from commit b41c8cb12e202b220353332ab87dc01a11f69304)",2026-08-26,2026-08,2026-08-24
+CVE-2026-80541,2026-08-26 15:17:08.400,2026-08-27 06:17:35.123,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+drm/amdgpu: validate GEM_CREATE domain combinations
+
+AMDGPU_GEM_CREATE checked domain bits against AMDGPU_GEM_DOMAIN_MASK,
+but did not validate domain combinations. Userspace could combine
+CPU|GTT|VRAM with DOORBELL, GDS, GWS, or OA, making
+amdgpu_bo_placement_from_domain() exceed AMDGPU_BO_MAX_PLACEMENTS and
+hit BUG_ON().
+
+Allow combinations only within CPU/GTT/VRAM, and require non-CPU/GTT/
+VRAM domains to be specified one at a time. Return -EINVAL for invalid
+combinations in amdgpu_gem_create_ioctl().
+
+v2: Rename helper from amdgpu_gem_domain_valid() to
+    amdgpu_gem_are_domains_valid() (Christian)
+
+(cherry picked from commit db39852d0c39843cb02048dfb47e4b8c703e9080)",2026-08-26,2026-08,2026-08-24
+CVE-2026-80544,2026-08-26 15:17:08.763,2026-08-27 06:17:35.497,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/zcrypt: Improve EP11 CPRB domain handling with ASN.1 parsing
+
+The zcrypt_msgtype6_send_ep11_cprb() function uses fragile struct
+overlays to access and modify the domain field in the EP11 CPRB
+payload, creating maintainability and security concerns:
+1. Struct overlay approach (pld_hdr) assumes fixed payload structure
+   and doesn't validate the actual ASN.1 encoding.
+2. Complex length format detection logic is error-prone and doesn't
+   properly validate bounds at each parsing step.
+3. Direct struct member access bypasses proper ASN.1 validation.
+
+Fix by replacing struct overlays with explicit ASN.1 parsing that
+validates each field (payload tag/length, function tag/length/value,
+optional domain tag/length/value) with proper bounds checking at every
+step. Add asn1_int_encode() helper function to safely write integer
+values with correct endianness conversion. This makes the code
+consistent with the validation pattern introduced with the rework of
+the xcrb_msg_to_type6_ep11cprb_msgx() function.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80545,2026-08-26 15:17:08.870,2026-08-27 06:17:35.780,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/zcrypt: Improve EP11 CPRB length and overflow checks
+
+The xcrb_msg_to_type6_ep11cprb_msgx() function lacks proper input
+validation, creating security vulnerabilities:
+1. Missing minimum size validation: The ep11_cprb structure and
+   subsequent payload fields (pld_tag, pld_lenfmt) are copied from
+   userspace without verifying sufficient buffer length.
+2. Arithmetic overflow in length calculations: CEIL4 alignment could
+   overflow, bypassing size checks and enabling buffer overflows.
+3. The payload is asn1 encoded but the function just uses a simple c
+   struct overlay to access some fields of the payload.
+
+Fix by using size_t for length calculations, adding U32_MAX boundary
+checks after alignment, and validating minimum request size and
+minimum reply size before copying from userspace. Do a very simple
+asn1 parsing of the payload up to the function value field.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80546,2026-08-26 15:17:08.977,2026-08-27 06:17:36.067,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/zcrypt: Improve CCA CPRB length and overflow checks
+
+The xcrb_msg_to_type6cprb_msgx() function lacks proper input
+validation, creating security vulnerabilities:
+1. Integer overflow after CEIL4 alignment: Signed int variables could
+   overflow during 4-byte boundary alignment, causing undersized
+   buffer allocations or incorrect bounds checking.
+2. Missing minimum size validation: The CPRBX structure is copied from
+   userspace without verifying sufficient buffer length. Undersized
+   buffers cause uninitialized memory access when reading structure
+   fields like cprbx.cprb_len and cprbx.domain.
+3. Arithmetic overflow in sum calculations: Adding control block and
+   data block sizes could overflow, bypassing size checks and enabling
+   buffer overflows.
+
+Fix by using size_t for length calculations, adding U32_MAX boundary
+checks after alignment, validating minimum control block size before
+copying from userspace, and detecting sum calculation overflows.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80547,2026-08-26 15:17:09.087,2026-08-27 06:17:36.350,8.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/vfio_ccw: Implement a crw lock
+
+Unlike the channel_program struct, which covers synchronous I/O
+submissions and asynchronous interrupts, the CRW region relies
+exclusively on asynchronous events coming from hardware.
+
+Implement a lock to manage the list of those payloads, to ensure
+they are read cohesively.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80548,2026-08-26 15:17:09.200,2026-08-27 06:17:36.697,8.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/vfio_ccw: Selectively expand io_mutex
+
+The io_mutex was defined to serialize the io_regions, but then has
+also sort of been associated with the I/O themselves because of
+the close relationship they share.
+
+With the handful of races that are possible, the choices are either to:
+ A) expand the scope of io_mutex to close these remaining windows, or
+ B) reduce the scope of io_mutex to just io_region, and introduce a new
+    lock mechanism for the remaining I/O resources
+
+This patch implements A, since B brings with it a lot more interactions
+that would need to be tracked and kept in a correct hierarchy. It also
+takes advantage of the workqueue element for cp_free() that now gets
+called out of fsm_notoper(), which could be invoked out of an interrupt
+context and thus cannot acquire a mutex itself.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80549,2026-08-26 15:17:09.323,2026-08-27 06:17:37.093,8.2,HIGH,LOCAL,LOW,HIGH,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/vfio_ccw: Move cp cleanup out of not operational
+
+The fsm_notoper() routine is called when the device has been
+lost, and is (by definition) no longer operational. Since this
+can happen asynchronously from the normal behavior of the
+driver, the cleanup may happen when holding other locks
+in the calling sequence (notably, the cio subchannel lock).
+
+Push the cleanup of the private->cp resources to a workqueue,
+where it can be done out from under that lock sequence and
+a future patch can safely manage the locking requirements.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80550,2026-08-26 15:17:09.477,2026-08-27 06:17:37.617,7.9,HIGH,LOCAL,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/vfio_ccw: Fix out of bounds check on CCW array
+
+The routine ccwchain_calc_length() counts the number of channel
+command words (CCWs) that are chained together in a single channel
+program, and rejects anything larger than CCWCHAIN_LEN_MAX (256) CCWs.
+
+The loop itself is ""do..while (count < 257)"", and while the logic in
+is_cpa_within_range() correctly adjusts between the 0-index array of
+CCWs and the count of CCWs starting at 1, this means it would look
+at a possible 257th CCW before ending the loop and (correctly)
+returning an error.
+
+Fix this by restructuring the loop to break as soon as 256 CCWs
+(thus indexes 0-255) are examined, without looking at memory
+outside the range.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80551,2026-08-26 15:17:09.610,2026-08-27 06:17:38.080,9.3,CRITICAL,LOCAL,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/vfio_ccw: Ensure first IDAW remains constant
+
+The first IDAW in a list does not need to be on a 2K/4K boundary
+like all others, and so is read separately to accurately calculate
+the size of the buffer needed to read the full IDAL.
+
+Verify that the address found in the first IDAW is unchanged between
+reads, to ensure a consistent set of IDAWs being worked with.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80552,2026-08-26 15:17:09.723,2026-08-27 06:17:38.397,8.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/vfio_ccw: Ensure index for read/write regions are within range
+
+The introduction of the capability chain rightly clamped the
+region indexes to the range of the capabilities itself, but
+neglected to do so for the existing read/write regions which
+should also be enforced.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80553,2026-08-26 15:17:09.863,2026-08-27 06:17:38.630,8.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/vfio_ccw: Cancel existing workqueues
+
+The initialization of the io_work and crw_work workqueues begs the
+question of whether they should be un-initialized. Add the corresponding
+cleanup tags in _release_dev to ensure work isn't dispatched after
+the private struct is free'd.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80554,2026-08-26 15:17:09.990,2026-08-27 06:17:38.923,9.3,CRITICAL,LOCAL,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/vfio_ccw: Limit the number of channel program segments
+
+The processing of channel programs, and the CCWs within them, is done
+recursively. As such, there is an arbitrary (but not architectural)
+limit to the number of CCWs that can exist in a single channel program.
+
+The vfio-ccw logic breaks these channel programs into segments whenever
+it encounters a Transfer-In-Channel (TIC) CCW, and the combined number
+of segments count towards the global limit. Impose an equivalent limit
+to the number of segments until such logic can be made non-recursive.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80555,2026-08-26 15:17:10.130,2026-08-27 06:17:39.140,7.1,HIGH,LOCAL,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/vfio_ccw: Free all memory if cp_init() fails
+
+The routine cp_free() is called to unpin/free any memory once an I/O
+is completed successfully, or if cp_prefetch() fails. But if cp_init()
+fails, and cp->initialized is not enabled, the same routine cannot be
+used to free all the memory.
+
+An attempt to address this exists in ccwchain_handle_ccw(), where a
+single call to ccwchain_free() is made for the currently-processed
+CCW segment. But this will leak other segments (created as a result
+of a Transfer in Channel) that had been allocated as part of the same
+channel program.
+
+Address this by performing the cleanup outside of the recursive
+ccwchain_handle_ccw()/ccwchain_loop_tic() logic.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80556,2026-08-26 15:17:10.253,2026-08-27 06:17:39.387,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+mmc: atmel-mci: Fix use-after-free in atmci_remove due to race condition
+
+In atmci_probe, &host->bh_work is bound with atmci_work_func, and
+atmci_interrupt, atmci_timeout_timer and atmci_dma_complete can all
+queue this work on system_bh_wq.
+
+If we remove the module, atmci_remove makes cleanup and the memory
+allocated for host with devm_kzalloc() is released after the remove
+callback returns, while the work mentioned above may still be pending
+or running. The sequence of operations that may lead to a UAF bug is
+as follows:
+
+CPU0                                      CPU1
+
+                                          | atmci_interrupt
+                                          | queue_work(system_bh_wq,
+                                          |            &host->bh_work)
+atmci_remove                              |
+atmci_cleanup_slot(...)                   |
+atmci_writel(host, ATMCI_IDR, ~0UL)       |
+timer_delete_sync(&host->timer)           |
+dma_release_channel(host->dma.chan)       |
+free_irq(platform_get_irq(pdev, 0), host) |
+                                          | atmci_work_func
+                                          | // use host
+// devm resources released after          |
+// remove returns, host is freed          |
+                                          | // use host (use-after-free)
+
+Fix it by canceling the work after all the sources that can schedule
+it (IRQ handler, timeout timer and DMA completion callback) have been
+stopped, and before proceeding with the remaining cleanup in
+atmci_remove.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80557,2026-08-26 15:17:10.400,2026-08-27 06:17:39.677,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+libceph: fix OOB read in decode_watchers() via missing bounds check
+
+ceph_start_decoding() validates that struct_len bytes remain in the
+buffer after the encoding header, but accepts struct_len=0 as valid:
+ceph_decode_need(p, end, 0, bad) always passes. When a malicious or
+compromised OSD sends an obj_list_watch_response_t reply with
+struct_len=0, ceph_start_decoding() returns success with p == end,
+leaving zero bytes guaranteed for subsequent reads.
+
+The immediately following ceph_decode_32(p) in decode_watchers() has
+no preceding bounds check. With p == end this is a 4-byte read past
+the validated buffer boundary. The garbage value is then passed
+directly to kzalloc_objs() as the watcher count.
+
+The sibling function decode_watcher() already uses the safe variants
+(ceph_decode_copy_safe, ceph_decode_64_safe, ceph_decode_skip_32)
+after its own ceph_start_decoding() call. decode_watchers() is the
+only site that uses the bare variant, confirming an oversight.
+
+Fix by replacing ceph_decode_32(p) with ceph_decode_32_safe(p, end,
+*num_watchers, bad), consistent with the established pattern.
+
+Attacker model: a malicious or compromised OSD in a multi-tenant Ceph
+deployment (e.g. cloud) can trigger this against any kernel client
+that calls CEPH_OSD_OP_LIST_WATCHERS, without any further privileges
+beyond OSD session establishment.
+
+[ idryomov: trim changelog ]",2026-08-26,2026-08,2026-08-24
+CVE-2026-80558,2026-08-26 15:17:10.530,2026-08-27 06:17:39.903,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+libceph: Avoid using invalid osd indices from primary_temp
+
+A corrupted osdmap received from a Ceph monitor or OSD may contain osd
+indices in its pg_temp, primary_temp, pg_upmap, and pg_upmap_items parts
+that don't exist, i.e., that are greater than max_osd or smaller than
+CEPH_HOMELESS_OSD (-1). These indices are used to create the up and
+acting set in ceph_pg_to_up_acting_osds(), called from calc_target().
+While most of these osd indices are checked, the one from primary_temp
+is not. Subsequently, this may lead to calc_target() returning this
+(potentially invalid) index as target osd for a (linger) request.
+Because the osd_state, osd_weight, and osd_addr arrays only contain
+max_osd entries (with indices 0 to max_osd -1), this leads to
+out-of-bounds accesses when trying to read values from these arrays.
+
+This patch fixes the issue by adding a check to get_temp_osds(), so that
+only valid osd indices from primary_temp are used, and it falls back to
+using the primary from pg_temp or the up set if it is invalid.
+
+[ idryomov: changelog ]",2026-08-26,2026-08,2026-08-24
+CVE-2026-80559,2026-08-26 15:17:10.690,2026-08-27 06:17:40.253,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+Input: sur40 - fix input device registration ordering
+
+In sur40_probe(), input_register_device() was previously called early before
+the V4L2 video device and vb2_queue components were fully initialized. If
+userspace opened the input device immediately upon registration, sur40_open()
+would trigger and start the sur40_poll() worker thread. This worker thread
+invokes sur40_process_video() and accesses the uninitialized vb2_queue
+structure, leading to a data race and potential system crash.
+
+Furthermore, if V4L2 or video registration failed after input_register_device()
+succeeded, the error path fell through to calling input_free_device() on a
+successfully registered device instead of input_unregister_device(), corrupting
+input core state.
+
+Move input_register_device() to the very end of sur40_probe(). This ensures
+the V4L2 and video queue structures are fully initialized before polling can
+start, and naturally resolves the error path bug since input_free_device()
+is now only called when input registration has not yet occurred.
+
+To maintain strict LIFO (Last-In, First-Out) teardown ordering, also move
+input_unregister_device() to the very beginning of sur40_disconnect(). This
+guarantees that the input polling worker thread is stopped before V4L2
+video components or control handlers are unregistered.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80560,2026-08-26 15:17:10.850,2026-08-27 06:17:40.650,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+openrisc: signal: do not restore privileged SR bits on sigreturn
+
+restore_sigcontext() copies the whole supervision register (SR) from the
+signal frame and only clears SPR_SR_SM before the value is reloaded into
+the hardware SR (through ESR and l.rfe) on the return to user space.  All
+other SR bits are left under user control.
+
+An unprivileged task can thus return from a signal handler through a
+crafted sigframe that clears SPR_SR_DME.  With the data MMU disabled the
+CPU performs no translation or protection on data accesses, so the task
+gains read and write access to arbitrary physical memory, a local
+privilege escalation.  SPR_SR_IME, SPR_SR_SUMRA, SPR_SR_LEE, SPR_SR_EPH
+and the cache-enable bits are exposed the same way.  The ptrace GPR regset
+already refuses any change to SR for exactly this reason.
+
+Restore only the arithmetic flag bits (F, CY, OV) from the signal frame
+and take every privileged control bit from the SR the kernel saved on
+signal entry.
+
+Verified with qemu-system-or1k -M or1k-sim: before this change an
+unprivileged PoC clears SPR_SR_DME in rt_sigreturn and writes a marker to
+physical address 0x03000000 (beyond the kernel's mem=32M); afterwards the
+same PoC receives SIGSEGV and physical memory is unchanged.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80561,2026-08-26 15:17:11.007,2026-08-27 06:17:41.057,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+libceph: fix multiple unsafe decodes in decode_locker()
+
+decode_locker() in cls_lock_client.c contains three unsafe decode
+operations that allow a malicious or compromised OSD to trigger
+slab-out-of-bounds reads:
+
+1. ceph_decode_copy() at the locker_id_t name field has no preceding
+   bounds check. With p == end after ceph_start_decoding() accepts
+   struct_len=0, this reads sizeof(ceph_entity_name) = 9 bytes past
+   the validated buffer boundary.
+
+2. *p += sizeof(struct ceph_timespec) after the locker_info_t header
+   is an unchecked pointer advance. A malicious OSD can position p
+   past end, causing all subsequent _safe checks to pass against a
+   bogus boundary.
+
+3. len = ceph_decode_32(p) has no preceding bounds check, and the
+   immediately following *p += len is uncapped. A malicious OSD can
+   send len=0xffffffff, advancing p gigabytes past end and escaping
+   the decode window entirely.
+
+Fix all three by replacing bare operations with their safe variants:
+  ceph_decode_copy   -> ceph_decode_copy_safe
+  *p += sizeof(...)  -> ceph_decode_skip_n
+  ceph_decode_32(p)  -> ceph_decode_32_safe
+  *p += len          -> ceph_decode_skip_n
+
+A new label is added to return -EINVAL on any bounds violation.
+-EINVAL is appropriate here: the data received from the OSD
+is structurally malformed, which is an invalid argument to the decode
+contract regardless of whether the caller or the wire is at fault.
+
+Attacker model: a malicious or compromised OSD in a multi-tenant Ceph
+deployment can trigger this against any kernel client that issues the
+lock.get_info class method (e.g. during RBD exclusive lock acquisition)
+without any further privileges beyond OSD session establishment.
+
+[ idryomov: use ceph_decode_skip_string() to skip description, trim
+  changelog ]",2026-08-26,2026-08,2026-08-24
+CVE-2026-80565,2026-08-26 15:17:11.550,2026-08-27 06:17:41.390,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+crypto: qce - fix error path in devm_qce_register_algs
+
+If ops->register_algs() fails, the error path repeatedly calls the same
+ops->unregister_algs() from the failed registration. Use the loop index
+to unregister the previously registered algorithms instead.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80568,2026-08-26 15:17:12.303,2026-08-27 06:17:41.767,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+Input: synaptics-rmi4 - block s_input when F54 queue is busy
+
+Changing the input (diagnostic report type) mid-stream changes the
+report size. Since V4L2 buffers are allocated based on the size at
+stream start, changing the input while streaming could lead to a
+heap buffer overflow if the new size is larger than the allocated
+buffers.
+
+Prevent this by blocking VIDIOC_S_INPUT with -EBUSY if the V4L2 queue
+is busy (streaming).",2026-08-26,2026-08,2026-08-24
+CVE-2026-80569,2026-08-26 15:17:12.457,2026-08-27 06:17:42.103,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+Input: synaptics-rmi4 - bound the F54 report size to the allocated buffer
+
+rmi_f54_work() reads a diagnostics report from the device into
+f54->report_data, sizing the transfer with rmi_f54_get_report_size():
+
+	report_size = rmi_f54_get_report_size(f54);
+	...
+	for (i = 0; i < report_size; i += F54_REPORT_DATA_SIZE) {
+		int size = min(F54_REPORT_DATA_SIZE, report_size - i);
+		...
+		rmi_read_block(.., f54->report_data + i, size);
+	}
+
+report_data is allocated once at probe from F54's own electrode counts
+(array3_size(f54->num_tx_electrodes, f54->num_rx_electrodes, sizeof(u16))),
+but rmi_f54_get_report_size() computes the size from
+drv_data->num_*_electrodes when those are set, i.e. from the F55
+function's electrode counts. Both counts come straight from device
+queries (F54 and F55 each report up to 255 electrodes) and nothing
+constrains the F55 counts to the F54 ones.
+
+A malicious or malfunctioning RMI4 device that reports larger F55
+electrode counts than its F54 counts makes report_size exceed the
+allocation, so the read loop writes past report_data (and the V4L2
+dequeue memcpy() then reads past it). On conforming hardware the F55
+configured electrodes are a subset of the F54 physical electrodes, so
+report_size never exceeds the buffer and well-behaved devices are
+unaffected.
+
+Record the allocation size and reject a report that does not fit,
+mirroring the existing zero-size check.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80570,2026-08-26 15:17:12.880,2026-08-27 06:17:42.377,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+Input: synaptics-rmi4 - zero report size on F54 work error
+
+In rmi_f54_work(), if an error occurs during report request or command
+verification, the code jumped directly to the 'error' label, bypassing
+the 'abort' label where f54->report_size was normally zeroed out.
+
+This left f54->report_size containing its previous successful payload
+size. If a user then altered the V4L2 format to a smaller size, and a
+subsequent run failed, rmi_f54_buffer_queue() would copy the stale,
+larger payload size into the shrunken V4L2 buffer, causing a heap
+buffer overflow.
+
+Fix this by merging the 'abort' and 'error' labels into a single 'out'
+exit path, and ensuring that f54->report_size is always set to 0 on
+failure by checking for error and zeroing the local report_size first.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80572,2026-08-26 15:17:13.140,2026-08-27 06:17:42.600,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+Input: byd - synchronize timer deletion before freeing private data
+
+byd_disconnect() uses timer_delete() before freeing the driver's private
+data.  This does not wait for a running byd_clear_touch() callback, which
+dereferences the private data and its psmouse pointer.  A callback racing
+with disconnect can therefore access the private data after it has been
+freed.  The timer can also still be re-armed by byd_process_byte() while
+the disconnect is in progress.
+
+Use timer_shutdown_sync() before freeing the private data: it waits for
+a running callback and turns any later re-arm attempt into a no-op.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80573,2026-08-26 15:17:13.253,2026-08-27 06:17:42.820,,,,,,,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+Input: iforce - validate input packet lengths
+
+iforce_process_packet() reads fixed fields from joystick, wheel and
+status packets without first checking their lengths. In particular, the
+shared hats-and-buttons helper unconditionally reads data[6]. The status
+tail is a sequence of 16-bit effect addresses, but an incomplete final
+address is also consumed. A successful zero-length USB URB additionally
+reads the packet ID before the common parser is called.
+
+Reject the zero-length USB transfer, require the seven-byte joystick and
+wheel prefixes and the two-byte status prefix, and consume only complete
+status-tail addresses.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80574,2026-08-26 15:17:13.393,2026-08-27 06:17:43.003,8.4,HIGH,LOCAL,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+Input: focaltech - fix array out-of-bounds in focaltech_process_rel_packet
+
+Make finger2 (and also finger1) unsigned, so that if the finger index in
+the packet is 0 then subtracting 1 creates an array index which overflows
+above the existing check for FOC_MAX_FINGERS, as the existing comment says
+it should, instead of writing to state->fingers[-1].",2026-08-26,2026-08,2026-08-24
+CVE-2026-80575,2026-08-26 15:17:13.530,2026-08-27 06:17:43.243,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+Input: cs40l50-vibra - validate custom data from user space
+
+cs40l50_add() copies the custom data of an FF_PERIODIC/FF_CUSTOM effect
+straight from the ff_effect the user passed to EVIOCSFF, without
+requiring it to hold anything:
+
+    work_data.custom_data = memdup_array_user(periodic->custom_data,
+                                              periodic->custom_len,
+                                              sizeof(s16));
+    work_data.custom_len = periodic->custom_len;
+
+The driver then reads two words out of that buffer: custom_data[0] as the
+waveform bank in cs40l50_effect_bank_set(), and custom_data[1] as the
+index within the bank in cs40l50_effect_index_set().  Neither read is
+covered by a length check, and custom_len is fully user controlled:
+
+  - custom_len == 0 makes memdup_array_user() call memdup_user() with a
+    length of zero, which returns ZERO_SIZE_PTR rather than an error, so
+    custom_data[0] dereferences it.
+
+  - custom_len == 1 allocates two bytes.  A bank of ROM or RAM keeps
+    effect->type out of the OWT case, and custom_data[1] is then read one
+    word past the allocation.
+
+The bank value itself is also mishandled.  It is masked with
+CS40L50_CUSTOM_DATA_MASK (0xffff) but stored in an s16, so a
+custom_data[0] of 0x8000 or above wraps to a negative value that passes
+the ""bank_type >= CS40L50_WVFRM_BANK_NUM"" test.
+cs40l50_effect_index_set() indexes vib->dsp.banks[] with it before the
+switch statement's default case gets a chance to reject it:
+
+    base_index = vib->dsp.banks[effect->type].base_index;
+    max_index = vib->dsp.banks[effect->type].max_index;
+
+Require the two words the driver reads to be present, and hold the masked
+bank in a u32 so the existing upper-bound test covers the whole range.
+The da7280 haptic driver already range checks custom_len this way.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80576,2026-08-26 15:17:13.653,2026-08-27 06:17:43.533,8.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+drm/amdgpu: reject oversized IBs with per-ring packet limits
+
+On GFX rings, amdgpu_cs_p2_ib() passed user-supplied ib_bytes through
+to ib->length_dw without a limit, while ring_emit_ib() encodes length
+into packet fields. Oversized values can corrupt adjacent control bits
+and destabilize command submission.
+
+Add a per-ring IB packet size limit helper and reject command
+submissions exceeding the corresponding dword limit before IB
+allocation. Use the documented 20-bit limit for GFX/compute/SDMA/VPE,
+and apply the MM fallback limit for other ring types.
+
+(cherry picked from commit 7f48fa2cf62e3fa6c9c3870aa74988f773247e52)",2026-08-26,2026-08,2026-08-24
+CVE-2026-80578,2026-08-26 15:17:13.880,2026-08-27 06:17:43.823,7.3,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+fbdev: core: Fix pointer desynchronization in fb_io_read()
+
+In fb_io_read(), if copy_to_user() performs a partial copy (e.g., due to
+a faulty user buffer), the loop adjusts the chunk size 'c' and updates
+the remaining 'count'. However, the hardware 'src' pointer has already
+been eagerly advanced by the original chunk size.
+
+If the loop is allowed to continue, the read will resume from an
+incorrect, over-advanced offset. Since the remaining 'count' was only
+decremented by the successful bytes, this desynchronization causes the
+next iterations to execute more hardware reads than originally bounded,
+eventually leading to out-of-bounds I/O reads.
+
+Fix this by breaking out of the loop immediately upon a partial
+copy_to_user(). A partial copy indicates a faulty user buffer, making
+subsequent read attempts futile. Breaking out ensures we return the
+number of successfully read bytes without risking out-of-bounds hardware
+accesses in subsequent mismatched iterations.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80579,2026-08-26 15:17:14.007,2026-08-27 06:17:44.093,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+fbdev: clear fb_info->mode before deleting a videomode
+
+fb_set_var() can delete a mode from info->modelist when userspace
+passes FB_ACTIVATE_INV_MODE through FBIOPUT_VSCREENINFO. The code
+checks that the mode being deleted is not the current info->var and
+that fbcon is not using it, but it does not check fb_info->mode.
+
+fb_info->mode may still point into the modelist entry being deleted.
+If the entry is freed, later mode sysfs reads through show_mode() can
+dereference a stale pointer.
+
+Clear fb_info->mode before calling fb_delete_videomode() when it
+matches the mode being removed.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80580,2026-08-26 15:17:14.103,2026-08-27 06:17:44.300,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+fbdev: bound mode sysfs output to the sysfs buffer
+
+mode_string() uses snprintf() which can return a value larger than the
+remaining buffer space. show_modes() accumulates the return value into i
+without checking whether i has reached PAGE_SIZE, causing the offset to
+advance past the sysfs buffer if the modelist is long enough.
+
+Add a size parameter to mode_string() and use scnprintf() to return
+only the bytes actually written. Add an early return when offset
+already exceeds the buffer. In show_modes(), stop accumulating once
+the buffer is full.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80582,2026-08-26 15:17:14.337,2026-08-27 06:17:44.570,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+drm/shmem_helper: Check VMA boundaries for PMD mappings
+
+In the ->huge_fault handler do not install a PMD huge page
+mapping if the huge page exceeds the boundaries of the VMA.
+
+All other ->huge_fault handlers have similar checks and the
+resulting mapping will trigger a VM_BUG_ON_VMA() if it ever
+reaches copy_pmd_range().",2026-08-26,2026-08,2026-08-24
+CVE-2026-80583,2026-08-26 15:17:14.437,2026-08-27 06:17:44.817,7.8,HIGH,LOCAL,LOW,LOW,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+ASoC: codecs: lpass-tx-macro: Fix enum kcontrol accesses
+
+The ""DEC0 MODE"" to ""DEC7 MODE"" controls are enumerated, but
+tx_macro_dec_mode_get() and tx_macro_dec_mode_put() access their
+value through ucontrol->value.integer.value[0] (a long) instead of
+ucontrol->value.enumerated.item[0] (an unsigned int).
+
+This same pattern was fixed in the sibling drivers by
+commit bcfe5f76cc40 (""ASoC: codecs: rx-macro: fix accessing array
+out of bounds for enum type"") and
+commit 0ea5eff7c606 (""ASoC: codecs: va-macro: fix accessing array
+out of bounds for enum type""), but tx-macro was missed.
+
+On 64-bit kernels built with CONFIG_SND_CTL_DEBUG, the elem value
+sanity check catches the 4 bytes written past the enumerated item
+and every read of these controls fails with -EINVAL:
+
+  snd-sm8250 sound: control 2:0:0:DEC0 MODE:0: access overflow",2026-08-26,2026-08,2026-08-24
+CVE-2026-80584,2026-08-26 15:17:14.577,2026-08-27 06:17:45.070,8.4,HIGH,LOCAL,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+s390/qeth: validate user buffer length in SNMP and ARP query ioctls
+
+qeth_snmp_command() and qeth_l3_arp_query() allocate a buffer sized by
+a user-supplied length (udata_len) without checking a lower bound, then
+set udata_offset to a fixed non-zero value and pass both to a reply
+callback. The callback bounds-checks the copy with
+
+        if ((udata_len - udata_offset) < len)
+
+Both fields are u32, so a udata_len smaller than udata_offset makes the
+subtraction wrap and the check pass, and the following memcpy() writes
+past the allocation. A udata_len of 0 also yields ZERO_SIZE_PTR from
+kzalloc(), which the existing NULL check does not catch.
+
+Reject buffers smaller than udata_offset before allocating, so the
+callback subtraction can no longer underflow.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80585,2026-08-26 15:17:14.750,2026-08-27 06:17:45.397,9.4,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+mptcp: fastopen: only mark MPTFO subflows with SYN data
+
+Passive TCP Fast Open accepts a valid-cookie SYN even when it carries
+no data. In that case the child socket's receive queue is intentionally
+left empty.
+
+mptcp_fastopen_subflow_synack_set_params() set is_mptfo before checking
+for queued SYN data. That made data-less TFO SYNs hit a WARN and, if
+the warning was non-fatal, left stale MPTFO state behind. The stale
+flag could later trigger a state-confusion bug in
+check_fully_established().
+
+Only mark the subflow as MPTFO after confirming that an SKB was queued.
+Return quietly when the receive queue is empty.
+
+Note that mptcp_subflow_context's is_mptfo field is now not just about
+subflows where the TFO was present, but about MPTFO subflow that
+consumed SYN data. Only having a valid cookie but not carrying data is
+not really ""doing TFO"".",2026-08-26,2026-08,2026-08-24
+CVE-2026-80586,2026-08-26 15:17:14.873,2026-08-27 06:17:45.700,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+mptcp: options: reset DSS fields in case of unexpected size
+
+A remote peer could send a malformed DSS with a wrong size, followed by
+another DSS or MPC + Data. In this case, the first suboption will be
+ignored, but leaving some fields written, which could lead to
+inconsistency or access uninitialized data.
+
+Explicitly reset the fields that could have been modified in case of
+unexpected size.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80587,2026-08-26 15:17:15.017,2026-08-27 06:17:46.040,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+mptcp: avoid combining some incoming suboptions
+
+Some MPTCP suboptions are mutually exclusive according to the RFC8684,
+but also because in different places, the code doesn't expect some
+combinations to be present. That's specially true for suboptions that
+would be present twice, but with different attributes.
+
+The new restrictions are the same as the ones applied on the output
+side, with mptcp_write_options. The same rules can be reused with a
+small fix: an MP_FASTCLOSE can be used with a DSS when the sender picks
+this option [1], which is not the case on Linux. Here are the rules:
+
+  Which options can be used together?
+
+  X: mutually exclusive
+  O: often used together
+  C: can be used together in some cases
+  P: could be used together but we prefer not to (optimisations)
+
+  | Opt: | MPC  | MPJ  | DSS  | ADD  |  RM  | PRIO | FAIL |  FC  |
+  |------|------|------|------|------|------|------|------|------|
+  | MPC  |------|------|------|------|------|------|------|------|
+  | MPJ  |  X   |------|------|------|------|------|------|------|
+  | DSS  |  X   |  X   |------|------|------|------|------|------|
+  | ADD  |  X   |  X   |  P   |------|------|------|------|------|
+  | RM   |  C   |  C   |  C   |  P   |------|------|------|------|
+  | PRIO |  X   |  C   |  C   |  C   |  C   |------|------|------|
+  | FAIL |  X   |  X   |  C   |  X   |  X   |  X   |------|------|
+  | FC   |  X   |  X   |  P   |  X   |  X   |  X   |  X   |------|
+  | RST  |  X   |  X   |  X   |  X   |  X   |  X   |  O   |  O   |
+  |------|------|------|------|------|------|------|------|------|
+
+The only difference is with the 'P': another stack could send and
+ADD_ADDR with other suboptions (DSS, RM_ADDR), and this should be
+allowed.
+
+A few points of attention:
+
+ - In theory, an MP_CAPABLE could be used with a RM_ADDR, but there is
+   no reason to add it with a SYN. Note that even with a 4th ACK, it
+   doesn't seem to be useful, except when IDs are known in advance via
+   another channel. Better not to break that.
+
+ - Now, combining both an MP_CAPABLE and an MP_JOIN will no longer
+   result to a reject of the two options, but only the second suboption
+   is ignored. That seems OK to do that for this unexpected error. At
+   least now all inconsistent combinations are handled the same way.
+   This could change later in next. This also means the explicit checks
+   for having both MPC + MPJ in subflow.c will now be unreachable.
+   That's fine, they will be removed in a follow-up patch.
+
+ - In case of conflicting combinations, the extra suboption(s) is/are
+   ignored: having such combinations either means the remote peer is
+   buggy, or is evil. The simplest action is then taken in this case:
+   stop processing the current suboption.
+
+ - In mp_opt->suboptions, there is also a bit reserved to the checksum,
+   which can be used in an MP_CAPABLE and a DSS. Each time a DSS option
+   can be used in parallel with another option, the checksum can be set,
+   so the verification is combined into a new OPTIONS_MPTCP_DSS macro.
+
+ - An MP_CAPABLE ACK can carry a Data-Level Length, and an optional
+   Checksum: they are the same as the ones found in a DSS, because a DSS
+   cannot be used in parallel to an MP_CAPABLE. Similarly, even if there
+   is room, a DSS cannot be used with an MP_JOIN.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80588,2026-08-26 15:17:15.180,2026-08-27 06:17:46.353,7.5,HIGH,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+mptcp: reclaim forward-allocated memory on RX path errors
+
+After commit 9db5b3cec4ec (""mptcp: borrow forward memory from subflow""),
+errors in the receive path prior to queueing skbs into the receive
+queue do not trigger forward-allocated memory reclaiming.
+
+Prevent forward memory from growing unboundedly in pathological drop
+scenarios by explicitly reclaiming memory when skbs are dropped.",2026-08-26,2026-08,2026-08-24
+CVE-2026-80589,2026-08-26 15:17:15.283,2026-08-27 06:17:46.553,9.8,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"In the Linux kernel, the following vulnerability has been resolved:
+
+block: stop the timeout timer when releasing a never added disk
+
+disk_release() undoes blk_mq_init_allocated_queue() for a disk whose
+probe failed before add_disk(), but it only calls blk_mq_exit_queue().
+Nothing there stops q->timeout, and that timer rolls forward: it stays
+pending until it next expires, not until the last request completes.
+So if the driver issued any I/O before adding the disk, the
+request_queue is freed while still linked into a timer wheel bucket.
+
+Commit 6f8191fdf41d (""block: simplify disk shutdown"") dropped the
+blk_cleanup_queue() call that used to stop it.  __del_gendisk() and
+blk_mq_destroy_queue() still do; only the probe failure path lost it.
+
+nvme gets there because nvme_update_ns_info() submits Report Zones or
+FDP io-mgmt-recv on ns->queue before the disk is added, so a later
+failure - a concurrent reset setting NVME_CTRL_FROZEN, or
+device_add_disk() failing - lands in put_disk() with the timer armed:
+
+  BUG: KASAN: slab-use-after-free in detach_if_pending+0x30c/0x340
+  Write of size 8 at addr ffff888004d71310 by task kworker/u8:2/37
+   __timer_delete_sync+0x156/0x240 kernel/time/timer.c:1621
+   blk_sync_queue+0x22/0x40 block/blk-core.c:222
+   nvme_sync_queues+0x100/0x150 drivers/nvme/host/core.c:5362
+   nvme_reset_work+0x138/0x930 drivers/nvme/host/pci.c:3264
+
+  Allocated by task 34:
+   __blk_mq_alloc_disk+0x33/0x100 block/blk-mq.c:4462
+   nvme_alloc_ns+0x290/0x3870 drivers/nvme/host/core.c:4146
+
+  Freed by task 0:
+   blk_free_queue_rcu+0x3a/0x50 block/blk-core.c:254
+   rcu_core+0xc10/0x1730 kernel/rcu/tree.c:2857
+
+The queue being synced there is ctrl->admin_q, only a victim sharing a
+timer wheel bucket with the freed queue's dangling entry; other runs
+tripped in enqueue_timer(), __run_timers() or blk_mq_timeout_work().
+Failing nvme_alloc_ns() with a debug patch makes it deterministic: one
+leaked timer trips KASAN within seconds, while 1987 patched releases
+produced no splat.
+
+Stop the timer and the queue work items before blk_mq_exit_queue(), like
+blk_mq_destroy_queue() does.
+
+Found by FuzzNvme.",2026-08-26,2026-08,2026-08-24
+CVE-2026-47836,2026-08-26 18:16:33.050,2026-08-27 06:17:15.010,7.2,HIGH,LOCAL,HIGH,HIGH,NONE,,False,"The base directory (spring.cloud.config.server.svn.basedir) used by the Spring Cloud Config Server to clone SVN repositories to is susceptible to time-of-check-time-of-use (TOCTOU) attacks.
+Spring Cloud Config 5.0.0 - 5.0.4
+Spring Cloud Config 4.3.0 - 4.3.4
+Spring Cloud Config 4.0.0 - 4.2.8
+Spring Cloud Config 3.1.14 and earlier",2026-08-26,2026-08,2026-08-24
+CVE-2026-47841,2026-08-26 18:16:33.303,2026-08-27 04:16:42.330,7.4,HIGH,NETWORK,HIGH,NONE,NONE,,False,"An application using Spring Security's WebAuthn support may be vulnerable to user verification bypass when using a distributed HTTP session store.
+Spring Security 7.1.0
+Spring Security 7.0.0 - 7.0.6
+Spring Security 6.5.0 - 6.5.11
+Spring Security 6.4.0 - 6.4.18",2026-08-26,2026-08,2026-08-24
+CVE-2026-47845,2026-08-27 01:17:31.827,2026-08-27 01:17:31.827,5.3,MEDIUM,NETWORK,LOW,NONE,NONE,,False,"In specific scenarios, Reactor Netty HTTP Server may incorrectly evaluate the remote IP address when HAProxy Protocol is enabled. In order for this to happen, the application must be configured to use HAProxy Protocol.
+Reactor Netty 1.3.0 - 1.3.6
+Reactor Netty 1.1.0 - 1.2.18
+Reactor Netty 1.0.52 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47850,2026-08-27 01:17:31.997,2026-08-27 01:17:31.997,4.3,MEDIUM,NETWORK,LOW,LOW,NONE,,False,"Spring Data REST does not preserve the persisted version (@Version) property of an aggregate root when handling an HTTP PUT against an immutable target type.
+Spring Data REST 5.1.0
+Spring Data REST 5.0.0 - 5.0.6
+Spring Data REST 4.5.0 - 4.5.12
+Spring Data REST 4.0.0 - 4.4.15
+Spring Data REST 3.7.20 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47851,2026-08-27 01:17:32.150,2026-08-27 01:17:32.150,7.5,HIGH,NETWORK,LOW,NONE,NONE,,False,"Analyzing a PDF with a deeply nested or cyclic table of contents can cause a StackOverflowError in the ingestion thread.
+Spring AI 2.0.0
+Spring AI 1.1.0 - 1.1.8
+Spring AI 1.0.0 - 1.0.9",2026-08-27,2026-08,2026-08-24
+CVE-2026-47852,2026-08-27 01:17:32.320,2026-08-27 01:17:32.320,7.5,HIGH,NETWORK,LOW,NONE,NONE,,False,"A local attacker on a multi-user host can pre-create the deterministic cache path and plant a malicious ONNX model file.
+Spring AI 2.0.0
+Spring AI 1.1.0 - 1.1.8
+Spring AI 1.0.0 - 1.0.9",2026-08-27,2026-08,2026-08-24
+CVE-2026-47856,2026-08-27 01:17:32.487,2026-08-27 01:17:32.487,6.3,MEDIUM,NETWORK,LOW,LOW,NONE,,False,"Spring Integration's JSON to object conversion uses the json__TypeId__ header to choose the deserialization target type, and resolves that header value to a class with ClassUtils.forName and no type/package allow-list.
+Spring Integration 7.1.0
+Spring Integration 7.0.0 - 7.0.5
+Spring Integration 6.5.0 - 6.5.10
+Spring Integration 6.4.0 - 6.4.12
+Spring Integration 5.5.21 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47857,2026-08-27 01:17:32.687,2026-08-27 01:17:32.687,5.9,MEDIUM,NETWORK,HIGH,NONE,NONE,,False,"In Reactor Core, applications that use the Flux.windowTimeout operator with fairBackpressure enabled are vulnerable to a Denial of Service (DoS) condition.
+Reactor Core 3.8.0 - 3.8.6
+Reactor Core 3.5.0 - 3.7.19
+Reactor Core 3.4.41 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47859,2026-08-27 01:17:32.850,2026-08-27 01:17:32.850,5.4,MEDIUM,NETWORK,LOW,LOW,NONE,,False,"RFC6587SyslogDeserializer, used by the Spring Integration syslog TCP inbound adapter to decode RFC 6587 / RFC 5424 frames, trusts the sender-supplied octet count of an octet-counted frame and allocates a byte array of exactly that size with no upper bound.
+Spring Integration 7.1.0
+Spring Integration 7.0.0 - 7.0.5
+Spring Integration 6.5.0 - 6.5.10
+Spring Integration 6.4.0 - 6.4.12
+Spring Integration 5.5.21 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47860,2026-08-27 01:17:33.000,2026-08-27 01:17:33.000,6.5,MEDIUM,NETWORK,LOW,LOW,NONE,,False,"An attacker who can publish to a queue consumed by an application that has enabled message decompression can crash the consumer JVM with a single ~1 MB message.
+Spring AMQP 4.1.0
+Spring AMQP 4.0.0 - 4.0.4
+Spring AMQP 3.2.0 - 3.2.12
+Spring AMQP 2.4.18 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47861,2026-08-27 01:17:33.157,2026-08-27 01:17:33.157,6.3,MEDIUM,NETWORK,LOW,LOW,NONE,,False,"An unauthenticated remote attacker who can send a single UDP packet to a Spring Integration UDP inbound adapter can cause the server to emit an outbound UDP datagram to an arbitrary internal or external host and port of the attacker's choosing.
+Spring Integration 7.1.0
+Spring Integration 7.0.0 - 7.0.5
+Spring Integration 6.5.0 - 6.5.10
+Spring Integration 6.4.0 - 6.4.12
+Spring Integration 5.5.21 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47862,2026-08-27 01:17:33.313,2026-08-27 01:17:33.313,5.4,MEDIUM,NETWORK,LOW,LOW,NONE,,False,"An attacker who can set the file_name header on a message reaching a ZipTransformer with ZipResultType.FILE (the default) can cause the resulting .zip archive to be written to an arbitrary filesystem path outside the configured workDirectory.
+Spring Integration 7.1.0
+Spring Integration 7.0.0 - 7.0.5
+Spring Integration 6.5.0 - 6.5.10
+Spring Integration 6.4.0 - 6.4.12",2026-08-27,2026-08,2026-08-24
+CVE-2026-47863,2026-08-27 01:17:33.467,2026-08-27 01:17:33.467,5.9,MEDIUM,NETWORK,HIGH,NONE,NONE,,False,"In Reactor Core, applications that use the Flux.bufferTimeout operator with fairBackpressure enabled are vulnerable to a Denial of Service (DoS) condition.
+Reactor Core 3.8.0 - 3.8.6
+Reactor Core 3.7.19 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47874,2026-08-27 01:17:33.620,2026-08-27 01:17:33.620,5.3,MEDIUM,NETWORK,LOW,NONE,NONE,,False,"The vulnerability occurs when a client sends HTTP/1.1 pipelined requests over a single connection, causing the Reactor Netty HTTP server to consume an excessive amount of memory.
+Reactor Netty 1.3.0 - 1.3.6
+Reactor Netty 1.1.0 - 1.2.18
+Reactor Netty 1.0.52 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-80183,2026-08-27 01:18:16.050,2026-08-27 01:18:16.050,,,,,,,CWE-843,False,"In OpenStack Keystone before 29.0.3, any authenticated user holding role:reader on any project can list every project-scoped role assignment under any domain by passing a domain ID as scope.project.id with include_subtree to the GET /v3/role_assignments endpoint. The domain's project record has domain_id=null, causing the policy domain_id check to pass for any caller. With include_names, the response discloses the names and home-domain IDs of every user, group, project, and role involved. The literal ""default"" domain ID works against any deployment created with keystone-manage bootstrap. An attacker can harvest domain IDs from the response and repeat the query to map role assignments across the entire cloud. This is caused by misuse of ""None"" in 
+
+list_role_assignments_for_tree.",2026-08-27,2026-08,2026-08-24
+CVE-2026-81421,2026-08-27 01:18:16.227,2026-08-27 01:18:16.227,7.3,HIGH,NETWORK,LOW,NONE,NONE,CWE-918,False,A security flaw has been discovered in ddfourtwo sentry-selfhosted-mcp 0.4.0. The affected element is an unknown function of the component raw_sentry_api. The manipulation of the argument endpoint results in server-side request forgery. It is possible to launch the attack remotely. The exploit has been released to the public and may be used for attacks. The project was informed of the problem early through an issue report but has not responded yet.,2026-08-27,2026-08,2026-08-24
+CVE-2026-19398,2026-08-27 02:16:27.460,2026-08-27 02:16:27.460,,,,,,,CWE-787,False,"“unsupported-when-assigned.” An out-of-bounds write in the SmiFlash SMM module of ASUS FA507NU and FA507NV BIOS allows a local  administrator to cause a system crash (BSOD) or BIOS corruption via a crafted software SMI (SW SMI) request with an oversized length value.Refer to the ' 
+Security Update for ASUS FA507NV / FA507NU BIOS   ' section on the ASUS Security Advisory for more information.",2026-08-27,2026-08,2026-08-24
+CVE-2026-81485,2026-08-27 02:16:28.553,2026-08-27 02:16:28.553,5.3,MEDIUM,NETWORK,LOW,NONE,NONE,CWE-22,False,A security vulnerability has been detected in danielpopamd linkedin-ads-mcp 1.0.0. Affected by this vulnerability is the function fs.readFileSync of the file src/tools/campaign-management.ts of the component Media Upload. Such manipulation of the argument filePath leads to path traversal. The attack may be performed from remote. The exploit has been disclosed publicly and may be used. The project was informed of the problem early through an issue report but has not responded yet.,2026-08-27,2026-08,2026-08-24
+CVE-2026-81486,2026-08-27 02:16:28.747,2026-08-27 02:16:28.747,5.3,MEDIUM,NETWORK,LOW,NONE,NONE,CWE-22,False,A vulnerability was detected in bsmi021 mcp-file-context-server 1.0.0. Affected by this issue is the function read_context of the file src/index.ts of the component Path Resolution. Performing a manipulation of the argument path results in path traversal. It is possible to initiate the attack remotely. The exploit is now public and may be used. The project was informed of the problem early through an issue report but has not responded yet.,2026-08-27,2026-08,2026-08-24
+CVE-2026-16895,2026-08-27 04:16:41.530,2026-08-27 04:16:41.530,,,,,,,CWE-305,False,"A logic vulnerability (fail-open condition) has been identified within the Metasploit Framework's JSON-RPC web service interface. When an exception occurs during the database health check (db.check) and the environment variable MSF_WS_JSON_RPC_API_TOKEN is not explicitly set, the application resets the internal state flag msf.auth_initialized to false. The ApiToken Warden authentication strategy misinterprets this false value as an indicator that authentication is not initialized or required, thereby granting unauthenticated local access to the JSON-RPC request dispatcher.",2026-08-27,2026-08,2026-08-24
+CVE-2026-81491,2026-08-27 04:17:59.853,2026-08-27 04:17:59.853,7.3,HIGH,NETWORK,LOW,NONE,NONE,CWE-22,False,A flaw has been found in boxpositron with-context-mcp up to 3.0.7. This affects the function ingest_notes/teleport_notes/sync_notes/project_folder of the file src/index.ts. Executing a manipulation can lead to path traversal. It is possible to launch the attack remotely. The exploit has been published and may be used. The project was informed of the problem early through an issue report but has not responded yet.,2026-08-27,2026-08,2026-08-24
+CVE-2026-13414,2026-08-27 06:16:55.207,2026-08-27 06:16:55.207,,,,,,,,False,"The CMP  WordPress plugin before 4.1.18 does not perform authorization checks on one of its AJAX actions and relies on a nonce that is skipped for certain  (and exposed to anonymous visitors on others), allowing unauthenticated attackers to disable the site's maintenance/coming-soon mode under a non-default countdown configuration.",2026-08-27,2026-08,2026-08-24
+CVE-2026-13415,2026-08-27 06:16:55.537,2026-08-27 06:16:55.537,,,,,,,,False,"The CMP  WordPress plugin before 4.1.18 does not enforce an option-name allow-list when importing settings via one of its AJAX actions, allowing users with the Editor role (when the administrator has granted the Editor role access to the CMP  WordPress plugin before 4.1.18's admin-bar controls) to update arbitrary WordPress options, including options that lead to privilege escalation to Administrator.",2026-08-27,2026-08,2026-08-24
+CVE-2026-13416,2026-08-27 06:16:55.723,2026-08-27 06:16:55.723,,,,,,,,False,"The CMP  WordPress plugin before 4.1.18 does not sanitise and escape a settings value before outputting it on the coming-soon page, allowing users with the Editor role (when the administrator has granted the Editor role access to the CMP  WordPress plugin before 4.1.18's admin-bar controls) to inject arbitrary web scripts that execute when a visitor views the page.",2026-08-27,2026-08,2026-08-24
+CVE-2026-16567,2026-08-27 06:16:56.013,2026-08-27 06:16:56.013,,,,,,,,False,"The Document Embedder  WordPress plugin before 2.3.1 does not check a document's status before issuing a download token and streaming the file, allowing unauthenticated attackers to download arbitrary Document Embedder  WordPress plugin before 2.3.1 documents, including private and draft ones, by enumerating IDs.",2026-08-27,2026-08,2026-08-24
+CVE-2026-16568,2026-08-27 06:16:56.297,2026-08-27 06:16:56.297,,,,,,,,False,"The Mobile App for WooCommerce: ShopApper Mobile App Builder Service for WooCommerce WordPress plugin through 0.4.62 does not verify that the requesting user owns the customer profile being queried through one of its REST endpoints, allowing any authenticated user (e.g. a customer/subscriber) to retrieve other users' personal data, including their email address, name, and roles.",2026-08-27,2026-08,2026-08-24
+CVE-2026-16569,2026-08-27 06:16:56.600,2026-08-27 06:16:56.600,,,,,,,,False,"The Mobile App for WooCommerce: ShopApper Mobile App Builder Service for WooCommerce WordPress plugin through 0.4.62 does not check the user's capabilities before allowing a stock-update operation through one of its REST endpoints, allowing any authenticated user, such as a customer or subscriber, to change the stock quantity of arbitrary products.",2026-08-27,2026-08,2026-08-24
+CVE-2026-19223,2026-08-27 06:16:56.803,2026-08-27 06:16:56.803,,,,,,,,False,"The Smush  WordPress plugin before 4.3.2 does not restrict a network-wide setting to network administrators, allowing an administrator of any single site on a multisite network to execute arbitrary code across the entire network.",2026-08-27,2026-08,2026-08-24
+CVE-2026-19225,2026-08-27 06:16:57.030,2026-08-27 06:16:57.030,,,,,,,,False,"The Defender Security  WordPress plugin before 6.2.0 does not restrict a network-wide setting to network administrators, allowing an administrator of any single site on a multisite network to execute arbitrary code across the entire network.",2026-08-27,2026-08,2026-08-24
+CVE-2026-19454,2026-08-27 06:16:57.207,2026-08-27 06:16:57.207,,,,,,,,False,"The JetBackup  WordPress plugin before 3.1.23.5 does not perform its multisite authorisation check before serving backup archives and job logs, allowing an administrator of the network's main site who is not a Super Admin to download a full backup of the entire network, including every site's data and the shared webroot.",2026-08-27,2026-08,2026-08-24
+CVE-2026-19715,2026-08-27 06:16:57.440,2026-08-27 06:16:57.440,,,,,,,,False,"The WP OAuth Server ( Login with WordPress ) WordPress plugin before 6.3.1 does not restrict access to the debug log it writes, which is stored at a fixed and publicly reachable location, allowing unauthenticated users to read the OAuth tokens and authorisation codes it has issued as well as user records including password hashes when debug logging is enabled.",2026-08-27,2026-08,2026-08-24
+CVE-2026-47849,2026-08-27 06:17:16.653,2026-08-27 06:17:16.653,7.1,HIGH,NETWORK,LOW,LOW,NONE,,False,"Spring Data REST does not guard identifier (@Id) and version (@Version) properties against mutation via RFC 6902 JSON Patch (application/json-patch+json) requests.
+Spring Data REST 5.1.0
+Spring Data REST 5.0.0 - 5.0.6
+Spring Data REST 4.5.0 - 4.5.12
+Spring Data REST 4.0.0 - 4.4.15
+Spring Data REST 3.7.20 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47864,2026-08-27 06:17:17.017,2026-08-27 06:17:17.017,6.4,MEDIUM,NETWORK,HIGH,LOW,NONE,,False,"SerializingHttpMessageConverter deserializes the body of incoming HTTP requests with a raw java.io.ObjectInputStream and no class filtering. Any request with Content-Type application/x-java-serialized-object whose body resolves to a Serializable type is read directly via readObject(). If an application using this converter on an inbound HTTP endpoint has any known Java deserialization ""gadget"" on its classpath, a remote, unauthenticated attacker can achieve arbitrary code execution.
+Spring Integration 7.1.0
+Spring Integration 7.0.0 - 7.0.5
+Spring Integration 6.5.0 - 6.5.10
+Spring Integration 6.4.0 - 6.4.12
+Spring Integration 5.5.21 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47875,2026-08-27 06:17:17.250,2026-08-27 06:17:17.250,5.6,MEDIUM,NETWORK,HIGH,NONE,NONE,,False,"Applications that deserialize execution contexts with Jackson2ExecutionContextStringSerializer are vulnerable to a deserialization attack if they use an untrusted data source for the job repository. The JobParameterDeserializer does not properly enforce the trusted-types allowlist, allowing an attacker to craft malicious input that can lead to arbitrary code execution, including known Jackson RCE gadgets.
+Spring Batch 6.0.0 - 6.0.4
+Spring Batch 5.2.0 - 5.2.6",2026-08-27,2026-08,2026-08-24
+CVE-2026-47877,2026-08-27 06:17:17.490,2026-08-27 06:17:17.490,8.2,HIGH,NETWORK,LOW,NONE,REQUIRED,,False,"Spring Security Authorization Server's default consent page renders user-controlled values without HTML entity encoding.
+Spring Security 7.1.0
+Spring Security 7.0.0 - 7.0.6",2026-08-27,2026-08,2026-08-24
+CVE-2026-47878,2026-08-27 06:17:17.640,2026-08-27 06:17:17.640,5.6,MEDIUM,NETWORK,HIGH,NONE,NONE,,False,"DefaultExecutionContextSerializer, used by default in Spring Batch's JDBC job repository, passes Base64-decoded bytes directly to ObjectInputStream.readObject() without an ObjectInputFilter that restricts types to a trusted class allowlist.
+Spring Batch 6.0.0 - 6.0.4
+Spring Batch 5.2.6 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47879,2026-08-27 06:17:17.813,2026-08-27 06:17:17.813,7.7,HIGH,NETWORK,HIGH,HIGH,NONE,,False,"Spring Cloud Gateway JsonToGrpcGatewayFilterFactory allows arbitrary Spring Resource locations for defining the proto descriptor.
+Spring Cloud Gateway 5.0.0 - 5.0.2
+Spring Cloud Gateway 4.3.0 - 4.3.5
+Spring Cloud Gateway 4.0.0 - 4.2.9
+Spring Cloud Gateway 3.1.13 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47880,2026-08-27 06:17:17.960,2026-08-27 06:17:17.960,5.4,MEDIUM,NETWORK,LOW,LOW,NONE,,False,"A producer who can publish to a JMS destination consumed by any Spring Integration JMS inbound component can set String JMS properties named replyChannel, errorChannel, or json__TypeId__ which are copied verbatim into the Spring Integration MessageHeaders.
+Spring Integration 7.1.0
+Spring Integration 7.0.0 - 7.0.5
+Spring Integration 6.5.0 - 6.5.10
+Spring Integration 6.4.0 - 6.4.12
+Spring Integration 5.5.21 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47881,2026-08-27 06:17:18.143,2026-08-27 06:17:18.143,5.9,MEDIUM,NETWORK,HIGH,NONE,NONE,,False,"Spring Batch's FlatFileItemReader supports files where a single logical record spans multiple physical lines — for example, a CSV field that contains embedded newlines wrapped in quotes. A specially crafted input file could exploit the way the reader assembles those multi-line records to consume excessive CPU time and memory, causing the batch job to stall or run out of memory.
+Spring Batch 6.0.0 - 6.0.4
+Spring Batch 5.2.0 - 5.2.6
+Spring Batch 4.3.0 - 4.3.13",2026-08-27,2026-08,2026-08-24
+CVE-2026-47883,2026-08-27 06:17:18.290,2026-08-27 06:17:18.290,,,,,,,,False,"UrlHandlerFilter can be vulnerable to an open redirect when configured with very broadly matching patterns. The issue applies to the filter variants in both Spring MVC and Spring WebFlux.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19",2026-08-27,2026-08,2026-08-24
+CVE-2026-47884,2026-08-27 06:17:18.507,2026-08-27 06:17:18.507,,,,,,,,False,"Use of XsltView in a Spring MVC application can result in SSRF and RCE attack if the application has an ""/**"" mapping that results in view rendering, and where the view name is not explicitly specified.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19
+Spring Framework 6.1.0 - 6.1.28
+Spring Framework 6.0.0 - 6.0.30
+Spring Framework 5.3.0 - 5.3.49
+Spring Framework 5.2.25.RELEASE and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47885,2026-08-27 06:17:18.747,2026-08-27 06:17:18.747,,,,,,,,False,"The PartEventHttpMessageReader in Spring WebFlux does not enforce the maxPartSize limit when maxInMemorySize is set to -1.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19
+Spring Framework 6.1.0 - 6.1.28",2026-08-27,2026-08,2026-08-24
+CVE-2026-47886,2026-08-27 06:17:19.053,2026-08-27 06:17:19.053,,,,,,,,False,"Applications that evaluate user-supplied Spring Expression Language (SpEL) expressions may be vulnerable to a Denial of Service (DoS) attack when the power operator (^) is used with a BigDecimal or BigInteger operand and a large exponent value.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19
+Spring Framework 6.1.0 - 6.1.28
+Spring Framework 6.0.0 - 6.0.30
+Spring Framework 5.3.0 - 5.3.49
+Spring Framework 5.2.25.RELEASE and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47887,2026-08-27 06:17:19.310,2026-08-27 06:17:19.310,,,,,,,,False,"A Spring MVC application that uses UrlFileNameViewController that is mapped with an end-of-path, and does not have a configured prefix is vulnerable to an open redirect.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19
+Spring Framework 6.1.0 - 6.1.28
+Spring Framework 6.0.0 - 6.0.30
+Spring Framework 5.3.0 - 5.3.49
+Spring Framework 5.2.25.RELEASE and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47888,2026-08-27 06:17:19.623,2026-08-27 06:17:19.623,,,,,,,,False,"A Spring RSocket application is exposed to a memory leak via a malformed SETUP frame.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19
+Spring Framework 6.1.0 - 6.1.28
+Spring Framework 6.0.0 - 6.0.30
+Spring Framework 5.3.0 - 5.3.49
+Spring Framework 5.2.0.RELEASE - 5.2.25.RELEASE",2026-08-27,2026-08,2026-08-24
+CVE-2026-47889,2026-08-27 06:17:19.867,2026-08-27 06:17:19.867,,,,,,,,False,"A WebFlux application running on the Jetty 12 Core reactive adapter serializes response cookies without the sameSite attribute.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19",2026-08-27,2026-08,2026-08-24
+CVE-2026-47890,2026-08-27 06:17:20.120,2026-08-27 06:17:20.120,,,,,,,,False,"Spring MVC and WebFlux applications are vulnerable to stream corruption when using Server-Sent Events (SSE) with view fragments.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19",2026-08-27,2026-08,2026-08-24
+CVE-2026-47891,2026-08-27 06:17:20.287,2026-08-27 06:17:20.287,,,,,,,,False,"A Spring WebFlux application that relies on the Aalto XML processor to parse XML input does not correctly enforce the maxInMemorySize limit.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19
+Spring Framework 6.1.0 - 6.1.28
+Spring Framework 6.0.0 - 6.0.30
+Spring Framework 5.3.0 - 5.3.49
+Spring Framework 5.2.25.RELEASE and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47892,2026-08-27 06:17:20.470,2026-08-27 06:17:20.470,,,,,,,,False,"A WebFlux application using functional endpoints and deployed with DispatcherServlet may be vulnerable to a header predicate bypass in a pre-flight request.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19
+Spring Framework 6.1.0 - 6.1.28
+Spring Framework 6.0.0 - 6.0.30
+Spring Framework 5.3.0 - 5.3.49
+Spring Framework 5.2.5.RELEASE - 5.2.25.RELEASE",2026-08-27,2026-08,2026-08-24
+CVE-2026-47893,2026-08-27 06:17:20.687,2026-08-27 06:17:20.687,,,,,,,,False,"A Spring WebFlux application that supports WebSocket connections may expose indirectly sensitive user information by including request headers in an exception reason.
+Spring Framework 7.0.0 - 7.0.8
+Spring Framework 6.2.0 - 6.2.19
+Spring Framework 6.1.0 - 6.1.28
+Spring Framework 6.0.0 - 6.0.30
+Spring Framework 5.3.0 - 5.3.49
+Spring Framework 5.2.25.RELEASE and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-47894,2026-08-27 06:17:20.930,2026-08-27 06:17:20.930,4.9,MEDIUM,NETWORK,LOW,HIGH,NONE,,False,"Spring Cloud Config Server native environment repository allows exposure of configuration files outside of the configured repository path.
+Spring Cloud Config 5.0.0 - 5.0.4
+Spring Cloud Config 4.3.0 - 4.3.4
+Spring Cloud Config 4.0.0 - 4.2.8
+Spring Cloud Config 3.1.14 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-59270,2026-08-27 06:17:21.223,2026-08-27 06:17:21.223,9.4,CRITICAL,NETWORK,LOW,NONE,NONE,,False,"Spring Security's embedded UnboundID LDAP server (UnboundIdContainer) unconditionally registers an administrative credential and binds its listener to all available network interfaces.
+Spring Security 7.1.0
+Spring Security 7.0.0 - 7.0.6
+Spring Security 6.5.0 - 6.5.11
+Spring Security 6.4.0 - 6.4.18
+Spring Security 5.8.0 - 5.8.27
+Spring Security 5.7.0 - 5.7.25",2026-08-27,2026-08,2026-08-24
+CVE-2026-59271,2026-08-27 06:17:21.510,2026-08-27 06:17:21.510,5.3,MEDIUM,NETWORK,HIGH,LOW,NONE,,False,"When the RabbitMQ management aliveness check fails, the configured admin password is embedded in cleartext in the thrown exception message.
+Spring AMQP 4.1.0
+Spring AMQP 4.0.0 - 4.0.4
+Spring AMQP 3.2.0 - 3.2.12
+Spring AMQP 2.4.18 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-59274,2026-08-27 06:17:21.820,2026-08-27 06:17:21.820,6.5,MEDIUM,NETWORK,LOW,LOW,NONE,,False,"The UnZipTransformer does not limit decompressed entry size or entry count when processing archives. Consequently, an attacker can send a zip archive that can exhaust JVM heap memory, causing a denial-of-service outage.
+Spring Integration 7.1.0
+Spring Integration 7.0.0 - 7.0.5
+Spring Integration 6.5.0 - 6.5.10
+Spring Integration 6.4.0 - 6.4.12",2026-08-27,2026-08,2026-08-24
+CVE-2026-59275,2026-08-27 06:17:22.073,2026-08-27 06:17:22.073,6.6,MEDIUM,NETWORK,HIGH,HIGH,NONE,,False,"A single hostile AMQP message can terminate the entire consumer JVM (System.exit(99)), not just the listener thread — full availability loss for every workload co-located in that process.
+Spring AMQP 4.1.0
+Spring AMQP 4.0.0 - 4.0.4
+Spring AMQP 3.2.0 - 3.2.12
+Spring AMQP 2.4.18 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-59278,2026-08-27 06:17:22.403,2026-08-27 06:17:22.403,6.5,MEDIUM,NETWORK,LOW,NONE,NONE,,False,"JsonKafkaHeaderMapper and DefaultKafkaHeaderMapper include java.net in their default trusted packages list. When these mappers are used — which is the default configuration for all @KafkaListener consumers — an external Kafka producer can inject a java.net.InetAddress type via the spring_json_header_types message header.
+Spring for Apache Kafka 4.1.0
+Spring for Apache Kafka 4.0.0 - 4.0.6
+Spring for Apache Kafka 3.0.0 - 3.3.16
+Spring for Apache Kafka 2.9.0 - 2.9.14
+Spring for Apache Kafka 2.8.12 and earlier",2026-08-27,2026-08,2026-08-24
+CVE-2026-76549,2026-08-27 06:17:26.837,2026-08-27 06:17:26.837,,,,,,,,False,"The UpdraftPlus: WP Backup & Migration Plugin WordPress plugin before 1.26.7 does not have CSRF checks in one of its backup management actions, which could allow attackers to make a logged in admin restore an existing backup, reverting the site's database and files to an earlier state, via a crafted link.",2026-08-27,2026-08,2026-08-24
+CVE-2026-77016,2026-08-27 06:17:27.057,2026-08-27 06:17:27.057,,,,,,,,False,"The Workeera  WordPress plugin before 1.0.6 does not restrict which values may be written to a user's own candidate profile, and does not validate or contain the stored file path before deleting it, allowing users with a role as low as subscriber to delete arbitrary files on the server.",2026-08-27,2026-08,2026-08-24
+CVE-2026-77017,2026-08-27 06:17:27.307,2026-08-27 06:17:27.307,,,,,,,,False,"The Workeera  WordPress plugin before 1.0.6 does not restrict which profile values a candidate may submit, nor confine the stored file location to an allowed directory before serving it, allowing users with a role as low as subscriber to read arbitrary files on the server, including its configuration file and authentication secrets.",2026-08-27,2026-08,2026-08-24
+CVE-2026-77018,2026-08-27 06:17:27.500,2026-08-27 06:17:27.500,,,,,,,,False,"The Workeera  WordPress plugin before 1.0.6 does not restrict which profile values a candidate may submit, nor validate the type of the file it subsequently writes into a publicly reachable directory, allowing users with a role as low as subscriber to upload arbitrary files and achieve remote code execution.",2026-08-27,2026-08,2026-08-24
+CVE-2026-77034,2026-08-27 06:17:27.720,2026-08-27 06:17:27.720,,,,,,,CWE-284,False,Joomla Extension - joomlaeventmanager.net - Unauthenticated article overwrite and force-publish in Joomla Event Manager < 5.0.1 - Any visitor holding their own session token can republish and overwrite an article associated with an event.,2026-08-27,2026-08,2026-08-24
+CVE-2026-77035,2026-08-27 06:17:28.120,2026-08-27 06:17:28.120,,,,,,,CWE-639,False,Joomla Extension - joomlaeventmanager.net - Cross-user event and venue takeover through forged form fields in Joomla Event Manager < 5.0.1 - A registered user with edit-own rights (the eventowner=1 setting or core.edit.own) can POST another user's record id together with their own id as created_by and take over that record.,2026-08-27,2026-08,2026-08-24
+CVE-2026-77989,2026-08-27 06:17:28.413,2026-08-27 06:17:28.413,,,,,,,CWE-79,False,"Joomla Extension - joomlaeventmanager.net - Reflected XSS via the PDF export link in Joomla Events Manager < 5.0.1 - buildCurrentPdfLink copies the current request query string into the PDF button URL, and pdfbutton() echoes it unescaped, leading to an reflected XSS vector.",2026-08-27,2026-08,2026-08-24
+CVE-2026-77990,2026-08-27 06:17:28.673,2026-08-27 06:17:28.673,,,,,,,CWE-639,False,"Joomla Extension - joomlaeventmanager.net - Attendee lists readable by any logged-in user in Joomla Event Manager < 5.0.1 - A non-manager can therefore read attendee names, usernames, registration dates and statuses for events they do not manage, including lists belonging to unpublished events.",2026-08-27,2026-08,2026-08-24
+CVE-2026-77991,2026-08-27 06:17:28.970,2026-08-27 06:17:28.970,,,,,,,CWE-434,False,"Joomla Extension - joomlaeventmanager.net - Privileged remote code execution in Joomla Event Manager < 5.0.1 - The administrator source model allows to write dangerous file type incl. PHP, leading to remote code execution.",2026-08-27,2026-08,2026-08-24
+CVE-2026-78125,2026-08-27 06:17:29.157,2026-08-27 06:17:29.157,,,,,,,,False,"The LearnPress  WordPress plugin before 4.0.3 does not perform any authorization check on one of its REST endpoints in all versions up to, and including, 4.0.2, allowing unauthenticated attackers to disclose the payment status of arbitrary orders by enumerating order identifiers.",2026-08-27,2026-08,2026-08-24
+CVE-2026-78137,2026-08-27 06:17:29.313,2026-08-27 06:17:29.313,,,,,,,,False,"The StoreGrowth  WordPress plugin before 2.1.2 does not validate a browser-supplied product price on two of its unauthenticated actions, allowing unauthenticated attackers to add a product to the cart at an arbitrary, attacker-chosen price that carries through to the checkout total when the BOGO offer feature is enabled.",2026-08-27,2026-08,2026-08-24
+CVE-2026-78138,2026-08-27 06:17:29.497,2026-08-27 06:17:29.497,,,,,,,,False,"The Finale Lite  WordPress plugin before 2.21.0 does not perform a capability check on an AJAX action that returns a sales-campaign's configuration for an arbitrary post ID, allowing any authenticated user (Subscriber and above) to read the Finale Lite  WordPress plugin before 2.21.0's campaign configuration and scheduling data.",2026-08-27,2026-08,2026-08-24
+CVE-2026-78139,2026-08-27 06:17:29.707,2026-08-27 06:17:29.707,,,,,,,,False,"The Notifima  WordPress plugin before 3.1.4 does not verify that the caller owns the subscription being modified on one of its REST endpoints in all versions up to, and including, 3.1.3, allowing authenticated attackers with Subscriber-level access to unsubscribe arbitrary customers from product stock-alert notifications.",2026-08-27,2026-08,2026-08-24
+CVE-2026-78333,2026-08-27 06:17:29.897,2026-08-27 06:17:29.897,,,,,,,,False,"The 12 Step Meeting List WordPress plugin before 3.19.17 does not sanitise and escape a value submitted by unauthenticated users before storing it in its activity log and outputting it back in an admin area page, leading to a Stored Cross-Site Scripting issue which could be used against high privilege users such as admin.",2026-08-27,2026-08,2026-08-24
