@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vulnprio"
+version = "0.1.0"
+description = "Risk-based vulnerability prioritisation: ranking CVEs by likelihood of exploitation."
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+vulnprio = "vulnprio.cli:app"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "network: test requires internet access (deselect with '-m \"not network\"')",
+    "slow: test takes more than a few seconds",
+]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.coverage.run]
+source = ["src/vulnprio"]

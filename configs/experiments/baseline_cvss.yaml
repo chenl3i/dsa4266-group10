@@ -1,0 +1,22 @@
+# Reproduces the strategy described in the project brief: rank purely by CVSS
+# base score and patch the top k%. This is the number every model must beat.
+extends: ../default.yaml
+
+experiment_name: baseline_cvss_only
+
+features:
+  blocks:
+    cvss: true
+    temporal: false
+    cwe: false
+    cpe: false
+    references: false
+    text: false
+
+models:
+  enabled: []
+
+baselines:
+  cvss: true
+  epss: false
+  random: true

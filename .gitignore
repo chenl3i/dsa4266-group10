@@ -5,7 +5,35 @@ __pycache__/
 
 .venv/
 venv/
-
 .env
 
-data/raw/
+# Data: raw is downloaded, interim/processed are derived. Never commit.
+data/raw/*
+data/interim/*
+data/processed/*
+!data/**/.gitkeep
+# data/external/ IS committed - small, hand-curated reference tables.
+
+# Generated outputs
+reports/figures/*
+reports/results/*
+!reports/**/.gitkeep
+mlruns/
+*.joblib
+*.pkl
+
+# Claude Code: local session state, settings and scratch. CLAUDE.md is the one
+# file the team shares - it documents the repo, so it stays tracked.
+.claude/
+.claude.json
+.claude.json.backup
+!CLAUDE.md
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/

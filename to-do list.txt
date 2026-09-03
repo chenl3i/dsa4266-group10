@@ -1,0 +1,194 @@
+DSA4266 GROUP 10 - TO-DO LIST
+Risk-Based Vulnerability Prioritisation
+Updated: 2026-09-04
+
+===============================================================================
+STATUS
+===============================================================================
+
+Tests:      73 pass, 11 fail (all 11 are item 3 below)
+Stubs left: 34 (run: grep -rn "NotImplementedError" src/vulnprio)
+Data:       NVD complete. KEV missing. EPSS missing.
+
+Stage 1 (fetch NVD) is done. Stage 2, 3 and 4 are not started.
+
+===============================================================================
+DONE
+===============================================================================
+
+[x] Project scaffold, config, schema, splits, labels, leakage guards
+[x] Metrics: precision@k, recall@k, lift, bootstrap CIs
+[x] Baselines: CVSS, random
+[x] Feature block: CVSS (the worked example)
+[x] Python environment (.venv) and dependencies
+[x] NVD acquisition, feed mode + API paging      src/vulnprio/data/sources/nvd.py
+[x] CLI command: vulnprio fetch                  src/vulnprio/cli.py
+[x] Full NVD pull: 312,175 CVEs, 173 MB          data/raw/nvd/2026-09-04/
+
+===============================================================================
+TO DO - IN ORDER
+===============================================================================
+
+--- 1. KEV ACQUISITION -------------------------------------- BLOCKS EVERYTHING
+    File:  src/vulnprio/data/sources/kev.py:27
+    Plan:  Task 3
+
+    Why first: we have features but no labels. Nothing can train without
+    labels. This is the only item that blocks all the others.
+
+    Source: https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    One JSON file. Small. No API key.
+
+    Must produce kev_date_added, not only a true/false flag. labels.py needs
+    the date to apply labels.observation_cutoff.
+
+    WARNING: do not use the cisaExploitAdd field inside the NVD feed. It gives
+    a flag with no date. ADR 0002 requires the KEV catalogue.
+
+
+--- 2. NVD PARSER ------------------------------------------------------------
+    File:  src/vulnprio/data/parse.py:27
+    Plan:  Task 5
+
+    Read the 12 ZIP files. Do not unzip them first. Use stdlib zipfile.
+    Produce the 20 columns in data/schema.py (NVD_COLUMNS).
+    Apply the publication-date filter here (2016-01-01 to 2024-12-31).
+
+    Starting point: the script on branch cl_csv_sample ("import json.py").
+    Its CVSS and CWE extraction is correct. Its column names are not.
+    It also misses cvss_vector, cpe_*, reference_* and the impact fields.
+
+
+--- 3. TIE-BREAKING POLICY ---------------------------------- FIXES 11 TESTS
+    File:  src/vulnprio/evaluation/metrics.py:86
+    Plan:  ADR 0004
+    Size:  About 10 lines.
+
+    This is a group exercise, not unfinished work. The docstring has a hint
+    (np.lexsort) and a worked example. All 11 failing tests pass after this.
+
+    Do this any time. It does not depend on items 1 or 2.
+
+
+--- 4. BUILD-DATASET COMMAND -------------------------------------------------
+    File:  src/vulnprio/cli.py:46
+    Plan:  Tasks 5-6
+    Needs: items 1 and 2
+
+    Chain: parse -> labels -> splits -> data/interim/analysis_table.parquet
+
+
+--- 5. FEATURE BLOCKS --------------------------------------------------------
+    Plan:  Tasks 7-11
+    Copy features/cvss.py. It is the worked example.
+
+    [ ] temporal    features/temporal.py:36     Task 7
+    [ ] cwe         features/cwe.py:41          Task 8
+    [ ] cpe         features/cpe.py:55          Task 9
+    [ ] references  features/references.py:58   Task 10
+    [ ] text        features/text.py:51         Task 11
+
+
+--- 6. FEATURE ASSEMBLY ------------------------------------------------------
+    File:  src/vulnprio/features/build.py:35    Task 12
+    File:  src/vulnprio/cli.py:55
+
+    Fit on train rows only. Transform every split.
+
+
+--- 7. EPSS ACQUISITION AND BASELINE -----------------------------------------
+    File:  src/vulnprio/data/sources/epss.py:31   Task 4
+    File:  src/vulnprio/baselines/epss.py:49      Task 14
+
+    EPSS is the baseline that makes the result credible. Beating CVSS is easy.
+
+    Take the score AS OF a date at or before the split boundary. Today's score
+    contains the future. This is a leak.
+
+    EPSS is the only per-date time series in the project. Store it as a long
+    table (cve_id, score_date, epss), not as extra columns on the CVE row.
+
+
+--- 8. MODELS ----------------------------------------------------------------
+    Files: src/vulnprio/models/  (see the README in that directory)
+
+    The registry is empty by design. Add a file, register it, list it under
+    models.enabled in the config. Nothing else changes.
+
+
+--- 9. EVALUATION AND REPORTING ----------------------------------------------
+    File:  src/vulnprio/evaluation/report.py:32   Task 16
+    File:  src/vulnprio/evaluation/plots.py:45    Task 17
+    File:  src/vulnprio/cli.py:64                 Tasks 15-17
+
+
+===============================================================================
+OPEN DECISIONS - THE GROUP MUST AGREE
+===============================================================================
+
+[ ] NVD API RETRY POLICY
+    File: src/vulnprio/data/sources/nvd.py, build_transport()
+    Still a stub. It is NOT needed for the one-time pull, which is complete.
+    It is needed only if we later add incremental (delta) pulls.
+    The docstring lists the four trade-offs.
+
+[ ] NVD REVISION LEAK - WRITE AN ADR
+    The NVD gives each CVE its CURRENT state, not its state in the past. A
+    2021 training row carries 2026 analyst knowledge. This is a real leak.
+    Two honest options:
+      (a) accept it and state it as a limitation in the report, or
+      (b) use only fields that analysts do not revise.
+    Most published work does (a). Write the decision down either way.
+
+[ ] BASE RATE IS LOW
+    About 1,538 positives in about 180,000 rows. That is 0.85 percent.
+    At k = 0.5 percent we rank about 900 CVEs. The confidence intervals will
+    be wide. Do not read a single point estimate as a result.
+
+[ ] --year FLAG IS MIN/MAX, NOT A SET
+    File: src/vulnprio/cli.py
+    "--year 2015 --year 2020" fetches 2015 THROUGH 2020, not those two years.
+    Fine for a smoke test. Rename it or change it if this confuses anyone.
+
+
+===============================================================================
+HOUSEKEEPING
+===============================================================================
+
+[ ] COMMIT THE WORK
+    There is one commit: "Initial proj set up". Everything else is untracked.
+    All the code exists only on one machine. Commit it.
+
+[ ] TELL THE TEAM TO CREATE .venv
+    The README quick-start creates it. It did not exist before 2026-09-04.
+
+[ ] GET AN NVD API KEY (LOW PRIORITY)
+    https://nvd.nist.gov/developers/request-an-api-key
+    Copy .env.example to .env. Paste the key.
+    The feed does not need a key. Only the API path needs one.
+
+
+===============================================================================
+USEFUL COMMANDS
+===============================================================================
+
+  Run the tests:
+    ./.venv/Scripts/python.exe -m pytest -m "not network"
+
+  Check the style:
+    ./.venv/Scripts/python.exe -m ruff check src tests
+    ./.venv/Scripts/python.exe -m ruff format src tests
+
+  Find every remaining stub:
+    grep -rn "NotImplementedError" src/vulnprio
+
+  Re-run the NVD pull (one year, for a quick test):
+    ./.venv/Scripts/python.exe -m vulnprio.cli fetch --year 2015
+
+  Read the data we already have:
+    import zipfile, json, glob
+    z = glob.glob('data/raw/nvd/*/nvdcve-2.0-2020.json.zip')[0]
+    with zipfile.ZipFile(z) as zf:
+        d = json.load(zf.open(zf.namelist()[0]))
+
+===============================================================================
