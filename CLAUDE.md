@@ -8,8 +8,11 @@ UGR'16 v2 network attack detection: PCA baseline vs MLP, LSTM and 1D-CNN autoenc
 scored by reconstruction error. `docs/DSA4266.md` is the final proposal and the source of
 truth for method decisions; `docs/eda-findings.md` holds the data evidence behind it.
 
-No pipeline or model code exists yet. `src/ugr16ad/` has only `paths.py` and
-`logging_utils.py`.
+Week 1 starter files are in place: each pipeline module in `src/ugr16ad/` has its
+interface, a `NotImplementedError` body naming its owner, and tests marked `@todo`
+(strict xfail, from `tests/stubs.py`). Ownership and the open decisions are in
+`docs/team-plan.md`. Do not implement a member's stub unless asked; the stubs are
+their week-1 work.
 
 ## Commands
 

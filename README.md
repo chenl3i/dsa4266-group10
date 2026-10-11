@@ -7,8 +7,7 @@ threshold frozen before seeing test data?
 - Method: **[docs/DSA4266.md](docs/DSA4266.md)** (the final proposal)
 - Data checks and the risks they expose: **[docs/eda-findings.md](docs/eda-findings.md)**
 
-No pipeline or model code exists yet. The repo holds the data, the EDA script, path and
-logging helpers, and the tests that keep them honest.
+Week 1 starter files are in place: each pipeline module has its full interface and tests, waiting to be implemented. Who owns what: **[docs/team-plan.md](docs/team-plan.md)**.
 
 ## Quick start
 
@@ -41,7 +40,7 @@ python scripts/eda_checks.py
 
 ```
 data/             external (committed) + raw / interim / processed (gitignored)
-src/ugr16ad/      The package: paths and logging helpers so far
+src/ugr16ad/      The package: data, preprocess, windows, train, evaluate, results, models/
 scripts/          eda_checks.py: read-only data checks behind docs/eda-findings.md
 notebooks/        EDA and presentation only; no logic other code depends on
 tests/            pytest
