@@ -5,6 +5,7 @@ scipy>=1.12
 
 # Modelling
 scikit-learn>=1.4
+torch>=2.4
 
 # Visualisation
 matplotlib>=3.8
