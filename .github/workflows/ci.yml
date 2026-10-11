@@ -28,6 +28,4 @@ jobs:
           ruff format --check src tests
 
       - name: Test
-        # Network-marked tests are excluded: CI must not depend on the NVD API
-        # being up, or on its rate limits.
-        run: pytest -m "not network" --cov=src/vulnprio --cov-report=term-missing
+        run: pytest --cov=src/ugr16ad --cov-report=term-missing

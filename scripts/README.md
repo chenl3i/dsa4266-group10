@@ -1,17 +1,14 @@
 # Scripts
 
-Thin wrappers only. All real logic lives in `src/vulnprio/` so it can be tested;
-a script that grows past argument parsing and a function call should become a
-CLI command in `src/vulnprio/cli.py` instead.
+Thin, runnable entry points. Logic that a later step depends on belongs in
+`src/ugr16ad/` where it can be tested.
 
-Prefer the CLI:
+| Script | Purpose |
+|---|---|
+| `eda_checks.py` | Read-only data checks; source of every number in `docs/eda-findings.md` |
 
-```bash
-vulnprio fetch --config configs/default.yaml
-```
-
-If the package is not installed, run it as a module from the repo root:
+Run from the repo root after `pip install -e .`:
 
 ```bash
-python -m vulnprio.cli info --config configs/default.yaml
+python scripts/eda_checks.py
 ```

@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "vulnprio"
+name = "ugr16ad"
 version = "0.1.0"
-description = "Risk-based vulnerability prioritisation: ranking CVEs by likelihood of exploitation."
+description = "Nonlinear and temporal autoencoders for network attack detection on UGR'16 v2."
 requires-python = ">=3.10"
 dynamic = ["dependencies"]
 
@@ -15,14 +15,10 @@ dependencies = { file = ["requirements.txt"] }
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[project.scripts]
-vulnprio = "vulnprio.cli:app"
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q --strict-markers"
 markers = [
-    "network: test requires internet access (deselect with '-m \"not network\"')",
     "slow: test takes more than a few seconds",
 ]
 
@@ -34,4 +30,4 @@ src = ["src", "tests"]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.coverage.run]
-source = ["src/vulnprio"]
+source = ["src/ugr16ad"]

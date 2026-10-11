@@ -1,18 +1,14 @@
-# DSA4266 Group 10 — Risk-Based Vulnerability Prioritisation
+# DSA4266 Group 10 — Nonlinear and Temporal Autoencoders for Network Attack Detection
 
-Using machine learning to prioritise software vulnerabilities by their
-**likelihood of exploitation**, rather than by severity alone.
+Do autoencoders that reconstruct single minutes (MLP) or windows of minutes (LSTM,
+1D-CNN) detect attacks in UGR'16 v2 network traffic better than a PCA baseline, at a
+threshold frozen before seeing test data?
 
-> If a company can patch only 10% of its vulnerabilities, which 10% should it
-> patch first — and does a learned ranking beat ranking by CVSS score?
+- Method: **[docs/DSA4266.md](docs/DSA4266.md)** (the final proposal)
+- Data checks and the risks they expose: **[docs/eda-findings.md](docs/eda-findings.md)**
 
-How it all fits together: **[docs/architecture.md](docs/architecture.md)** — the four
-stages, the artifact crossing each boundary, and the invariant that must hold there.
-Start here if you are new to the project.
-
-Full specification: **[docs/project-spec.md](docs/project-spec.md)**
-
----
+No pipeline or model code exists yet. The repo holds the data, the EDA script, path and
+logging helpers, and the tests that keep them honest.
 
 ## Quick start
 
@@ -25,88 +21,43 @@ pip install -r requirements.txt && pip install -e .
 ```
 
 ```bash
-vulnprio info
+python scripts/eda_checks.py
 ```
 
-`vulnprio info` prints the resolved config and everything registered — the
-fastest check that your environment is wired up correctly.
+## Data
 
-## Pipeline
+`data/external/ugr16v2/` holds the four supplied CSVs (committed):
 
-Each stage reads the same config and writes to disk, so any stage can be re-run
-without repeating the ones before it. That matters: `fetch` takes tens of
-minutes, `evaluate` takes seconds, and you will run `evaluate` a hundred times.
+| File | Rows | Content |
+|---|---|---|
+| `UGR16v2.Xtrain.csv` | 98,262 | 134 per-minute flow counters, 2016-03-19 → 05-31 |
+| `UGR16v2.Ytrain.csv` | 98,262 | 8 label counts per minute |
+| `UGR16v2.Xtest.csv` | 43,200 | same features, 2016-07-28 → 08-26 |
+| `UGR16v2.Ytest.csv` | 43,200 | same labels |
 
-```bash
-vulnprio fetch --config configs/default.yaml
-```
-
-```bash
-vulnprio build-dataset --config configs/default.yaml
-```
-
-```bash
-vulnprio build-features --config configs/default.yaml
-```
-
-```bash
-vulnprio evaluate --config configs/experiments/baseline_cvss.yaml
-```
+`Row` (`YYYYMMDDHHMM`) joins X to Y. It is a key, never a feature.
 
 ## Layout
 
 ```
-configs/          Base config + one YAML per experiment
-data/             raw / interim / processed (gitignored) + external (committed)
-src/vulnprio/     The package
-  data/           Sources, schema, parsing, labels, temporal splits
-  features/       Toggleable feature blocks (cvss is the worked example)
-  models/         Ranker interface + registry  (no models yet, by design)
-  baselines/      CVSS, EPSS, random
-  evaluation/     precision@k, recall@k, PR-AUC, bootstrap CIs, figures
-  leakage.py      Executable leakage guards
-notebooks/        EDA and presentation only — no logic other code depends on
+data/             external (committed) + raw / interim / processed (gitignored)
+src/ugr16ad/      The package: paths and logging helpers so far
+scripts/          eda_checks.py: read-only data checks behind docs/eda-findings.md
+notebooks/        EDA and presentation only; no logic other code depends on
 tests/            pytest
-docs/decisions/   ADRs: why the project is shaped this way
-reports/          Figures and result tables
+docs/             Proposal and EDA findings
+reports/          Figures and result tables (gitignored)
 ```
-
-## Key design decisions
-
-Read these before writing code — each one shapes how the rest of the project
-fits together.
-
-| ADR | Decision |
-|---|---|
-| [0001](docs/decisions/0001-project-framing.md) | Ranking under a budget, not classification |
-| [0002](docs/decisions/0002-label-definition.md) | KEV as target, with the positive-unlabelled caveat |
-| [0003](docs/decisions/0003-temporal-split.md) | Temporal split with a 180-day embargo |
-| [0004](docs/decisions/0004-tie-breaking.md) | Tie-breaking is explicit and reported |
-
-## Adding things
-
-**A feature block** — new file in `src/vulnprio/features/`, subclass
-`FeatureBlock`, decorate with `@register_block`, import it in
-`features/__init__.py`, add it under `features.blocks` in config.
-Copy [`features/cvss.py`](src/vulnprio/features/cvss.py) — it is the worked example.
-
-**A model** — see [`src/vulnprio/models/README.md`](src/vulnprio/models/README.md).
-Nothing in the pipeline, CLI, or evaluation changes.
 
 ## Development
 
 ```bash
-pytest -m "not network"
+pytest
 ```
 
 ```bash
 ruff check src tests && ruff format src tests
 ```
 
-## Data sources
-
-| Source | Role | Licence / access |
-|---|---|---|
-| [NIST NVD](https://nvd.nist.gov/) | Features | Public; API key recommended (`.env`) |
-| [CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) | Labels | Public |
-| [FIRST EPSS](https://www.first.org/epss/) | Baseline | Public |
+The earlier vulnerability-prioritisation project (NVD/KEV/EPSS) is preserved at the git
+tag `archive/vulnprio`.

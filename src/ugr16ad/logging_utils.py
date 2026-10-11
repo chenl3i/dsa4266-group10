@@ -22,8 +22,6 @@ def setup_logging(level: int | str = logging.INFO) -> None:
         stream=sys.stdout,
         force=True,
     )
-    # The requests/urllib3 stack is noisy during NVD paging.
-    logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 def get_logger(name: str) -> logging.Logger:
