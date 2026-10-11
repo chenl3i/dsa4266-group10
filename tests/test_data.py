@@ -10,6 +10,7 @@ def assert_shared_index(part):
     assert isinstance(part.X.index, pd.DatetimeIndex)
     for field in (part.y, part.labels, part.segment):
         assert field.index.equals(part.X.index)
+        assert field.index.name == "timestamp"
     assert pd.api.types.is_integer_dtype(part.segment)
 
 
