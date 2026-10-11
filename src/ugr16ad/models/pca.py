@@ -28,10 +28,16 @@ class PCAScorer:
         raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
 
     def score(self, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        """``(scores, feature_errors)``: squared error of ``inverse_transform(transform(X))``
-        per feature, and its mean per row."""
+        """Return ``(scores, feature_errors)`` for each row of ``X``.
+
+        ``feature_errors`` is the squared error of ``inverse_transform(transform(X))``
+        per feature, shape ``(rows, features)``; ``scores`` is its per-row mean.
+        """
         raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
 
     def transform(self, X: np.ndarray) -> np.ndarray:
-        """Component coordinates ``(rows, n_components)``, for the latent-space plots."""
+        """Component coordinates ``(rows, n_components)``, for the latent-space plots.
+
+        A plain centred projection onto the components (not whitened).
+        """
         raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")

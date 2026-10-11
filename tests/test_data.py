@@ -72,9 +72,13 @@ def test_segment_ids_increment_at_gaps():
             "2016-03-19 00:02",
             "2016-03-19 00:10",
             "2016-03-19 00:11",
+            "2016-03-19 00:13",
         ]
     )
-    assert data.segment_ids(index).tolist() == [0, 0, 0, 1, 1]
+    # Two gaps, the second only 2 minutes: a cummax would give every row after the first gap id 1.
+    ids = data.segment_ids(index)
+    assert ids.tolist() == [0, 0, 0, 1, 1, 2]
+    assert ids.index.equals(index)
 
 
 @todo

@@ -3,6 +3,8 @@
 Each run writes to ``reports/results/<model>/seed<seed>/``:
 
 - ``scores.csv``: one row per scored minute; columns ``timestamp, part, score``.
+  ``part`` is a ``load_dataset`` key (``"fit"``, ``"tune"``, ``"calib"`` or
+  ``"test"``). For windowed models ``timestamp`` is the window's final minute.
 - ``meta.json``: at least ``model``, ``seed`` and ``threshold``, plus anything
   else worth reporting (settings, training seconds, parameter count).
 - ``latents.npy`` (optional): row i is the embedding of scores row i.
@@ -51,6 +53,10 @@ def save_run(
     feature_errors: np.ndarray | None = None,
 ) -> None:
     """Write a run in the format above, creating ``directory`` if needed.
+
+    NumPy scalar values in ``meta`` (a float32 threshold, an int64 seed) are
+    converted to plain Python types with ``.item()`` before the JSON is written,
+    because ``json.dump`` rejects them.
 
     Raises:
         ValueError: if ``scores`` lacks a ``SCORE_COLUMNS`` column, ``meta``

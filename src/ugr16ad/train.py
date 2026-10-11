@@ -3,6 +3,12 @@
 Sharing them is what keeps the MLP, LSTM and CNN comparison fair: same loss,
 same early stopping, same seeds, same "final minute" score. A model owner only
 writes the ``nn.Module``.
+
+The ``nn.Module`` contract: its input is a float32 tensor shaped ``(batch,
+features)`` or ``(batch, length, features)``, and it must return a tensor of the
+SAME shape. A CNN therefore transposes to channels-first internally and back
+before returning. Training loss is the MSE over the whole input or window;
+scoring uses the final minute only (as in the proposal).
 """
 
 from __future__ import annotations
@@ -30,9 +36,11 @@ class TrainResult:
         model: the model with its best-epoch weights restored.
         history: one row per epoch run; columns ``epoch`` (from 1),
             ``train_loss``, ``tune_loss`` (mean MSE). This is the loss curve the
-            report shows.
+            report shows. ``train_loss`` is the mean training loss over the
+            epoch's mini-batches, weighted by batch size.
         best_epoch: the epoch with the lowest ``tune_loss``.
-        seconds: wall-clock training time, for the runtime comparison.
+        seconds: wall-clock training time, for the runtime comparison, measured
+            with ``time.perf_counter()``.
     """
 
     model: nn.Module
@@ -59,7 +67,8 @@ def train_autoencoder(
     length, features)``. Mini-batches are shuffled within the fit part only,
     using ``seed``; that never mixes rows across parts. Stops when ``tune_loss``
     has not strictly improved for ``patience`` epochs, then restores the
-    best-epoch weights.
+    best-epoch weights. The caller's ``train`` and ``tune`` arrays are never
+    modified or reordered; shuffling happens on indices.
     """
     raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
 
@@ -73,5 +82,6 @@ def score_autoencoder(
     shape ``(n, features)``: ``x`` itself for 2-D input, ``x[:, -1, :]`` for
     windows. ``scores`` is its mean over features. Only the final minute counts,
     so a window model's alert refers to minute t, as a single-minute model's does.
+    Puts ``model`` in eval mode (dropout off) before scoring.
     """
     raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")

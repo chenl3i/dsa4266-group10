@@ -17,6 +17,10 @@ def fit_threshold(calib_scores: np.ndarray, quantile: float = 0.99) -> float:
 
     At 0.99 about 1% of calibration minutes alert. The threshold is then frozen
     and applied unchanged to test.
+
+    Returns a plain Python ``float``, not ``np.float32``: scores are float32 in
+    the real flow, and ``json.dump`` rejects NumPy scalars when the threshold
+    goes into ``meta.json``.
     """
     raise NotImplementedError("Vanessa, week 1: see docs/team-plan.md")
 

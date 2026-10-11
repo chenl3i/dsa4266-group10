@@ -33,6 +33,7 @@ class Preprocessor:
 
         Raises:
             RuntimeError: if called before ``fit``.
-            ValueError: if ``X`` lacks a column that was present at fit time.
+            ValueError: if ``X`` lacks any column in ``feature_names_``. Columns
+                dropped as constant at fit time may be absent.
         """
         raise NotImplementedError("Kesha, week 1: see docs/team-plan.md")

@@ -46,6 +46,13 @@ def test_transform_ignores_extra_columns():
 
 
 @todo
+def test_transform_does_not_need_columns_dropped_at_fit():
+    pre = Preprocessor().fit(FIT)
+    # "b" was constant at fit, so it is not in feature_names_ and may be absent.
+    np.testing.assert_array_equal(pre.transform(FIT.drop(columns="b")), pre.transform(FIT))
+
+
+@todo
 def test_transform_before_fit_raises():
     pre = Preprocessor()
     with pytest.raises(RuntimeError):

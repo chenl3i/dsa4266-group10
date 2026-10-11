@@ -33,12 +33,12 @@ those, not against someone's unfinished implementation, and nobody waits.
 ## How to do your week 1 part
 
 1. `git checkout main && git pull`, then `git checkout -b <yourname>/week1`.
-2. Set up once: `python -m venv .venv`, then `pip install -r requirements.txt` and `pip install -e .`.
+2. Set up once: `python -m venv .venv`, then `./.venv/Scripts/python.exe -m pip install -r requirements.txt` and `./.venv/Scripts/python.exe -m pip install -e .`.
 3. Open your files. Replace each `raise NotImplementedError(...)` with real code.
-4. Run your tests: `python -m pytest tests/test_<yourfile>.py -v`.
+4. Run your tests: `./.venv/Scripts/python.exe -m pytest tests/test_<yourfile>.py -v`.
    - `XFAIL` = still a stub. `FAILED` with an assertion = your code disagrees with the test.
    - `FAILED ... XPASS(strict)` = it works. Delete the `@todo` line above that test.
-5. Done when your tests pass with no `@todo` left, and `ruff check src tests` plus `ruff format src tests` are clean.
+5. Done when your tests pass with no `@todo` left, and `./.venv/Scripts/python.exe -m ruff check src tests` plus `./.venv/Scripts/python.exe -m ruff format src tests` are clean.
 6. Push your branch and open a pull request into `main`. CI must be green.
 
 If you think a test or a signature is wrong, say so in the group chat before

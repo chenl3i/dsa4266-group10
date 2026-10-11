@@ -54,6 +54,16 @@ def test_meta_values_keep_their_types_and_extra_keys_survive(tmp_path):
 
 
 @todo
+def test_numpy_scalars_in_meta_are_written_as_plain_python_types(tmp_path):
+    meta = {**META, "threshold": np.float32(1.5), "seed": np.int64(0)}
+    save_run(tmp_path, scores=SCORES, meta=meta)
+    loaded = load_run(tmp_path).meta
+    assert loaded["threshold"] == 1.5
+    assert type(loaded["threshold"]) is float
+    assert type(loaded["seed"]) is int
+
+
+@todo
 def test_save_run_creates_missing_parent_directories(tmp_path):
     directory = tmp_path / "reports" / "results" / "pca" / "seed0"
     save_run(directory, scores=SCORES, meta=META)

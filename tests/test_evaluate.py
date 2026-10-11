@@ -25,6 +25,13 @@ def test_fit_threshold_honours_the_quantile_argument():
 
 
 @todo
+def test_fit_threshold_returns_a_plain_float_for_float32_scores():
+    # np.quantile of float32 scores is np.float32, which json.dump rejects in meta.json.
+    scores = np.arange(1, 101, dtype=np.float32)
+    assert type(fit_threshold(scores)) is float
+
+
+@todo
 def test_threshold_metrics_counts_and_rates():
     y = np.array([0, 0, 0, 1, 1], dtype=bool)
     s = np.array([0.1, 0.2, 0.9, 0.8, 0.3])
