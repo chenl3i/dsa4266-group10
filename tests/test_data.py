@@ -5,6 +5,14 @@ from stubs import todo
 from ugr16ad import data
 
 
+def assert_shared_index(part):
+    assert part.X.index.name == "timestamp"
+    assert isinstance(part.X.index, pd.DatetimeIndex)
+    for field in (part.y, part.labels, part.segment):
+        assert field.index.equals(part.X.index)
+    assert pd.api.types.is_integer_dtype(part.segment)
+
+
 def test_attack_labels_exclude_blacklist():
     assert len(data.ATTACK_LABELS) == 7
     assert data.BLACKLIST_LABEL not in data.ATTACK_LABELS
@@ -25,7 +33,8 @@ def test_read_split_indexes_by_timestamp_and_drops_key(raw_dir):
 def test_read_split_rejects_misaligned_keys(raw_dir):
     path = raw_dir / "UGR16v2.Ytrain.csv"
     Y = pd.read_csv(path)
-    Y.loc[0, "Row"] = 201601010000
+    # Order-preserving nudge (00:13 -> 00:14): only an X-vs-Y equality check catches it.
+    Y.loc[9, "Row"] += 1
     Y.to_csv(path, index=False)
     with pytest.raises(ValueError):
         data.read_split("train", directory=raw_dir)
@@ -37,6 +46,18 @@ def test_read_split_rejects_duplicate_keys(raw_dir):
         path = raw_dir / f"UGR16v2.{prefix}train.csv"
         frame = pd.read_csv(path)
         pd.concat([frame, frame.tail(1)]).to_csv(path, index=False)
+    with pytest.raises(ValueError):
+        data.read_split("train", directory=raw_dir)
+
+
+@todo
+def test_read_split_rejects_unsorted_keys(raw_dir):
+    # Swapped identically in X and Y: aligned and duplicate-free, only unsorted.
+    for prefix in ("X", "Y"):
+        path = raw_dir / f"UGR16v2.{prefix}train.csv"
+        frame = pd.read_csv(path)
+        order = [1, 0, *range(2, len(frame))]
+        frame.iloc[order].to_csv(path, index=False)
     with pytest.raises(ValueError):
         data.read_split("train", directory=raw_dir)
 
@@ -63,6 +84,7 @@ def test_make_part_target_ignores_blacklist(raw_dir):
     assert data.BLACKLIST_LABEL not in part.labels.columns
     assert list(part.labels.columns) == list(data.ATTACK_LABELS)
     assert part.segment.tolist() == [0, 0, 0, 0, 0]
+    assert_shared_index(part)
 
 
 @todo
@@ -75,11 +97,21 @@ def test_load_dataset_splits_chronologically(raw_dir):
 
 
 @todo
+def test_load_dataset_floors_tune_count(raw_dir):
+    # The 4 rows after fit: int(4 * 0.4) = int(1.6) = 1 tune row, not round() = 2.
+    parts = data.load_dataset(directory=raw_dir, fit_rows=6, tune_fraction=0.4)
+    assert [len(p.X) for p in parts.values()] == [6, 1, 3, 5]
+    assert parts["fit"].X.index.max() < parts["tune"].X.index.min()
+    assert parts["tune"].X.index.max() < parts["calib"].X.index.min()
+
+
+@todo
 def test_segment_restarts_per_part(raw_dir):
     # Parts are windowed separately, so a window in tune can never reach into fit.
     parts = data.load_dataset(directory=raw_dir, fit_rows=6, tune_fraction=0.5)
     for part in parts.values():
         assert part.segment.iloc[0] == 0
+        assert_shared_index(part)
 
 
 @todo
