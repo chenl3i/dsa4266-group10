@@ -21,11 +21,11 @@ class PCAScorer:
     explained_variance_ratio_: np.ndarray
 
     def __init__(self, n_components: int) -> None:
-        raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
+        raise NotImplementedError("Chen Lei, week 2: see docs/team-plan.md")
 
     def fit(self, X: np.ndarray) -> PCAScorer:
         """Fit on the fit part's preprocessed rows. Returns self."""
-        raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
+        raise NotImplementedError("Chen Lei, week 2: see docs/team-plan.md")
 
     def score(self, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Return ``(scores, feature_errors)`` for each row of ``X``.
@@ -33,11 +33,11 @@ class PCAScorer:
         ``feature_errors`` is the squared error of ``inverse_transform(transform(X))``
         per feature, shape ``(rows, features)``; ``scores`` is its per-row mean.
         """
-        raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
+        raise NotImplementedError("Chen Lei, week 2: see docs/team-plan.md")
 
     def transform(self, X: np.ndarray) -> np.ndarray:
         """Component coordinates ``(rows, n_components)``, for the latent-space plots.
 
         A plain centred projection onto the components (not whitened).
         """
-        raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
+        raise NotImplementedError("Chen Lei, week 2: see docs/team-plan.md")
