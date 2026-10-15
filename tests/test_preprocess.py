@@ -2,13 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from stubs import todo
 from ugr16ad.preprocess import Preprocessor
 
 FIT = pd.DataFrame({"a": [0, 1, 3, 7], "b": [2, 2, 2, 2], "c": [0, 0, 0, 100]})
 
 
-@todo
 def test_fit_drops_constant_columns_and_standardises():
     pre = Preprocessor().fit(FIT)
     assert pre.feature_names_ == ["a", "c"]
@@ -19,7 +17,6 @@ def test_fit_drops_constant_columns_and_standardises():
     np.testing.assert_allclose(Z.std(axis=0), 1, atol=1e-6)
 
 
-@todo
 def test_transform_reuses_fit_statistics_unchanged():
     pre = Preprocessor().fit(FIT)
     later = pd.DataFrame({"a": [0], "b": [9], "c": [0]})
@@ -31,45 +28,37 @@ def test_transform_reuses_fit_statistics_unchanged():
     np.testing.assert_allclose(Z[0], expected, rtol=1e-5)
 
 
-@todo
 def test_transform_follows_feature_names_order_not_input_order():
     pre = Preprocessor().fit(FIT)
     shuffled = FIT[["c", "b", "a"]]
     np.testing.assert_array_equal(pre.transform(shuffled), pre.transform(FIT))
 
 
-@todo
 def test_transform_ignores_extra_columns():
     pre = Preprocessor().fit(FIT)
     extra = FIT.assign(z=[5, 6, 7, 8])
     np.testing.assert_array_equal(pre.transform(extra), pre.transform(FIT))
 
 
-@todo
 def test_transform_does_not_need_columns_dropped_at_fit():
     pre = Preprocessor().fit(FIT)
     # "b" was constant at fit, so it is not in feature_names_ and may be absent.
     np.testing.assert_array_equal(pre.transform(FIT.drop(columns="b")), pre.transform(FIT))
 
 
-@todo
 def test_transform_before_fit_raises():
     pre = Preprocessor()
     with pytest.raises(RuntimeError):
         pre.transform(FIT)
-    # The failed call must not break a later fit. This also keeps the test red-to-green:
-    # NotImplementedError is itself a RuntimeError, so the raises() above passes on a stub.
     assert pre.fit(FIT).transform(FIT).shape == (4, 2)
 
 
-@todo
 def test_transform_rejects_different_columns():
     pre = Preprocessor().fit(FIT)
     with pytest.raises(ValueError):
         pre.transform(FIT.drop(columns="a"))
 
 
-@todo
 def test_transform_rejects_missing_column_even_with_extra_columns_present():
     pre = Preprocessor().fit(FIT)
     # Same number of columns as at fit time, but "a" is gone.
