@@ -12,7 +12,7 @@ Week 1 starter files are in place: each pipeline module in `src/ugr16ad/` has it
 interface, a `NotImplementedError` body naming its owner, and tests marked `@todo`
 (strict xfail, from `tests/stubs.py`). Ownership and the open decisions are in
 `docs/team-plan.md`. Do not implement a member's stub unless asked; the stubs are
-their week-1 work.
+their own work (`models/pca.py` is Chen Lei's week-2 stub, the rest are week 1).
 
 ## Commands
 

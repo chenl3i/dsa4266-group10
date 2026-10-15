@@ -1,19 +1,30 @@
 # Team plan: 12 Oct – 5 Nov 2026
 
 Basically in week 1 each of us builds one part of the common pipeline that every
-model will use (data loading, input prep, scoring, training tools), then from
-week 2 each of us owns one model.
+model will use (data loading, input prep, scoring, training loop), in week 2 each
+of us owns one model, and in week 3 each of us runs our model's experiments and
+double-checks one part of the pipeline.
 
 ## Who owns which files
 
-| Person | Week 1: common pipeline | Tests that define "done" | Week 2–3: model and analysis |
+| Person | Week 1: common pipeline | Week 2: model | Week 3: final work |
 |---|---|---|---|
-| Phone | `src/ugr16ad/data.py`, `src/ugr16ad/synthetic.py` | `tests/test_data.py`, `tests/test_synthetic.py` | LSTM autoencoder (`src/ugr16ad/models/lstm.py`), GRU if time |
-| Kesha | `src/ugr16ad/preprocess.py`, `src/ugr16ad/windows.py` | `tests/test_preprocess.py`, `tests/test_windows.py` | 1D-CNN autoencoder (`src/ugr16ad/models/cnn.py`) |
-| Vanessa | `src/ugr16ad/evaluate.py`, `src/ugr16ad/results.py` | `tests/test_evaluate.py`, `tests/test_results.py` | Charts: score over time, loss curves, which features cause alerts, latent space; synthetic-anomaly check on every model |
-| Chen Lei | `src/ugr16ad/train.py`, `src/ugr16ad/models/pca.py` | `tests/test_train.py`, `tests/test_pca.py` | PCA tuning, MLP autoencoder (`src/ugr16ad/models/mlp.py`), MLP on flattened windows |
+| Phone | Load CSVs, align features and labels, define targets and chronological splits; synthetic anomalies for the sanity check | LSTM autoencoder (GRU if time) | Run LSTM experiments; check splits and label alignment |
+| Kesha | Log transformation, scaling and gap-safe sliding windows | 1D-CNN autoencoder | Run CNN experiments; check preprocessing and window boundaries |
+| Vanessa | Threshold calibration, evaluation metrics and standard results format | Windowed MLP autoencoder (flattened windows) | Run windowed MLP experiments; assemble the comparison table |
+| Chen Lei | Starter interfaces and shared training loop, including early stopping, seeds and timing | PCA baseline and single-minute MLP autoencoder | Run PCA/MLP experiments; check training settings and reproducibility |
 
-Week 2 files don't exist yet; each owner creates theirs.
+Files and the tests that define "done":
+
+| Person | Week 1 files | Week 1 tests | Week 2 files |
+|---|---|---|---|
+| Phone | `src/ugr16ad/data.py`, `src/ugr16ad/synthetic.py` | `tests/test_data.py`, `tests/test_synthetic.py` | `src/ugr16ad/models/lstm.py` |
+| Kesha | `src/ugr16ad/preprocess.py`, `src/ugr16ad/windows.py` | `tests/test_preprocess.py`, `tests/test_windows.py` | `src/ugr16ad/models/cnn.py` |
+| Vanessa | `src/ugr16ad/evaluate.py`, `src/ugr16ad/results.py` | `tests/test_evaluate.py`, `tests/test_results.py` | `src/ugr16ad/models/windowed_mlp.py` |
+| Chen Lei | `src/ugr16ad/train.py` | `tests/test_train.py` | `src/ugr16ad/models/pca.py`, `src/ugr16ad/models/mlp.py` |
+
+`models/pca.py` already has its interface and `@todo` tests (`tests/test_pca.py`);
+the other week 2 files don't exist yet, so each owner creates theirs.
 
 ## How the pieces connect
 
@@ -22,7 +33,7 @@ data.load_dataset()        -> {"fit", "tune", "calib", "test"} Parts      (Phone
 Preprocessor.fit(fit.X)    -> transform every part                         (Kesha)
 make_windows(...)          -> windows for LSTM / CNN / flattened MLP       (Kesha)
 train_autoencoder(...)     -> trained model + loss curve                   (Chen Lei)
-score_autoencoder / PCAScorer.score -> (scores, feature_errors)            (Chen Lei)
+score_autoencoder / PCAScorer.score -> (scores, feature_errors)            (Chen Lei; PCA is week 2)
 fit_threshold(calib scores), threshold_metrics, ranking_metrics            (Vanessa)
 save_run(...)              -> reports/results/<model>/seed<seed>/          (Vanessa)
 ```
@@ -56,9 +67,9 @@ changing it. Someone else is coding against it.
 |---|---|
 | 12–18 Oct | Week 1: common pipeline (table above) |
 | Mon 19 Oct | Call: merge week 1, settle open decisions |
-| 19–25 Oct | Week 2: first version of each model; charts built on PCA |
+| 19–25 Oct | Week 2: first version of each model |
 | Mon 26 Oct | Call: first results; slides start |
-| 26 Oct–1 Nov | Week 3: fix settings, run 3 seeds; report sections |
+| 26 Oct–1 Nov | Week 3: fix settings, run 3 seeds, pipeline checks, comparison table; report sections |
 | Mon 2 Nov | Call: results review |
 | Tue 3 Nov | Results lock |
 | Wed 4 Nov | Timed rehearsal (10 min + Q&A) |
