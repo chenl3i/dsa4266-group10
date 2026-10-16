@@ -17,6 +17,7 @@ in week 2 and rerun unchanged on every other model.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -41,7 +42,14 @@ class Run:
 
 def run_dir(model: str, seed: int, root: Path = RESULTS_DIR) -> Path:
     """``root / model / f"seed{seed}"``. Does not create it."""
-    raise NotImplementedError("Vanessa, week 1: see docs/team-plan.md")
+    return root / model / f"seed{seed}"
+
+
+def _json_default(obj):
+    """Let ``json.dump`` handle NumPy scalars by converting them with ``.item()``."""
+    if isinstance(obj, np.generic):
+        return obj.item()
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 
 
 def save_run(
@@ -64,9 +72,47 @@ def save_run(
             differs from ``len(scores)``. Bad files caught here would otherwise
             surface as a wrong chart two weeks later.
     """
-    raise NotImplementedError("Vanessa, week 1: see docs/team-plan.md")
+    # Validate everything first so a bad call never leaves a half-written run.
+    missing_columns = [c for c in SCORE_COLUMNS if c not in scores.columns]
+    if missing_columns:
+        raise ValueError(f"scores is missing columns: {missing_columns}")
+    missing_meta = [k for k in REQUIRED_META if k not in meta]
+    if missing_meta:
+        raise ValueError(f"meta is missing keys: {missing_meta}")
+    optional = {"latents": latents, "feature_errors": feature_errors}
+    for name, array in optional.items():
+        if array is not None and len(array) != len(scores):
+            raise ValueError(f"{name} has {len(array)} rows but scores has {len(scores)}")
+
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+
+    scores.to_csv(directory / "scores.csv", index=False)
+    with open(directory / "meta.json", "w") as f:
+        json.dump(meta, f, indent=2, default=_json_default)
+
+    for name, array in optional.items():
+        path = directory / f"{name}.npy"
+        if array is not None:
+            np.save(path, np.asarray(array))
+        elif path.exists():
+            path.unlink()  # don't leave a stale file from an earlier run
 
 
 def load_run(directory: Path) -> Run:
     """Read a run written by ``save_run``; ``timestamp`` comes back as datetime."""
-    raise NotImplementedError("Vanessa, week 1: see docs/team-plan.md")
+    directory = Path(directory)
+    scores = pd.read_csv(directory / "scores.csv", parse_dates=["timestamp"])
+    with open(directory / "meta.json") as f:
+        meta = json.load(f)
+
+    def _load_optional(name: str) -> np.ndarray | None:
+        path = directory / f"{name}.npy"
+        return np.load(path) if path.exists() else None
+
+    return Run(
+        scores=scores,
+        meta=meta,
+        latents=_load_optional("latents"),
+        feature_errors=_load_optional("feature_errors"),
+    )
