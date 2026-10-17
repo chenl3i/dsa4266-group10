@@ -13,6 +13,12 @@ import pandas as pd
 from sklearn.metrics import average_precision_score, roc_auc_score, roc_curve
 
 
+def _require_finite(scores: np.ndarray, name: str = "scores") -> None:
+    """A NaN score would silently never alert, or make the threshold NaN, so fail loudly."""
+    if not np.isfinite(np.asarray(scores, dtype=float)).all():
+        raise ValueError(f"{name} contains NaN or infinite values")
+
+
 def fit_threshold(calib_scores: np.ndarray, quantile: float = 0.99) -> float:
     """The alarm threshold: the ``quantile`` of calibration scores (``np.quantile``).
 
@@ -23,6 +29,7 @@ def fit_threshold(calib_scores: np.ndarray, quantile: float = 0.99) -> float:
     the real flow, and ``json.dump`` rejects NumPy scalars when the threshold
     goes into ``meta.json``.
     """
+    _require_finite(calib_scores, "calib_scores")
     return float(np.quantile(calib_scores, quantile))
 
 
@@ -34,6 +41,7 @@ def threshold_metrics(y_true: np.ndarray, scores: np.ndarray, threshold: float) 
     workload. With no alerts, precision and F1 are 0.0 rather than undefined,
     so a silent model scores as useless instead of crashing the table.
     """
+    _require_finite(scores)
     y = np.asarray(y_true).astype(bool)
     alerts = np.asarray(scores) > threshold
 
@@ -75,6 +83,7 @@ def ranking_metrics(
         partial_auc: ``roc_auc_score(..., max_fpr=max_fpr)``, the standardised
             (McClish) partial AUC over FPR 0..``max_fpr``.
     """
+    _require_finite(scores)
     y = np.asarray(y_true).astype(bool)
     s = np.asarray(scores)
 
@@ -103,6 +112,12 @@ def per_category_recall(labels: pd.DataFrame, alerts: np.ndarray) -> pd.DataFram
     spam never occur in test and "0% detected" would be a false claim.
     """
     alerts = np.asarray(alerts).astype(bool)
+    if len(alerts) != len(labels):
+        raise ValueError(
+            f"alerts has {len(alerts)} rows but labels has {len(labels)}; "
+            "windowed models score fewer minutes, so align labels to the scored timestamps first"
+        )
+
     rows = {}
     for category in labels.columns:
         positive = labels[category].to_numpy() > 0

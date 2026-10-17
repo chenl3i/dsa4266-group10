@@ -128,3 +128,19 @@ def test_per_category_recall_absent_category_is_nan():
     assert table.loc["labelanomalyspam", "n_positive"] == 0
     assert table.loc["labelanomalyspam", "n_detected"] == 0
     assert np.isnan(table.loc["labelanomalyspam", "recall"])
+
+
+def test_nan_scores_are_rejected():
+    with pytest.raises(ValueError):
+        fit_threshold(np.array([1.0, np.nan]))
+    y = np.array([0, 1], dtype=bool)
+    with pytest.raises(ValueError):
+        threshold_metrics(y, np.array([0.1, np.nan]), threshold=0.5)
+    with pytest.raises(ValueError):
+        ranking_metrics(y, np.array([0.1, np.nan]))
+
+
+def test_per_category_recall_rejects_misaligned_alerts():
+    labels = pd.DataFrame({"labeldos": [1, 0, 2, 0]})
+    with pytest.raises(ValueError):
+        per_category_recall(labels, np.array([True, False]))

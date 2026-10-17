@@ -46,7 +46,7 @@ def run_dir(model: str, seed: int, root: Path = RESULTS_DIR) -> Path:
 
 
 def _json_default(obj):
-    """Let ``json.dump`` handle NumPy scalars by converting them with ``.item()``."""
+    """float32 thresholds and int64 seeds come from NumPy, and json.dump rejects them."""
     if isinstance(obj, np.generic):
         return obj.item()
     raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
@@ -84,12 +84,18 @@ def save_run(
         if array is not None and len(array) != len(scores):
             raise ValueError(f"{name} has {len(array)} rows but scores has {len(scores)}")
 
+    # Serialise meta before touching any file: if it holds something JSON cannot
+    # store, this raises here and nothing has been written yet.
+    meta_text = json.dumps(meta, indent=2, default=_json_default)
+
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
 
-    scores.to_csv(directory / "scores.csv", index=False)
-    with open(directory / "meta.json", "w") as f:
-        json.dump(meta, f, indent=2, default=_json_default)
+    # float_format keeps 9 significant digits, enough to round-trip float32.
+    # The default CSV text is shorter, so a score sitting exactly on the
+    # threshold could flip from "no alert" to "alert" after load_run.
+    scores.to_csv(directory / "scores.csv", index=False, float_format="%.9g")
+    (directory / "meta.json").write_text(meta_text)
 
     for name, array in optional.items():
         path = directory / f"{name}.npy"

@@ -109,3 +109,25 @@ def test_save_run_rejects_misaligned_latents(tmp_path):
 def test_save_run_rejects_misaligned_feature_errors(tmp_path):
     with pytest.raises(ValueError):
         save_run(tmp_path, scores=SCORES, meta=META, feature_errors=np.zeros((4, 3)))
+
+
+def test_float32_scores_survive_a_save_load_round_trip(tmp_path):
+    # A score exactly on the threshold must not flip to "alert" after reloading.
+    rng = np.random.default_rng(0)
+    scores = pd.DataFrame(
+        {
+            "timestamp": pd.date_range("2016-07-28", periods=1000, freq="min"),
+            "part": "test",
+            "score": rng.random(1000).astype(np.float32),
+        }
+    )
+    save_run(tmp_path, scores=scores, meta=META)
+    loaded = load_run(tmp_path).scores["score"].to_numpy().astype(np.float32)
+    np.testing.assert_array_equal(loaded, scores["score"].to_numpy())
+
+
+def test_unserialisable_meta_writes_nothing(tmp_path):
+    directory = tmp_path / "run"
+    with pytest.raises(TypeError):
+        save_run(directory, scores=SCORES, meta={**META, "bad": np.zeros(3)})
+    assert not directory.exists()
