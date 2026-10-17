@@ -13,6 +13,8 @@ interface, a `NotImplementedError` body naming its owner, and tests marked `@tod
 (strict xfail, from `tests/stubs.py`). Ownership and the open decisions are in
 `docs/team-plan.md`. Do not implement a member's stub unless asked; the stubs are
 their own work (`models/pca.py` is Chen Lei's week-2 stub, the rest are week 1).
+When a stub is implemented and its tests pass, they report XPASS and fail; delete the
+`@todo` marker on those tests.
 
 ## Commands
 
@@ -24,8 +26,10 @@ python -m venv .venv
 ./.venv/Scripts/python.exe -m pip install -r requirements.txt
 ./.venv/Scripts/python.exe -m pip install -e .
 
-# Tests
+# Tests (all, one file, one test)
 ./.venv/Scripts/python.exe -m pytest
+./.venv/Scripts/python.exe -m pytest tests/test_windows.py
+./.venv/Scripts/python.exe -m pytest tests/test_windows.py::test_name
 
 # Lint (CI runs both; `format --check` fails CI, plain `format` rewrites)
 ./.venv/Scripts/python.exe -m ruff check src tests
@@ -34,6 +38,33 @@ python -m venv .venv
 # EDA checks (read-only, ~1 min)
 ./.venv/Scripts/python.exe scripts/eda_checks.py
 ```
+
+CI (`.github/workflows/ci.yml`) runs on Ubuntu, Python 3.11, with the CPU-only torch
+wheel, on pushes to `main` and `working` and on PRs.
+
+## Architecture
+
+Every model goes through one common pipeline, so a difference in results comes from
+the model, not the plumbing (load, preprocess, window, train/score, threshold, save):
+
+1. `data.load_dataset` reads the CSVs and returns four chronological `Part`s keyed
+   `fit`, `tune`, `calib`, `test`; each carries a `segment` id that changes at every
+   data gap.
+2. `preprocess.Preprocessor` is fit on `fit` only, then transforms every part.
+3. `windows.eligible_positions` / `make_windows` build windows that never cross a
+   segment boundary. All models, including single-minute ones, are scored on the same
+   eligible positions.
+4. `train.train_autoencoder` / `score_autoencoder` are shared by all neural models; a
+   model owner only writes the `nn.Module`, which must return the same shape as its
+   input. `models/pca.py` returns scores in the same `(scores, feature_errors)` form.
+5. `evaluate` fits the frozen threshold on `calib` and computes threshold metrics
+   (what an analyst would see) separately from ranking metrics (retrospective only).
+6. `results.save_run` writes `reports/results/<model>/seed<seed>/` (`scores.csv`,
+   `meta.json`, optional `.npy`). Charts and tables read only these files, never
+   model code.
+
+`synthetic.inject_anomalies` is the validation sanity check, since validation has no
+labelled attacks.
 
 ## Data
 

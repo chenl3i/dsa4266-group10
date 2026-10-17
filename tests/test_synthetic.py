@@ -1,10 +1,8 @@
 import numpy as np
 
-from stubs import todo
 from ugr16ad.synthetic import inject_anomalies
 
 
-@todo
 def test_inject_anomalies_shifts_only_marked_rows():
     # Non-zero base, so "adds magnitude" is distinguishable from "sets to magnitude".
     X = np.ones((1000, 20), dtype=np.float32)
@@ -20,7 +18,6 @@ def test_inject_anomalies_shifts_only_marked_rows():
     assert np.all(X == 1), "input must not be modified in place"
 
 
-@todo
 def test_inject_anomalies_is_reproducible():
     X = np.zeros((200, 10), dtype=np.float32)
     a, mask_a = inject_anomalies(X, rate=0.1, magnitude=3.0, n_features=2, seed=1)
