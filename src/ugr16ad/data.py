@@ -66,7 +66,21 @@ def read_split(
         ValueError: if X and Y keys differ, keys are not strictly increasing,
             or any key repeats.
     """
-    raise NotImplementedError("Phone, week 1: see docs/team-plan.md")
+    X = pd.read_csv(directory / f"UGR16v2.X{split}.csv")
+    Y = pd.read_csv(directory / f"UGR16v2.Y{split}.csv")
+    if not X[KEY].equals(Y[KEY]):
+        raise ValueError(f"{split}: X and Y {KEY} keys differ")
+    if X[KEY].duplicated().any():
+        raise ValueError(f"{split}: {KEY} keys repeat")
+    if not X[KEY].is_monotonic_increasing:
+        raise ValueError(f"{split}: {KEY} keys are not increasing")
+
+    index = pd.DatetimeIndex(
+        pd.to_datetime(X[KEY].astype(str), format="%Y%m%d%H%M"), name="timestamp"
+    )
+    X = X.drop(columns=KEY).set_index(index)
+    Y = Y.drop(columns=KEY).set_index(index)
+    return X, Y
 
 
 def segment_ids(index: pd.DatetimeIndex) -> pd.Series:
@@ -77,7 +91,9 @@ def segment_ids(index: pd.DatetimeIndex) -> pd.Series:
     Gaps are never filled, so this is how windows learn where they must stop.
     Returns an int Series on ``index``.
     """
-    raise NotImplementedError("Phone, week 1: see docs/team-plan.md")
+    # The first step is NaT, which counts as a break: ids start at 1, so shift to 0.
+    breaks = index.to_series().diff() != pd.Timedelta(minutes=1)
+    return (breaks.cumsum() - 1).astype("int64")
 
 
 def make_part(X: pd.DataFrame, Y: pd.DataFrame) -> Part:
@@ -87,7 +103,13 @@ def make_part(X: pd.DataFrame, Y: pd.DataFrame) -> Part:
     ``BLACKLIST_LABEL``. ``segment`` is computed on this part's own index, so it
     restarts at 0.
     """
-    raise NotImplementedError("Phone, week 1: see docs/team-plan.md")
+    labels = Y[list(ATTACK_LABELS)]
+    return Part(
+        X=X,
+        y=(labels > 0).any(axis=1),
+        labels=labels,
+        segment=segment_ids(X.index),
+    )
 
 
 def load_dataset(
@@ -102,4 +124,13 @@ def load_dataset(
     are "calib". "test" is the whole test file. Nothing is shuffled: a later
     part always starts after an earlier one ends.
     """
-    raise NotImplementedError("Phone, week 1: see docs/team-plan.md")
+    X, Y = read_split("train", directory)
+    n_tune = int((len(X) - fit_rows) * tune_fraction)
+    cuts = {
+        "fit": slice(0, fit_rows),
+        "tune": slice(fit_rows, fit_rows + n_tune),
+        "calib": slice(fit_rows + n_tune, len(X)),
+    }
+    parts = {name: make_part(X.iloc[rows], Y.iloc[rows]) for name, rows in cuts.items()}
+    parts["test"] = make_part(*read_split("test", directory))
+    return parts

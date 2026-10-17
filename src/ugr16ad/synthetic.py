@@ -21,4 +21,14 @@ def inject_anomalies(
     ``X`` is 2-D ``(rows, features)`` and is never modified in place. The same
     ``seed`` gives the same result.
     """
-    raise NotImplementedError("Phone, week 1: see docs/team-plan.md")
+    rng = np.random.default_rng(seed)
+    n_rows, n_cols = X.shape
+    rows = rng.choice(n_rows, size=round(rate * n_rows), replace=False)
+    # Sorting a random key per row gives each row its own distinct columns.
+    cols = np.argsort(rng.random((len(rows), n_cols)), axis=1)[:, :n_features]
+
+    out = X.copy()
+    out[rows[:, None], cols] += magnitude
+    mask = np.zeros(n_rows, dtype=bool)
+    mask[rows] = True
+    return out, mask
