@@ -26,7 +26,14 @@ class Preprocessor:
 
     def fit(self, X: pd.DataFrame) -> Preprocessor:
         """Learn the kept columns, and their log1p means and stds, from ``X``. Returns self."""
-        raise NotImplementedError("Kesha, week 1: see docs/team-plan.md")
+        logged = np.log1p(X.to_numpy(dtype=np.float64))
+        scales = logged.std(axis=0)
+        keep = scales > 0
+
+        self.feature_names_ = X.columns[keep].tolist()
+        self.mean_ = logged.mean(axis=0)[keep]
+        self.scale_ = scales[keep]
+        return self
 
     def transform(self, X: pd.DataFrame) -> np.ndarray:
         """Apply the fitted steps. Returns float32 ``(rows, len(feature_names_))``.
@@ -36,4 +43,12 @@ class Preprocessor:
             ValueError: if ``X`` lacks any column in ``feature_names_``. Columns
                 dropped as constant at fit time may be absent.
         """
-        raise NotImplementedError("Kesha, week 1: see docs/team-plan.md")
+        if not hasattr(self, "feature_names_"):
+            raise RuntimeError("Preprocessor must be fitted before transform")
+
+        missing = [name for name in self.feature_names_ if name not in X.columns]
+        if missing:
+            raise ValueError(f"X is missing fitted feature columns: {missing}")
+
+        logged = np.log1p(X.loc[:, self.feature_names_].to_numpy(dtype=np.float64))
+        return ((logged - self.mean_) / self.scale_).astype(np.float32)

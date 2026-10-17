@@ -2,7 +2,6 @@ import numpy as np
 import torch
 from torch import nn
 
-from stubs import todo
 from ugr16ad.train import score_autoencoder, set_seed, train_autoencoder
 
 
@@ -54,7 +53,6 @@ def _data():
     return x[:150], x[150:]
 
 
-@todo
 def test_training_lowers_loss_and_keeps_best_epoch():
     train, tune = _data()
     set_seed(0)
@@ -67,7 +65,6 @@ def test_training_lowers_loss_and_keeps_best_epoch():
     assert result.seconds > 0
 
 
-@todo
 def test_early_stopping_after_patience_epochs_without_improvement():
     train, tune = _data()
     set_seed(0)
@@ -75,7 +72,6 @@ def test_early_stopping_after_patience_epochs_without_improvement():
     assert len(result.history) == 4  # best at epoch 1, then 3 epochs with no improvement
 
 
-@todo
 def test_same_seed_same_history():
     train, tune = _data()
     runs = []
@@ -85,7 +81,6 @@ def test_same_seed_same_history():
     assert runs[0].equals(runs[1])
 
 
-@todo
 def test_score_single_minutes():
     x = np.array([[1, 2], [3, 0]], dtype=np.float32)
     scores, errors = score_autoencoder(Zeros(), x)
@@ -93,7 +88,6 @@ def test_score_single_minutes():
     np.testing.assert_allclose(scores, [2.5, 4.5])
 
 
-@todo
 def test_score_windows_uses_final_minute_only():
     x = np.arange(2 * 3 * 2, dtype=np.float32).reshape(2, 3, 2)
     scores, errors = score_autoencoder(Zeros(), x)
@@ -101,7 +95,6 @@ def test_score_windows_uses_final_minute_only():
     np.testing.assert_allclose(scores, (x[:, -1, :] ** 2).mean(axis=1))
 
 
-@todo
 def test_best_epoch_weights_are_restored_not_last_epoch():
     # Train rows sit at 5 but tune rows at 0: every Adam step moves the constant
     # away from what the tune rows want, so epoch 1 is best and the last is worst.
@@ -116,7 +109,6 @@ def test_best_epoch_weights_are_restored_not_last_epoch():
     np.testing.assert_allclose(scores.mean(), h["tune_loss"].min(), rtol=1e-5)
 
 
-@todo
 def test_history_has_one_row_per_epoch_and_runs_all_epochs_while_improving():
     # Both parts sit at 5 and the constant starts at 0, so each step moves toward
     # the optimum and tune loss falls every epoch.
@@ -128,7 +120,6 @@ def test_history_has_one_row_per_epoch_and_runs_all_epochs_while_improving():
     assert result.best_epoch == 5
 
 
-@todo
 def test_losses_are_mean_squared_error_over_all_elements():
     # lr=0 leaves the constant at 0, so the reconstruction error is the input squared.
     train, tune = _data()
@@ -138,7 +129,6 @@ def test_losses_are_mean_squared_error_over_all_elements():
     np.testing.assert_allclose(row["tune_loss"], (tune**2).mean(), rtol=1e-4)
 
 
-@todo
 def test_training_accepts_windows():
     rng = np.random.default_rng(0)
     train = rng.normal(size=(60, 3, 4)).astype(np.float32)
@@ -147,7 +137,6 @@ def test_training_accepts_windows():
     np.testing.assert_allclose(result.history["tune_loss"].iloc[0], (tune**2).mean(), rtol=1e-4)
 
 
-@todo
 def test_different_seeds_shuffle_differently_and_inputs_are_untouched():
     train, tune = _data()
     train_before, tune_before = train.copy(), tune.copy()
@@ -162,7 +151,6 @@ def test_different_seeds_shuffle_differently_and_inputs_are_untouched():
     np.testing.assert_array_equal(tune, tune_before)
 
 
-@todo
 def test_set_seed_makes_weight_initialisation_repeatable():
     set_seed(3)
     first = TinyAE().net[0].weight.detach().clone()
@@ -173,7 +161,6 @@ def test_set_seed_makes_weight_initialisation_repeatable():
     assert not torch.equal(first, TinyAE().net[0].weight)
 
 
-@todo
 def test_score_is_independent_of_batch_size():
     train, _ = _data()
     set_seed(0)
@@ -188,7 +175,6 @@ def test_score_is_independent_of_batch_size():
     assert one[1].shape == (150, 4)
 
 
-@todo
 def test_scoring_is_deterministic_even_for_a_model_left_in_train_mode():
     train, tune = _data()
     set_seed(0)
@@ -203,7 +189,6 @@ def test_scoring_is_deterministic_even_for_a_model_left_in_train_mode():
     )
 
 
-@todo
 def test_score_windows_batches_match_unbatched():
     rng = np.random.default_rng(0)
     x = rng.normal(size=(10, 3, 4)).astype(np.float32)
