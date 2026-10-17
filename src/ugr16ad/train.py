@@ -13,10 +13,14 @@ scoring uses the final minute only (as in the proposal).
 
 from __future__ import annotations
 
+import random
+import time
+from copy import deepcopy
 from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+import torch
 from torch import nn
 
 
@@ -25,7 +29,23 @@ def set_seed(seed: int) -> None:
 
     Call it before building the model, so weight initialisation is seeded too.
     """
-    raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
+
+def _input_tensor(x: np.ndarray) -> torch.Tensor:
+    """Copy inputs so training and scoring cannot mutate the caller's arrays."""
+    if x.ndim not in (2, 3) or any(size == 0 for size in x.shape[1:]):
+        raise ValueError("Expected (rows, features) or (windows, length, features)")
+    return torch.tensor(x, dtype=torch.float32)
+
+
+def _reconstruct(model: nn.Module, batch: torch.Tensor) -> torch.Tensor:
+    reconstruction = model(batch)
+    if reconstruction.shape != batch.shape:
+        raise ValueError("The model must return the same shape as its input")
+    return reconstruction
 
 
 @dataclass(frozen=True)
@@ -70,7 +90,74 @@ def train_autoencoder(
     best-epoch weights. The caller's ``train`` and ``tune`` arrays are never
     modified or reordered; shuffling happens on indices.
     """
-    raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
+    if epochs < 1 or batch_size < 1 or patience < 1 or lr < 0:
+        raise ValueError("epochs, batch_size and patience must be positive; lr nonnegative")
+    train_tensor, tune_tensor = _input_tensor(train), _input_tensor(tune)
+    if len(train_tensor) == 0 or len(tune_tensor) == 0:
+        raise ValueError("Training and tuning inputs must be nonempty")
+    if train_tensor.shape[1:] != tune_tensor.shape[1:]:
+        raise ValueError("Training and tuning inputs must have matching sample shapes")
+
+    set_seed(seed)
+    generator = torch.Generator().manual_seed(seed)
+    model.to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    criterion = nn.MSELoss()
+    history = []
+    best_loss = float("inf")
+    best_state = None
+    best_epoch = 0
+    stale_epochs = 0
+    started = time.perf_counter()
+
+    for epoch in range(1, epochs + 1):
+        model.train()
+        total_train_loss = 0.0
+        # Permute whole samples/windows, preserving the time axis inside each window.
+        order = torch.randperm(len(train_tensor), generator=generator)
+        for indices in order.split(batch_size):
+            batch = train_tensor[indices].to(device)
+            optimizer.zero_grad()
+            loss = criterion(_reconstruct(model, batch), batch)
+            if not torch.isfinite(loss):
+                raise ValueError("Training loss is not finite")
+            loss.backward()
+            optimizer.step()
+            total_train_loss += loss.item() * len(batch)
+
+        model.eval()
+        total_tune_loss = 0.0
+        with torch.no_grad():
+            for batch in tune_tensor.split(batch_size):
+                batch = batch.to(device)
+                loss = criterion(_reconstruct(model, batch), batch)
+                total_tune_loss += loss.item() * len(batch)
+
+        train_loss = total_train_loss / len(train_tensor)
+        tune_loss = total_tune_loss / len(tune_tensor)
+        if not np.isfinite(tune_loss):
+            raise ValueError("Tuning loss is not finite")
+        history.append({"epoch": epoch, "train_loss": train_loss, "tune_loss": tune_loss})
+        if tune_loss < best_loss:
+            best_loss = tune_loss
+            best_epoch = epoch
+            # state_dict alone shares storage with weights that keep changing.
+            best_state = deepcopy(model.state_dict())
+            stale_epochs = 0
+        else:
+            stale_epochs += 1
+            if stale_epochs >= patience:
+                break
+
+    model.load_state_dict(best_state)
+    model.eval()
+    # Device work must finish before measuring elapsed wall-clock time.
+    target = torch.device(device)
+    if target.type == "cuda":
+        torch.cuda.synchronize(target)
+    elif target.type == "mps":
+        torch.mps.synchronize()
+    return TrainResult(model, pd.DataFrame(history), best_epoch, time.perf_counter() - started)
 
 
 def score_autoencoder(
@@ -84,4 +171,22 @@ def score_autoencoder(
     so a window model's alert refers to minute t, as a single-minute model's does.
     Puts ``model`` in eval mode (dropout off) before scoring.
     """
-    raise NotImplementedError("Chen Lei, week 1: see docs/team-plan.md")
+    if batch_size < 1:
+        raise ValueError("batch_size must be positive")
+    inputs = _input_tensor(x)
+    model.to(device)
+    model.eval()
+    if len(inputs) == 0:
+        return np.empty(0, dtype=np.float32), np.empty((0, x.shape[-1]), dtype=np.float32)
+
+    errors = []
+    with torch.no_grad():
+        for batch in inputs.split(batch_size):
+            batch = batch.to(device)
+            reconstruction = _reconstruct(model, batch)
+            if batch.ndim == 3:
+                batch = batch[:, -1, :]
+                reconstruction = reconstruction[:, -1, :]
+            errors.append((reconstruction - batch).square().cpu().numpy())
+    feature_errors = np.concatenate(errors, axis=0)
+    return feature_errors.mean(axis=1), feature_errors
