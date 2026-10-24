@@ -96,3 +96,28 @@ def test_gru_writes_under_gru(parts, tmp_path):
 def test_too_long_window_raises(parts, tmp_path):
     with pytest.raises(ValueError, match="fit"):
         run_lstm.run(parts, seed=0, out_root=tmp_path, **{**SETTINGS, "window_length": 40})
+
+
+def test_meta_records_settings_and_history(run_path):
+    run = load_run(run_path)
+    meta = run.meta
+    assert (meta["n_features"], meta["epochs"], meta["patience"], meta["device"]) == (
+        3,
+        2,
+        5,
+        "cpu",
+    )
+    assert len(pd.read_csv(run_path / "history.csv")) == meta["epochs_run"]
+    calib = run.scores[run.scores.part == "calib"].score
+    assert meta["calib_alert_rate"] == pytest.approx((calib > meta["threshold"]).mean())
+
+
+def test_test_labels_align_with_scored_minutes(run_path, parts):
+    meta = load_run(run_path).meta
+    test = parts["test"]
+    positions = eligible_positions(test.segment.to_numpy(), WINDOW)
+    expected = int(test.y.to_numpy()[positions].sum())
+    assert expected > 0
+    assert meta["test_metrics"]["tp"] + meta["test_metrics"]["fn"] == expected
+    by_category = {r["category"]: r for r in meta["per_category_recall"]}
+    assert by_category[ATTACK_LABELS[0]]["n_positive"] == expected

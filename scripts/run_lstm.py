@@ -32,12 +32,16 @@ log = get_logger(__name__)
 PART_ORDER = ("fit", "tune", "calib", "test")
 
 
-def _encode(model: LSTMAutoencoder, windows: np.ndarray, batch_size: int, device: str):
+def _encode(
+    model: LSTMAutoencoder, windows: np.ndarray, batch_size: int, device: str
+) -> np.ndarray:
     """Latent vectors, batched so the full fit part never sits on the device at once."""
     model.eval()
     out = []
     with torch.no_grad():
-        for batch in torch.tensor(windows, dtype=torch.float32).split(batch_size):
+        for batch in torch.from_numpy(np.ascontiguousarray(windows, dtype=np.float32)).split(
+            batch_size
+        ):
             out.append(model.encode(batch.to(device)).cpu().numpy())
     return np.concatenate(out, axis=0)
 
@@ -121,12 +125,18 @@ def run(
         "window_length": window_length,
         "hidden_dim": hidden_dim,
         "latent_dim": latent_dim,
+        "n_features": windows["fit"].shape[2],
+        "epochs": epochs,
+        "patience": patience,
+        "device": device,
         "lr": lr,
         "batch_size": batch_size,
         "best_epoch": result.best_epoch,
         "epochs_run": len(result.history),
         "train_seconds": result.seconds,
         "n_params": sum(p.numel() for p in model.parameters()),
+        # Sanity check that the frozen threshold alerts on about 1% of calib.
+        "calib_alert_rate": float((scores_by_part["calib"] > threshold).mean()),
         "test_metrics": {
             **threshold_metrics(y_test, test_scores, threshold),
             **ranking_metrics(y_test, test_scores),
