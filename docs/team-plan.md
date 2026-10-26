@@ -55,11 +55,38 @@ those, not against someone's unfinished implementation, and nobody waits.
 If you think a test or a signature is wrong, say so in the group chat before
 changing it. Someone else is coding against it.
 
-## Open decisions (settle on the Mon 19 Oct call)
+## Phone's week 3 part (26 Oct – 1 Nov)
 
-- **Tune / calibrate split of the validation rows.** `data.TUNE_FRACTION` is a 0.5 placeholder.
-- **Window length.** The proposal says it is fixed before evaluation, from operational reasoning and prior literature (Phone + Kesha to propose).
-- **Synthetic anomaly size.** `rate`, `magnitude`, `n_features` for the sanity check (Phone to propose).
+Settled on the Mon 26 Oct call: window length **20 minutes**, `TUNE_FRACTION` **0.5**
+(tune and calib are each ~9,826 minutes, about 6.8 days, so each covers close to a
+full weekly cycle).
+
+1. **Fix settings (Tue 27 Oct).** Drop "placeholder" from the `TUNE_FRACTION` comment
+   in `data.py`. Synthetic anomaly settings (settled): `rate=0.01`,
+   `magnitude ∈ {2, 4}`, `n_features ∈ {1, 5}`, injected into preprocessed calib.
+2. **Run LSTM, 3 seeds (Wed 28 Oct).**
+   `./.venv/Scripts/python.exe scripts/run_lstm.py --seed 0 1 2 --window-length 20`
+   writes `reports/results/lstm/seed{0,1,2}/`. Settings stay at the script defaults;
+   nothing is tuned on test.
+3. **Synthetic sanity check (Thu 29 Oct).** AUC of LSTM calib scores on the injected
+   rows for each setting in the grid. This shows the model reconstructs and reacts;
+   it is not a detection result.
+4. **Pipeline check: splits and label alignment (Thu–Fri).** Confirm with tests, not by
+   eye: fit = rows 0–78,608, validation = 78,609–98,261, tune before calib, no overlap
+   or shuffling; segments break at the 2016-03-27 DST hour and the 04-01 → 04-06
+   outage; X and Y join on `Row` with no dropped or duplicated minutes; target = any
+   of the seven non-blacklist labels > 0; `labelblacklist` absent from X and y.
+   Report anything wrong to the owner before fixing it.
+5. **GRU (if time).** `--cell gru`, same 3 seeds, saved as its own model.
+6. **Report paragraphs (Sat–Sun).** Data and splits section; LSTM method and results
+   (mean ± sd over seeds, threshold metrics kept separate from ranking metrics).
+7. **Hand results to Vanessa by Sun 1 Nov** for the comparison table.
+
+Blocked: NaN values in `meta.json` need a fix in Vanessa's `save_run`.
+
+## Open decisions
+
+- **Comparison table columns.** Which threshold and ranking metrics, and whether to add training time (Vanessa to propose).
 
 ## Schedule
 

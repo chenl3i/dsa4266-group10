@@ -30,7 +30,8 @@ BLACKLIST_LABEL = "labelblacklist"
 # Proposal: the first 78,609 training rows fit the models; the other 19,653 validate.
 FIT_ROWS = 78_609
 # Share of validation rows used for tuning; the rest calibrate the threshold.
-# The proposal does not fix this split. 0.5 is a placeholder for the team to confirm.
+# Settled by the team on 26 Oct: each half is ~6.8 days, close to a full weekly
+# cycle, so early stopping and the threshold both see weekday and weekend traffic.
 TUNE_FRACTION = 0.5
 
 
