@@ -32,8 +32,9 @@ class PCAScorer:
         self.pca.fit(X)
         self.explained_variance_ratio_ = self.pca.explained_variance_ratio_.copy()
         return self
-
-    def score(self, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]: #Return ``(scores, feature_errors)`` for each row of ``X``
+    
+    #Return ``(scores, feature_errors)`` for each row of ``X``
+    def score(self, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]: 
         """Return ``(scores, feature_errors)`` for each row of ``X``.
 
         ``feature_errors`` is the squared error of ``inverse_transform(transform(X))``
