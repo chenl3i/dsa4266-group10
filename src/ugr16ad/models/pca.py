@@ -28,13 +28,14 @@ class PCAScorer:
             raise ValueError("n_components must be a positive integer")
         self.pca = PCA(n_components=n_components, svd_solver="full", whiten=False)
 
-    def fit(self, X: np.ndarray) -> PCAScorer: #Fit on the fit part's preprocessed rows. Returns self
+    # Fit on the fit part's preprocessed rows. Returns self
+    def fit(self, X: np.ndarray) -> PCAScorer:
         self.pca.fit(X)
         self.explained_variance_ratio_ = self.pca.explained_variance_ratio_.copy()
         return self
-    
-    #Return ``(scores, feature_errors)`` for each row of ``X``
-    def score(self, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]: 
+
+    # Return ``(scores, feature_errors)`` for each row of ``X``
+    def score(self, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Return ``(scores, feature_errors)`` for each row of ``X``.
 
         ``feature_errors`` is the squared error of ``inverse_transform(transform(X))``
