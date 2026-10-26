@@ -24,6 +24,7 @@ from ugr16ad.models.lstm import LSTMAutoencoder
 from ugr16ad.paths import RESULTS_DIR
 from ugr16ad.preprocess import Preprocessor
 from ugr16ad.results import run_dir, save_run
+from ugr16ad.synthetic import sanity_check
 from ugr16ad.train import score_autoencoder, set_seed, train_autoencoder
 from ugr16ad.windows import make_windows
 
@@ -71,8 +72,11 @@ def run(
     windows, positions = {}, {}
     for name in PART_ORDER:
         part = parts[name]
+        transformed = preprocessor.transform(part.X)
+        if name == "calib":
+            calib_X = transformed  # kept clean for the synthetic sanity check
         windows[name], positions[name] = make_windows(
-            preprocessor.transform(part.X), part.segment.to_numpy(), window_length
+            transformed, part.segment.to_numpy(), window_length
         )
         if len(windows[name]) == 0:
             raise ValueError(f"no {window_length}-minute windows in {name}")
@@ -112,6 +116,11 @@ def run(
         )
 
     threshold = fit_threshold(scores_by_part["calib"])
+
+    def score_calib(X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        w, pos = make_windows(X, parts["calib"].segment.to_numpy(), window_length)
+        return score_autoencoder(model, w, device=device)[0], pos
+
     test = parts["test"]
     y_test = test.y.to_numpy()[positions["test"]]
     test_scores = scores_by_part["test"]
@@ -142,6 +151,7 @@ def run(
             **ranking_metrics(y_test, test_scores),
         },
         "per_category_recall": recall.reset_index(names="category").to_dict("records"),
+        "sanity_check": sanity_check(calib_X, score_calib),
     }
     directory = run_dir(cell, seed, root=out_root)
     save_run(

@@ -8,6 +8,7 @@ import pytest
 from ugr16ad.data import ATTACK_LABELS, Part
 from ugr16ad.evaluate import fit_threshold
 from ugr16ad.results import load_run
+from ugr16ad.synthetic import SANITY_GRID
 from ugr16ad.windows import eligible_positions
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "run_lstm.py"
@@ -121,3 +122,11 @@ def test_test_labels_align_with_scored_minutes(run_path, parts):
     assert meta["test_metrics"]["tp"] + meta["test_metrics"]["fn"] == expected
     by_category = {r["category"]: r for r in meta["per_category_recall"]}
     assert by_category[ATTACK_LABELS[0]]["n_positive"] == expected
+
+
+def test_meta_records_sanity_check(run_path):
+    checks = load_run(run_path).meta["sanity_check"]
+    # JSON turns the grid's tuples into lists. The 30-row calib picks no rows at
+    # rate 0.01, so auc is nan here; only the structure is checked.
+    assert [[c["magnitude"], c["n_features"]] for c in checks] == [list(g) for g in SANITY_GRID]
+    assert all("auc" in c for c in checks)
