@@ -8,7 +8,18 @@ standard deviations" and uses no information from later data.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import numpy as np
+from sklearn.metrics import roc_auc_score
+
+# Settled by the team on 26 Oct. The grid spans small to large spikes so the check
+# shows where each model starts reacting, instead of every model scoring AUC = 1.
+SANITY_RATE = 0.01
+SANITY_GRID = ((2.0, 1), (2.0, 5), (4.0, 1), (4.0, 5))  # (magnitude, n_features)
+# Fixed, not the run seed: every model and seed sees the same altered rows, so
+# their sanity AUCs are comparable.
+SANITY_SEED = 0
 
 
 def inject_anomalies(
@@ -34,19 +45,22 @@ def inject_anomalies(
     return out, mask
 
 
-SANITY_RATE = 0.01
-SANITY_SEED = 0
-SANITY_GRID = ((2, 1), (2, 5), (4, 1), (4, 5))
+def sanity_check(
+    X: np.ndarray,
+    score_rows: Callable[[np.ndarray], tuple[np.ndarray, np.ndarray]],
+    *,
+    rate: float = SANITY_RATE,
+    seed: int = SANITY_SEED,
+) -> list[dict[str, float]]:
+    """AUC of a model's scores on rows injected into ``X``, one dict per grid entry.
 
-
-def sanity_check(X, score_rows, *, rate=SANITY_RATE, seed=SANITY_SEED):
-    """ROC-AUC on altered calibration copies, aligned to scored endpoint rows.
-
-    Inject before window construction. The callback returns (scores, positions).
-    No thresholds or model settings are changed by this diagnostic.
+    ``X`` is preprocessed calib. ``score_rows(X_injected)`` returns ``(scores,
+    positions)``, the row each score belongs to: windowed models skip the first
+    minutes of each segment, so only scored rows can count. An injected minute
+    also raises the scores of later windows that contain it; those windows stay
+    labelled clean, because the score is the final minute's. AUC is ``nan`` when
+    the scored rows hold one class (too few rows for ``rate`` to pick any).
     """
-    from sklearn.metrics import roc_auc_score
-
     result = []
     for magnitude, n_features in SANITY_GRID:
         injected, mask = inject_anomalies(
