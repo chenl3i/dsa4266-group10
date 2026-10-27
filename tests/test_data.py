@@ -118,3 +118,31 @@ def test_real_data_matches_proposal():
     assert parts["fit"].X.shape[1] == 134
     assert not any(parts[name].y.any() for name in ("fit", "tune", "calib"))
     assert int(parts["test"].y.sum()) == 1_364
+
+
+@pytest.mark.slow
+def test_real_splits_and_labels_match_proposal():
+    parts = data.load_dataset()
+    fit, tune, calib, test = (parts[name] for name in ("fit", "tune", "calib", "test"))
+    # TUNE_FRACTION = 0.5 floors the 19,653 validation rows into tune.
+    assert (len(tune.X), len(calib.X)) == (9_826, 9_827)
+    assert fit.X.index.max() < tune.X.index.min()
+    assert tune.X.index.max() < calib.X.index.min()
+    assert calib.X.index.max() < test.X.index.min()
+    for part in parts.values():
+        assert part.X.index.is_unique and part.X.index.is_monotonic_increasing
+
+    # Fit breaks at the DST hour and at the outage; the other parts have no gap.
+    assert fit.segment.nunique() == 3
+    assert [p.segment.nunique() for p in (tune, calib, test)] == [1, 1, 1]
+    starts = fit.segment.index.to_series().groupby(fit.segment.to_numpy()).min()
+    assert str(starts[1].date()) == "2016-03-27"
+    assert str(starts[2].date()) == "2016-04-06"
+
+    calendar = {"row", "hour", "weekday", "day", "dayofweek"}
+    for part in parts.values():
+        assert list(part.labels.columns) == list(data.ATTACK_LABELS)
+        assert data.BLACKLIST_LABEL not in part.X.columns
+        assert data.BLACKLIST_LABEL not in part.labels.columns
+        assert part.y.equals(part.labels.gt(0).any(axis=1))
+        assert not calendar & {c.lower() for c in part.X.columns}
