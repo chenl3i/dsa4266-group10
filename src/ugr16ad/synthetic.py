@@ -32,3 +32,28 @@ def inject_anomalies(
     mask = np.zeros(n_rows, dtype=bool)
     mask[rows] = True
     return out, mask
+
+
+SANITY_RATE = 0.01
+SANITY_SEED = 0
+SANITY_GRID = ((2, 1), (2, 5), (4, 1), (4, 5))
+
+
+def sanity_check(X, score_rows, *, rate=SANITY_RATE, seed=SANITY_SEED):
+    """ROC-AUC on altered calibration copies, aligned to scored endpoint rows.
+
+    Inject before window construction. The callback returns (scores, positions).
+    No thresholds or model settings are changed by this diagnostic.
+    """
+    from sklearn.metrics import roc_auc_score
+
+    result = []
+    for magnitude, n_features in SANITY_GRID:
+        injected, mask = inject_anomalies(
+            X, rate=rate, magnitude=magnitude, n_features=n_features, seed=seed
+        )
+        scores, positions = score_rows(injected)
+        y = mask[positions]
+        auc = float(roc_auc_score(y, scores)) if 0 < y.sum() < len(y) else float("nan")
+        result.append({"magnitude": magnitude, "n_features": n_features, "auc": auc})
+    return result
