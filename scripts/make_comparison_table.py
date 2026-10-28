@@ -34,15 +34,20 @@ def main() -> None:
     if not runs:
         raise SystemExit(f"No runs found under {RESULTS_DIR}")
 
-    # Windowed models score fewer minutes, so compare on the minutes every model scored.
-    common = None
-    for test, _ in runs.values():
-        common = test.index if common is None else common.intersection(test.index)
-    print(f"{len(runs)} runs, {len(common)} common test minutes")
+    # Every model must be scored on the same eligible minutes. A mismatch means a
+    # run used a different window length or part boundary, so stop instead of
+    # silently shrinking the evaluation set.
+    indices = [test.index for test, _ in runs.values()]
+    common = indices[0]
+    mismatched = [key for key, idx in zip(runs, indices, strict=True) if not idx.equals(common)]
+    if mismatched:
+        raise SystemExit(f"Runs scored on different test minutes: {mismatched}")
+    print(f"{len(runs)} runs, all scored on the same {len(common)} test minutes")
 
     X, Y = read_split("test")
-    labels = make_part(X, Y).labels.loc[common]
-    y_true = (labels > 0).any(axis=1).to_numpy()
+    test_part = make_part(X, Y)
+    labels = test_part.labels.loc[common]
+    y_true = test_part.y.loc[common].to_numpy()  # one definition of "attack", in make_part
     print(f"{int(y_true.sum())} attack minutes among them")
 
     rows, category_rows = [], []
