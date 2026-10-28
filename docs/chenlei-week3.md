@@ -130,3 +130,22 @@ real test metrics; `summary.csv` gives means and sample standard deviations
 model/seed folder also contains `sanity_check.csv` for synthetic calibration
 ROC-AUC, separate from real test metrics. Inference times cover scoring already
 preprocessed eligible test rows, excluding preprocessing and model loading.
+
+
+## Shared result layout
+
+Evaluation now saves runs through `results.run_dir` at
+`reports/results/pca/seed0/` and `reports/results/mlp/seed{0,1,2}/`. These contain
+`scores.csv`, `meta.json`, `feature_errors.npy`, `categories.csv`, and
+`sanity_check.csv`, directly accessible to the team's chart/table readers.
+The metadata manifest link is relative to each run's actual location.
+
+`--output` remains the checkpoint/experiment folder. Its
+`evaluation-window20/` directory holds only protocol and comparison/summary tables
+for new runs. `--results-root` optionally selects another model/seed root,
+mainly for isolated tests. Existing shared runs are never silently overwritten.
+Changing `--output` alone does not change the shared results root.
+
+Previously evaluated results can be copied into the shared model/seed locations
+without retraining or rescoring; update the relative manifest path in each copied
+`meta.json`. Preserve the original experiment folder as the audit archive.

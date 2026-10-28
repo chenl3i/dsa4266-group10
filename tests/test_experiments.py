@@ -2,10 +2,11 @@ import json
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from ugr16ad import experiments
 from ugr16ad.data import ATTACK_LABELS
-from ugr16ad.results import load_run
+from ugr16ad.results import load_run, run_dir
 
 
 def test_elbow_uses_curve_not_just_lowest_loss():
@@ -52,9 +53,22 @@ def test_tune_then_frozen_evaluation(tmp_path, monkeypatch):
     audit = json.loads((root / "reproducibility.json").read_text())
     assert audit["weights_identical"] and audit["scores_identical"]
     frozen = (root / "selected.json").read_text()
+    shared = tmp_path / "shared-results"
+    monkeypatch.setattr(experiments, "RESULTS_DIR", shared)
     experiments.evaluate_run(root, window=3)
     assert (root / "selected.json").read_text() == frozen
-    run = load_run(root / "evaluation-window3" / "mlp" / "seed0")
+    directory = run_dir("mlp", 0, root=shared)
+    run = load_run(directory)
+    assert (directory / run.meta["manifest"]).resolve() == (root / "manifest.json").resolve()
+    assert (root / "evaluation-window3" / "comparison.csv").is_file()
+    assert not (root / "evaluation-window3" / "mlp").exists()
+    for model, seeds in (("pca", [0]), ("mlp", [0, 1, 2])):
+        assert all((run_dir(model, seed, root=shared) / "scores.csv").exists() for seed in seeds)
+    before = (directory / "scores.csv").read_bytes()
+    with pytest.raises(FileExistsError, match="Run already exists"):
+        experiments.evaluate_run(root, window=4)
+    assert (directory / "scores.csv").read_bytes() == before
+    assert not (root / "evaluation-window4").exists()
     calib = run.scores[run.scores.part == "calib"].score
     assert len(calib) == 18
     assert np.isclose(run.meta["threshold"], np.quantile(calib, 0.99))

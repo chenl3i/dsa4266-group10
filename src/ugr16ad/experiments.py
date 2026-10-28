@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import importlib.metadata
 import json
+import os
 import platform
 import subprocess
 import time
@@ -26,9 +27,9 @@ from ugr16ad.evaluate import (
 )
 from ugr16ad.models.mlp import MLPAutoencoder
 from ugr16ad.models.pca import PCAScorer
-from ugr16ad.paths import UGR16_DIR
+from ugr16ad.paths import RESULTS_DIR, UGR16_DIR
 from ugr16ad.preprocess import Preprocessor
-from ugr16ad.results import save_run
+from ugr16ad.results import run_dir, save_run
 from ugr16ad.synthetic import SANITY_GRID, SANITY_RATE, SANITY_SEED, sanity_check
 from ugr16ad.train import score_autoencoder, set_seed, train_autoencoder
 from ugr16ad.windows import eligible_positions
@@ -194,13 +195,22 @@ def tune_run(root: Path, tune_fraction: float):
     print("Selected:", selected, "\nReproducibility:", audit, flush=True)
 
 
-def evaluate_run(root, window):
+def evaluate_run(root, window, *, results_root=None):
     configure_cpu()
     manifest = json.loads((root / "manifest.json").read_text())
     selected = json.loads((root / "selected.json").read_text())
     for name, digest in manifest["data_sha256"].items():
         if hashlib.sha256((UGR16_DIR / name).read_bytes()).hexdigest() != digest:
             raise ValueError("Training data changed since tuning")
+    results_root = RESULTS_DIR if results_root is None else Path(results_root)
+    targets = [
+        run_dir(name, seed, root=results_root)
+        for name, seeds in (("pca", (0,)), ("mlp", manifest["seeds"]))
+        for seed in seeds
+    ]
+    for target in targets:
+        if target.exists():
+            raise FileExistsError(f"Run already exists: {target}; choose a new --results-root")
     destination = root / f"evaluation-window{window}"
     destination.mkdir(exist_ok=False)
     write_json(
@@ -236,7 +246,7 @@ def evaluate_run(root, window):
     tuning_table = pd.read_csv(root / "tuning.csv")
     for name, seeds in (("pca", (0,)), ("mlp", manifest["seeds"])):
         for seed in seeds:
-            directory = destination / name / f"seed{seed}"
+            directory = run_dir(name, seed, root=results_root)
             if name == "pca":
                 model = joblib.load(root / "pca.joblib")
                 score = model.score
@@ -290,7 +300,7 @@ def evaluate_run(root, window):
                 metrics=metrics,
                 inference_seconds=timings,
                 sanity_check=synthetic,
-                manifest="../../../manifest.json",
+                manifest=os.path.relpath((root / "manifest.json").resolve(), directory.resolve()),
                 training=manifest["training"] if name == "mlp" else {"svd_solver": "full"},
                 train_seconds=float(
                     tuning_table[
@@ -351,7 +361,18 @@ def evaluate_run(root, window):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=("tune", "evaluate"))
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+        help="Experiment folder containing checkpoints and summary tables",
+    )
+    parser.add_argument(
+        "--results-root",
+        type=Path,
+        default=RESULTS_DIR,
+        help="Shared model/seed results root (evaluation only)",
+    )
     parser.add_argument("--tune-fraction", type=float, default=TUNE_FRACTION)
     parser.add_argument("--window", type=int)
     args = parser.parse_args()
@@ -362,7 +383,7 @@ def main():
     else:
         if args.window is None or args.window < 1:
             parser.error("evaluate requires the agreed --window (positive integer)")
-        evaluate_run(args.output, args.window)
+        evaluate_run(args.output, args.window, results_root=args.results_root)
 
 
 if __name__ == "__main__":
