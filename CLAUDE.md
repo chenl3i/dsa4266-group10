@@ -8,13 +8,24 @@ UGR'16 v2 network attack detection: PCA baseline vs MLP, LSTM and 1D-CNN autoenc
 scored by reconstruction error. `docs/DSA4266.md` is the final proposal and the source of
 truth for method decisions; `docs/eda-findings.md` holds the data evidence behind it.
 
-Week 1 starter files are in place: each pipeline module in `src/ugr16ad/` has its
-interface, a `NotImplementedError` body naming its owner, and tests marked `@todo`
-(strict xfail, from `tests/stubs.py`). Ownership and the open decisions are in
-`docs/team-plan.md`. Do not implement a member's stub unless asked; the stubs are
-their own work (`models/pca.py` is Chen Lei's week-2 stub, the rest are week 1).
-When a stub is implemented and its tests pass, they report XPASS and fail; delete the
-`@todo` marker on those tests.
+## Status and ownership
+
+Week 1 (the common pipeline) is implemented and merged into `working`. Week 2 is one
+model per member; ownership and schedule are in `docs/team-plan.md`. Do not write a
+member's model unless asked; it is their own work.
+
+- `models/pca.py` (Chen Lei) is the only remaining stub: `NotImplementedError` bodies
+  plus strict-xfail tests marked `@todo` (from `tests/stubs.py`). When a stub passes,
+  its tests report XPASS and fail; delete the `@todo` marker on those tests.
+- `models/mlp.py` (Chen Lei), `lstm.py` (Phone), `cnn.py` (Kesha) and
+  `windowed_mlp.py` (Vanessa) do not exist yet; each owner creates theirs.
+- Settled on 26 Oct: window length 20, `data.TUNE_FRACTION` 0.5, synthetic sanity
+  check `rate=0.01` with `(magnitude, n_features)` in `(2, 1), (2, 5), (4, 1), (4, 5)`
+  on preprocessed calib (`synthetic.SANITY_GRID`).
+- Still open, for the team to settle, not for Claude to pick: the comparison table
+  columns.
+
+Branches: `<name>/weekN` → PR into `working`; `main` is updated from `working`.
 
 ## Commands
 
@@ -53,15 +64,21 @@ the model, not the plumbing (load, preprocess, window, train/score, threshold, s
 2. `preprocess.Preprocessor` is fit on `fit` only, then transforms every part.
 3. `windows.eligible_positions` / `make_windows` build windows that never cross a
    segment boundary. All models, including single-minute ones, are scored on the same
-   eligible positions.
+   eligible positions. `make_windows` materialises a full copy (`m × length ×
+   features`), so cast to float32 before windowing the fit part.
 4. `train.train_autoencoder` / `score_autoencoder` are shared by all neural models; a
-   model owner only writes the `nn.Module`, which must return the same shape as its
-   input. `models/pca.py` returns scores in the same `(scores, feature_errors)` form.
+   model owner only writes the `nn.Module`. It takes float32 `(batch, features)` or
+   `(batch, length, features)` and must return the same shape (a CNN transposes to
+   channels-first internally and back). Training loss is MSE over the whole window,
+   with early stopping on `tune` loss and best weights restored; scores use only the
+   final minute. Call `train.set_seed` before building the model. `models/pca.py`
+   returns the same `(scores, feature_errors)` form.
 5. `evaluate` fits the frozen threshold on `calib` and computes threshold metrics
    (what an analyst would see) separately from ranking metrics (retrospective only).
-6. `results.save_run` writes `reports/results/<model>/seed<seed>/` (`scores.csv`,
-   `meta.json`, optional `.npy`). Charts and tables read only these files, never
-   model code.
+6. `results.save_run` writes `reports/results/<model>/seed<seed>/`: `scores.csv`
+   (`timestamp, part, score`; a window's timestamp is its final minute), `meta.json`
+   (at least `model`, `seed`, `threshold`), optional `latents.npy` /
+   `feature_errors.npy`. Charts and tables read only these files, never model code.
 
 `synthetic.inject_anomalies` is the validation sanity check, since validation has no
 labelled attacks.
