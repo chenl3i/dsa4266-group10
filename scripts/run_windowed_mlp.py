@@ -2,8 +2,9 @@
 
 Usage:
     python scripts/run_windowed_mlp.py --sweep
+    python scripts/run_windowed_mlp.py --sweep --lr 3e-4
     python scripts/run_windowed_mlp.py --latent-dim 32 --smoke
-    python scripts/run_windowed_mlp.py --latent-dim 32
+    python scripts/run_windowed_mlp.py --latent-dim 32 --seeds 1 2
 """
 
 from __future__ import annotations
@@ -42,7 +43,7 @@ TOLERANCE = 0.05
 HIDDEN_DIM = 64
 DROPOUT = 0.2
 NOISE_STD = 0.1  # in fit-part standard deviations, applied during training only
-LR = 1e-4
+LR = 1e-4  # default; override with --lr
 
 
 def prepare() -> tuple[dict, dict]:
@@ -73,7 +74,7 @@ def window_part(parts: dict, features: dict, name: str) -> dict:
     }
 
 
-def build_and_train(fit: dict, tune: dict, latent_dim: int, seed: int):
+def build_and_train(fit: dict, tune: dict, latent_dim: int, seed: int, lr: float):
     """One place that builds and trains the model, so the sweep and final runs agree."""
     set_seed(seed)  # before building the model, so initial weights are seeded too
     model = WindowedMLPAutoencoder(
@@ -84,30 +85,34 @@ def build_and_train(fit: dict, tune: dict, latent_dim: int, seed: int):
         dropout=DROPOUT,
         noise_std=NOISE_STD,
     )
-    return train_autoencoder(model, fit["x"], tune["x"], lr=LR, seed=seed)
+    # train_autoencoder prints nothing per epoch, so say that a long, quiet step began.
+    print(f"training latent_dim={latent_dim} seed={seed} lr={lr:g} (quiet until it finishes)...")
+    return train_autoencoder(model, fit["x"], tune["x"], lr=lr, seed=seed)
 
 
-def sweep(parts: dict, features: dict) -> None:
+def sweep(parts: dict, features: dict, lr: float) -> None:
     """Seed 0, tune loss only. This never windows or scores calib or test."""
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     fit = window_part(parts, features, "fit")
     tune = window_part(parts, features, "tune")
     rows = []
     for latent_dim in LATENT_DIMS:
-        result = build_and_train(fit, tune, latent_dim, seed=0)
-        curve = RESULTS_DIR / f"{MODEL_NAME}_loss_latent{latent_dim}.csv"
+        result = build_and_train(fit, tune, latent_dim, seed=0, lr=lr)
+        curve = RESULTS_DIR / f"{MODEL_NAME}_loss_latent{latent_dim}_lr{lr:g}.csv"
         result.history.to_csv(curve, index=False)
         rows.append(
             {
                 "latent_dim": latent_dim,
+                "lr": lr,
                 "best_tune_loss": result.history["tune_loss"].min(),
                 "best_epoch": result.best_epoch,
                 "epochs_run": len(result.history),
                 "seconds": round(result.seconds, 1),
             }
         )
+        print(rows[-1])
     table = pd.DataFrame(rows)
-    table.to_csv(RESULTS_DIR / f"{MODEL_NAME}_sweep.csv", index=False)
+    table.to_csv(RESULTS_DIR / f"{MODEL_NAME}_sweep_lr{lr:g}.csv", index=False)
     print(table.to_string(index=False))
     best = table["best_tune_loss"].min()
     within = table[table["best_tune_loss"] <= best * (1 + TOLERANCE)]
@@ -115,9 +120,9 @@ def sweep(parts: dict, features: dict) -> None:
 
 
 def run_seed(
-    parts: dict, features: dict, fit: dict, tune: dict, seed: int, latent_dim: int
+    parts: dict, features: dict, fit: dict, tune: dict, seed: int, latent_dim: int, lr: float
 ) -> None:
-    result = build_and_train(fit, tune, latent_dim, seed)
+    result = build_and_train(fit, tune, latent_dim, seed, lr)
 
     # Calib and test are windowed only now, so they are not in memory during training,
     # and they are freed when this function returns.
@@ -145,7 +150,7 @@ def run_seed(
         "latent_dim": latent_dim,
         "dropout": DROPOUT,
         "noise_std": NOISE_STD,
-        "lr": LR,
+        "lr": lr,
         "best_epoch": result.best_epoch,
         "epochs_run": len(result.history),
         "train_seconds": result.seconds,
@@ -190,13 +195,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sweep", action="store_true", help="tune-loss sweep; no test scoring")
     parser.add_argument("--latent-dim", type=int, help="the setting chosen by the rule")
+    parser.add_argument("--lr", type=float, default=LR, help=f"learning rate (default {LR:g})")
     parser.add_argument("--smoke", action="store_true", help="run seed 0 only")
     parser.add_argument("--seeds", type=int, nargs="+", help="seeds to run, e.g. --seeds 1 2")
     args = parser.parse_args()
 
     parts, features = prepare()
     if args.sweep:
-        sweep(parts, features)
+        sweep(parts, features, args.lr)
     else:
         if not args.latent_dim:
             parser.error("run --sweep first, then pass --latent-dim")
@@ -204,4 +210,4 @@ if __name__ == "__main__":
         fit = window_part(parts, features, "fit")
         tune = window_part(parts, features, "tune")
         for seed in seeds:
-            run_seed(parts, features, fit, tune, seed, args.latent_dim)
+            run_seed(parts, features, fit, tune, seed, args.latent_dim, args.lr)
