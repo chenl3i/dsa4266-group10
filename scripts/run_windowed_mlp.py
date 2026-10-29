@@ -31,12 +31,18 @@ from ugr16ad.windows import make_windows
 
 MODEL_NAME = "windowed_mlp"
 WINDOW_LENGTH = 20  # agreed by the group
-HIDDEN_DIM = 128
 SEEDS = (0, 1, 2)
 LATENT_DIMS = (8, 16, 32)
 # Selection rule, fixed before any test result was seen: the smallest latent_dim
 # whose best tune loss is within this fraction of the lowest.
 TOLERANCE = 0.05
+# Regularisation, a response to review: the first version (hidden 128, no dropout,
+# no noise, lr 1e-3) had its lowest tune loss at epoch 1 for latent 8 and 16. These
+# are fixed together and judged on tune loss only, never on test results.
+HIDDEN_DIM = 64
+DROPOUT = 0.2
+NOISE_STD = 0.1  # in fit-part standard deviations, applied during training only
+LR = 1e-4
 
 
 def prepare() -> tuple[dict, dict]:
@@ -67,17 +73,28 @@ def window_part(parts: dict, features: dict, name: str) -> dict:
     }
 
 
+def build_and_train(fit: dict, tune: dict, latent_dim: int, seed: int):
+    """One place that builds and trains the model, so the sweep and final runs agree."""
+    set_seed(seed)  # before building the model, so initial weights are seeded too
+    model = WindowedMLPAutoencoder(
+        WINDOW_LENGTH,
+        fit["x"].shape[-1],
+        HIDDEN_DIM,
+        latent_dim,
+        dropout=DROPOUT,
+        noise_std=NOISE_STD,
+    )
+    return train_autoencoder(model, fit["x"], tune["x"], lr=LR, seed=seed)
+
+
 def sweep(parts: dict, features: dict) -> None:
     """Seed 0, tune loss only. This never windows or scores calib or test."""
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     fit = window_part(parts, features, "fit")
     tune = window_part(parts, features, "tune")
-    n_features = fit["x"].shape[-1]
     rows = []
     for latent_dim in LATENT_DIMS:
-        set_seed(0)
-        model = WindowedMLPAutoencoder(WINDOW_LENGTH, n_features, HIDDEN_DIM, latent_dim)
-        result = train_autoencoder(model, fit["x"], tune["x"], seed=0)
+        result = build_and_train(fit, tune, latent_dim, seed=0)
         curve = RESULTS_DIR / f"{MODEL_NAME}_loss_latent{latent_dim}.csv"
         result.history.to_csv(curve, index=False)
         rows.append(
@@ -85,6 +102,7 @@ def sweep(parts: dict, features: dict) -> None:
                 "latent_dim": latent_dim,
                 "best_tune_loss": result.history["tune_loss"].min(),
                 "best_epoch": result.best_epoch,
+                "epochs_run": len(result.history),
                 "seconds": round(result.seconds, 1),
             }
         )
@@ -99,10 +117,7 @@ def sweep(parts: dict, features: dict) -> None:
 def run_seed(
     parts: dict, features: dict, fit: dict, tune: dict, seed: int, latent_dim: int
 ) -> None:
-    n_features = fit["x"].shape[-1]
-    set_seed(seed)  # before building the model, so initial weights are seeded too
-    model = WindowedMLPAutoencoder(WINDOW_LENGTH, n_features, HIDDEN_DIM, latent_dim)
-    result = train_autoencoder(model, fit["x"], tune["x"], seed=seed)
+    result = build_and_train(fit, tune, latent_dim, seed)
 
     # Calib and test are windowed only now, so they are not in memory during training,
     # and they are freed when this function returns.
@@ -128,7 +143,11 @@ def run_seed(
         "window_length": WINDOW_LENGTH,
         "hidden_dim": HIDDEN_DIM,
         "latent_dim": latent_dim,
+        "dropout": DROPOUT,
+        "noise_std": NOISE_STD,
+        "lr": LR,
         "best_epoch": result.best_epoch,
+        "epochs_run": len(result.history),
         "train_seconds": result.seconds,
         "inference_seconds": inference_seconds,
         "n_parameters": sum(p.numel() for p in result.model.parameters()),
@@ -162,6 +181,7 @@ def run_seed(
     # The loss curve of every reported seed, next to its scores.
     result.history.to_csv(run_dir(MODEL_NAME, seed) / "history.csv", index=False)
     print(f"\nseed {seed}: calibration alert rate {calib_alert_rate:.4f}")
+    print(f"  best epoch {result.best_epoch} of {len(result.history)}")
     print(f"  test: {meta['threshold_metrics']}")
     print(f"  sanity check: {meta['sanity_check']}")
 
@@ -171,6 +191,7 @@ if __name__ == "__main__":
     parser.add_argument("--sweep", action="store_true", help="tune-loss sweep; no test scoring")
     parser.add_argument("--latent-dim", type=int, help="the setting chosen by the rule")
     parser.add_argument("--smoke", action="store_true", help="run seed 0 only")
+    parser.add_argument("--seeds", type=int, nargs="+", help="seeds to run, e.g. --seeds 1 2")
     args = parser.parse_args()
 
     parts, features = prepare()
@@ -179,7 +200,8 @@ if __name__ == "__main__":
     else:
         if not args.latent_dim:
             parser.error("run --sweep first, then pass --latent-dim")
+        seeds = args.seeds or (SEEDS[:1] if args.smoke else SEEDS)
         fit = window_part(parts, features, "fit")
         tune = window_part(parts, features, "tune")
-        for seed in SEEDS[:1] if args.smoke else SEEDS:
+        for seed in seeds:
             run_seed(parts, features, fit, tune, seed, args.latent_dim)

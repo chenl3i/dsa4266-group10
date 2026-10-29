@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 
 from ugr16ad.data import make_part, read_split
@@ -23,37 +25,47 @@ METRICS = [
 ]
 
 
-def main() -> None:
+def load_runs(results_dir: Path = RESULTS_DIR) -> dict:
+    """``{(model, seed): (test scores indexed by minute, meta)}`` for every saved run."""
     runs = {}
-    for seed_dir in sorted(RESULTS_DIR.glob("*/seed*")):
+    for seed_dir in sorted(results_dir.glob("*/seed*")):
         if not (seed_dir / "meta.json").exists():
             continue
         run = load_run(seed_dir)
         test = run.scores[run.scores["part"] == "test"].set_index("timestamp")["score"]
         runs[(run.meta["model"], run.meta["seed"])] = (test, run.meta)
     if not runs:
-        raise SystemExit(f"No runs found under {RESULTS_DIR}")
+        raise SystemExit(f"No runs found under {results_dir}")
+    return runs
 
-    # Every model must be scored on the same eligible minutes. A mismatch means a
-    # run used a different window length or part boundary, so stop instead of
-    # silently shrinking the evaluation set.
+
+def common_minutes(runs: dict) -> pd.DatetimeIndex:
+    """The test minutes every run scored. Stops if the runs disagree.
+
+    Every model must be scored on the same eligible minutes. A mismatch means a
+    run used a different window length or part boundary, so stop instead of
+    silently shrinking the evaluation set.
+    """
     indices = [test.index for test, _ in runs.values()]
     common = indices[0]
-    mismatched = [key for key, idx in zip(runs, indices, strict=True) if not idx.equals(common)]
+    mismatched = [key for key, index in zip(runs, indices, strict=True) if not index.equals(common)]
     if mismatched:
         raise SystemExit(f"Runs scored on different test minutes: {mismatched}")
-    print(f"{len(runs)} runs, all scored on the same {len(common)} test minutes")
+    return common
 
-    X, Y = read_split("test")
-    test_part = make_part(X, Y)
-    labels = test_part.labels.loc[common]
-    y_true = test_part.y.loc[common].to_numpy()  # one definition of "attack", in make_part
-    print(f"{int(y_true.sum())} attack minutes among them")
 
+def build_tables(
+    runs: dict, labels: pd.DataFrame, y_true
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Return ``(per_seed, summary, per_category)``.
+
+    ``labels`` is indexed by the common test minutes. Each run is judged at its own
+    frozen threshold from ``meta["threshold"]``, which is never refit here.
+    """
     rows, category_rows = [], []
     for (model, seed), (test, meta) in runs.items():
-        scores = test.loc[common].to_numpy()
-        threshold = meta["threshold"]  # frozen on calibration; never refit here
+        scores = test.loc[labels.index].to_numpy()
+        threshold = meta["threshold"]
         row = {"model": model, "seed": seed}
         row |= threshold_metrics(y_true, scores, threshold)
         row |= ranking_metrics(y_true, scores)
@@ -70,10 +82,24 @@ def main() -> None:
     per_category = (
         pd.concat(category_rows).groupby(["model", "category"])[["n_positive", "recall"]].mean()
     )
+    return per_seed, summary, per_category
 
-    per_seed.to_csv(RESULTS_DIR / "comparison_per_seed.csv", index=False)
-    summary.to_csv(RESULTS_DIR / "comparison_summary.csv")
-    per_category.to_csv(RESULTS_DIR / "comparison_per_category.csv")
+
+def main(results_dir: Path = RESULTS_DIR) -> None:
+    runs = load_runs(results_dir)
+    common = common_minutes(runs)
+    print(f"{len(runs)} runs, all scored on the same {len(common)} test minutes")
+
+    X, Y = read_split("test")
+    test_part = make_part(X, Y)
+    labels = test_part.labels.loc[common]
+    y_true = test_part.y.loc[common].to_numpy()  # one definition of "attack", in make_part
+    print(f"{int(y_true.sum())} attack minutes among them")
+
+    per_seed, summary, per_category = build_tables(runs, labels, y_true)
+    per_seed.to_csv(results_dir / "comparison_per_seed.csv", index=False)
+    summary.to_csv(results_dir / "comparison_summary.csv")
+    per_category.to_csv(results_dir / "comparison_per_category.csv")
     print(summary.round(3).T.to_string())
     print()
     print(per_category.round(3).to_string())

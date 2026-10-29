@@ -72,3 +72,37 @@ def test_embed_windows_is_row_aligned_with_the_scores():
     model = make_model()
     scores, _ = score_autoencoder(model, data)
     assert embed_windows(model, data).shape == (len(scores), 4)
+
+
+def test_regularisers_are_off_by_default():
+    model = WindowedMLPAutoencoder(window_length=W, n_features=F)
+    model.train()
+    x = torch.randn(4, W, F)
+    assert torch.equal(model(x), model(x))
+
+
+def test_noise_and_dropout_only_act_in_training_mode():
+    torch.manual_seed(0)
+    model = WindowedMLPAutoencoder(W, F, hidden_dim=32, latent_dim=4, dropout=0.5, noise_std=0.5)
+    x = torch.randn(4, W, F)
+    model.eval()
+    assert torch.equal(model(x), model(x))
+    model.train()
+    assert not torch.equal(model(x), model(x))
+
+
+def test_rejects_invalid_dropout_and_noise():
+    with pytest.raises(ValueError):
+        WindowedMLPAutoencoder(W, F, dropout=1.0)
+    with pytest.raises(ValueError):
+        WindowedMLPAutoencoder(W, F, noise_std=-0.1)
+
+
+def test_regularised_model_still_trains_against_the_clean_input():
+    data = low_rank_windows()
+    set_seed(0)
+    model = WindowedMLPAutoencoder(W, F, hidden_dim=32, latent_dim=4, dropout=0.1, noise_std=0.1)
+    result = train_autoencoder(
+        model, data[:96], data[96:], epochs=80, batch_size=16, lr=1e-2, patience=100
+    )
+    assert result.history["tune_loss"].min() < result.history["tune_loss"].iloc[0]
