@@ -1,5 +1,7 @@
 import numpy as np
+import pytest
 
+from ugr16ad.preprocess import Preprocessor
 from ugr16ad.windows import eligible_positions, make_windows
 
 SEGMENT = np.array([0, 0, 0, 0, 1, 1, 1])
@@ -51,3 +53,26 @@ def test_window_longer_than_any_segment_gives_empty_result():
     assert windows.shape == (0, 5, 2)
     assert positions.shape == (0,)
     assert positions.dtype == np.int64
+
+
+@pytest.mark.slow
+def test_real_windows_respect_gaps_and_part_edges(real_parts):
+    length = 20
+    pre = Preprocessor().fit(real_parts["fit"].X)
+    for part in real_parts.values():
+        transformed = pre.transform(part.X)
+        segment = part.segment.to_numpy()
+        windows, positions = make_windows(transformed, segment, length)
+
+        assert (segment[positions - length + 1] == segment[positions]).all()
+        np.testing.assert_array_equal(windows[:, -1], transformed[positions])
+
+        # Each part is windowed on its own, so no window reaches back across the DST
+        # hour, the 1 to 6 Apr outage or a part edge: the first eligible position of
+        # every long-enough segment is its start + 19.
+        starts = np.flatnonzero(np.r_[True, segment[1:] != segment[:-1]])
+        sizes = np.diff(np.r_[starts, len(segment)])
+        long_enough = sizes >= length
+        assert set((starts[long_enough] + length - 1).tolist()) <= set(positions.tolist())
+        assert not set((starts[long_enough] + length - 2).tolist()) & set(positions.tolist())
+        assert len(positions) == int(np.maximum(0, sizes - length + 1).sum())

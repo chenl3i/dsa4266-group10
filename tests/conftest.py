@@ -48,3 +48,11 @@ def raw_dir(tmp_path: Path) -> Path:
         X.to_csv(tmp_path / f"UGR16v2.X{split}.csv", index=False)
         Y.to_csv(tmp_path / f"UGR16v2.Y{split}.csv", index=False)
     return tmp_path
+
+
+@pytest.fixture(scope="session")
+def real_parts():
+    """The real dataset, loaded once for the slow pipeline checks."""
+    from ugr16ad.data import load_dataset
+
+    return load_dataset()

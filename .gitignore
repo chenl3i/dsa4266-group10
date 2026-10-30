@@ -17,6 +17,17 @@ data/processed/*
 # Generated outputs
 reports/figures/*
 reports/results/*
+reports/runs-*/
+# LaTeX build output next to reports/report/main.tex
+reports/report/*.aux
+reports/report/*.bbl
+reports/report/*.blg
+reports/report/*.log
+reports/report/*.out
+reports/report/*.pdf
+reports/report/*.synctex.gz
+reports/report/*.fdb_latexmk
+reports/report/*.fls
 !reports/**/.gitkeep
 mlruns/
 *.joblib
