@@ -99,6 +99,12 @@ def test_too_long_window_raises(parts, tmp_path):
         run_lstm.run(parts, seed=0, out_root=tmp_path, **{**SETTINGS, "window_length": 40})
 
 
+def test_meta_has_the_comparison_table_keys(run_path):
+    meta = load_run(run_path).meta
+    for key in ("threshold", "n_parameters", "train_seconds", "inference_seconds"):
+        assert meta[key] is not None
+
+
 def test_meta_records_settings_and_history(run_path):
     run = load_run(run_path)
     meta = run.meta

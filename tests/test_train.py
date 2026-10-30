@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from ugr16ad.train import score_autoencoder, set_seed, train_autoencoder
+from ugr16ad.train import encode_autoencoder, score_autoencoder, set_seed, train_autoencoder
 
 
 class TinyAE(nn.Module):
@@ -12,6 +12,9 @@ class TinyAE(nn.Module):
 
     def forward(self, x):
         return self.net(x)
+
+    def encode(self, x):
+        return self.net[0](x)
 
 
 class Zeros(nn.Module):
@@ -199,3 +202,14 @@ def test_score_windows_batches_match_unbatched():
     np.testing.assert_allclose(a[0], b[0], rtol=1e-5, atol=1e-6)
     np.testing.assert_allclose(a[1], b[1], rtol=1e-5, atol=1e-6)
     assert a[1].shape == (10, 4)
+
+
+def test_encode_is_row_aligned_with_the_scores():
+    train, _ = _data()
+    model = TinyAE()
+    scores, _ = score_autoencoder(model, train)
+    latents = encode_autoencoder(model, train, batch_size=64)
+    assert latents.shape == (len(scores), 2)
+    np.testing.assert_allclose(
+        latents, encode_autoencoder(model, train, batch_size=1), rtol=1e-5, atol=1e-6
+    )

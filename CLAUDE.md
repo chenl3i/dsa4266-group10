@@ -10,15 +10,18 @@ truth for method decisions; `docs/eda-findings.md` holds the data evidence behin
 
 ## Status and ownership
 
-Week 1 (the common pipeline) is implemented and merged into `working`. Week 2 is one
-model per member; ownership and schedule are in `docs/team-plan.md`. Do not write a
-member's model unless asked; it is their own work.
+Weeks 1 and 2 (the common pipeline and all five models) are merged into `working`.
+Week 3 is experiments and report sections; ownership and schedule are in
+`docs/team-plan.md`. Do not write a member's model unless asked; it is their own work.
 
-- `models/pca.py` (Chen Lei) is the only remaining stub: `NotImplementedError` bodies
-  plus strict-xfail tests marked `@todo` (from `tests/stubs.py`). When a stub passes,
-  its tests report XPASS and fail; delete the `@todo` marker on those tests.
-- `models/mlp.py` (Chen Lei), `lstm.py` (Phone), `cnn.py` (Kesha) and
-  `windowed_mlp.py` (Vanessa) do not exist yet; each owner creates theirs.
+- Models and their run entry points: `pca.py` and `mlp.py` (Chen Lei,
+  `python -m ugr16ad.experiments`), `lstm.py` (Phone, `scripts/run_lstm.py`), `cnn.py`
+  (Kesha, `scripts/run_cnn.py`), `windowed_mlp.py` (Vanessa,
+  `scripts/run_windowed_mlp.py`). `scripts/make_comparison_table.py` reads them all.
+- Shared names: model constructors take `n_features` first; `meta.json` uses
+  `n_parameters`, `train_seconds`, `inference_seconds` (calib + test scoring),
+  `calib_alert_rate`, `window_length`, `latent_dim`, `test_metrics` and
+  `per_category_recall`. The comparison table reads these keys, so keep them.
 - Settled on 26 Oct: window length 20, `data.TUNE_FRACTION` 0.5, synthetic sanity
   check `rate=0.01` with `(magnitude, n_features)` in `(2, 1), (2, 5), (4, 1), (4, 5)`
   on preprocessed calib (`synthetic.SANITY_GRID`).

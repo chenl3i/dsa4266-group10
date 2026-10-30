@@ -3,8 +3,8 @@
 Usage:
     python scripts/run_windowed_mlp.py --sweep
     python scripts/run_windowed_mlp.py --sweep --lr 3e-4
-    python scripts/run_windowed_mlp.py --latent-dim 32 --smoke
-    python scripts/run_windowed_mlp.py --latent-dim 32 --seeds 1 2
+    python scripts/run_windowed_mlp.py --latent-dim 16 --smoke
+    python scripts/run_windowed_mlp.py --latent-dim 16 --seed 1 2
 """
 
 from __future__ import annotations
@@ -22,12 +22,17 @@ from ugr16ad.evaluate import (
     ranking_metrics,
     threshold_metrics,
 )
-from ugr16ad.models.windowed_mlp import WindowedMLPAutoencoder, embed_windows
+from ugr16ad.models.windowed_mlp import WindowedMLPAutoencoder
 from ugr16ad.paths import RESULTS_DIR
 from ugr16ad.preprocess import Preprocessor
 from ugr16ad.results import run_dir, save_run
 from ugr16ad.synthetic import sanity_check
-from ugr16ad.train import score_autoencoder, set_seed, train_autoencoder
+from ugr16ad.train import (
+    encode_autoencoder,
+    score_autoencoder,
+    set_seed,
+    train_autoencoder,
+)
 from ugr16ad.windows import make_windows
 
 MODEL_NAME = "windowed_mlp"
@@ -78,8 +83,8 @@ def build_and_train(fit: dict, tune: dict, latent_dim: int, seed: int, lr: float
     """One place that builds and trains the model, so the sweep and final runs agree."""
     set_seed(seed)  # before building the model, so initial weights are seeded too
     model = WindowedMLPAutoencoder(
-        WINDOW_LENGTH,
         fit["x"].shape[-1],
+        WINDOW_LENGTH,
         HIDDEN_DIM,
         latent_dim,
         dropout=DROPOUT,
@@ -157,9 +162,13 @@ def run_seed(
         "inference_seconds": inference_seconds,
         "n_parameters": sum(p.numel() for p in result.model.parameters()),
         "calib_alert_rate": calib_alert_rate,
-        "threshold_metrics": threshold_metrics(test["y"], test_scores, threshold),
-        "ranking_metrics": ranking_metrics(test["y"], test_scores),
-        "per_category": per_category_recall(test["labels"], alerts).to_dict(orient="index"),
+        "test_metrics": {
+            **threshold_metrics(test["y"], test_scores, threshold),
+            **ranking_metrics(test["y"], test_scores),
+        },
+        "per_category_recall": per_category_recall(test["labels"], alerts)
+        .reset_index(names="category")
+        .to_dict("records"),
     }
     # The agreed check: calibration block, rate and grid from synthetic.py.
     # features["calib"] is the same array as prep.transform(parts["calib"].X).
@@ -179,7 +188,7 @@ def run_seed(
         scores=scores,
         meta=meta,
         latents=np.concatenate(
-            [embed_windows(result.model, calib["x"]), embed_windows(result.model, test["x"])]
+            [encode_autoencoder(result.model, part["x"]) for part in (calib, test)]
         ),
         feature_errors=np.concatenate([calib_errors, test_errors]),
     )
@@ -187,7 +196,7 @@ def run_seed(
     result.history.to_csv(run_dir(MODEL_NAME, seed) / "history.csv", index=False)
     print(f"\nseed {seed}: calibration alert rate {calib_alert_rate:.4f}")
     print(f"  best epoch {result.best_epoch} of {len(result.history)}")
-    print(f"  test: {meta['threshold_metrics']}")
+    print(f"  test: {meta['test_metrics']}")
     print(f"  sanity check: {meta['sanity_check']}")
 
 
@@ -197,7 +206,7 @@ if __name__ == "__main__":
     parser.add_argument("--latent-dim", type=int, help="the setting chosen by the rule")
     parser.add_argument("--lr", type=float, default=LR, help=f"learning rate (default {LR:g})")
     parser.add_argument("--smoke", action="store_true", help="run seed 0 only")
-    parser.add_argument("--seeds", type=int, nargs="+", help="seeds to run, e.g. --seeds 1 2")
+    parser.add_argument("--seed", type=int, nargs="+", help="seeds to run, e.g. --seed 1 2")
     args = parser.parse_args()
 
     parts, features = prepare()
@@ -206,7 +215,7 @@ if __name__ == "__main__":
     else:
         if not args.latent_dim:
             parser.error("run --sweep first, then pass --latent-dim")
-        seeds = args.seeds or (SEEDS[:1] if args.smoke else SEEDS)
+        seeds = args.seed or (SEEDS[:1] if args.smoke else SEEDS)
         fit = window_part(parts, features, "fit")
         tune = window_part(parts, features, "tune")
         for seed in seeds:

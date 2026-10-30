@@ -190,3 +190,23 @@ def score_autoencoder(
             errors.append((reconstruction - batch).square().cpu().numpy())
     feature_errors = np.concatenate(errors, axis=0)
     return feature_errors.mean(axis=1), feature_errors
+
+
+def encode_autoencoder(
+    model: nn.Module, x: np.ndarray, *, batch_size: int = 1024, device: str = "cpu"
+) -> np.ndarray:
+    """Return ``model.encode`` for each row or window of ``x``, for ``save_run(latents=...)``.
+
+    Batched like ``score_autoencoder`` so a whole part never sits on the device at
+    once, and row-aligned with its scores.
+    """
+    if batch_size < 1:
+        raise ValueError("batch_size must be positive")
+    model.to(device)
+    model.eval()
+    with torch.no_grad():
+        latents = [
+            model.encode(batch.to(device)).cpu().numpy()
+            for batch in _input_tensor(x).split(batch_size)
+        ]
+    return np.concatenate(latents, axis=0)

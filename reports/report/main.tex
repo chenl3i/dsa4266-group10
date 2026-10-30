@@ -124,7 +124,7 @@ Because validation has no labelled attacks, we check that each trained model rea
 \textbf{Recurrent autoencoder.} An LSTM autoencoder reconstructs windows of consecutive minutes to investigate whether temporal dependencies improve detection. The encoder's final hidden state is mapped to a 16-dimensional latent vector, which is repeated once per minute and decoded by a second recurrent layer (64 hidden units in both). The single-vector bottleneck prevents the model from copying the window through. A GRU variant uses the same architecture with only the recurrent cell changed.
 
 \textbf{1D convolutional autoencoder.} A 1D-CNN autoencoder is trained on the same windows to capture local patterns over time. Its performance is compared with the recurrent model using the same scoring method and a similar tuning budget.
-% TODO (Kesha, PR #6 not yet merged into working): architecture and settings.
+% TODO (Kesha, PR #6 merged): architecture and settings.
 
 \textbf{Windowed MLP autoencoder.} As a control for the benefit of temporal structure, a feedforward autoencoder sees the same 20-minute windows flattened into a single vector of $20 \times 133$ values, with one 64-unit hidden layer on each side of the bottleneck. It has no recurrence or convolution, so any gain of the LSTM or CNN over it reflects how they use the order of minutes rather than simply having more minutes as input. A first version overfitted, with its lowest tuning loss at the first epoch, so we added dropout (0.2) on the encoder's hidden layer, Gaussian input noise (0.1 standard deviations, making it a denoising autoencoder) and a lower learning rate ($10^{-4}$). These settings were fixed together and judged on tuning loss only.
 

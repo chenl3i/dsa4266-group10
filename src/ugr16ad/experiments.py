@@ -291,14 +291,19 @@ def evaluate_run(root, window, *, results_root=None):
                 return score(values[pos])[0], pos
 
             synthetic = sanity_check(calib_X, score_calib)
+            categories = per_category_recall(
+                parts["test"].labels.iloc[positions["test"]], arrays["test"] > threshold
+            )
             meta = dict(
                 model=name,
                 seed=seed,
                 threshold=threshold,
-                dimension=selected[name],
-                window=window,
-                metrics=metrics,
-                inference_seconds=timings,
+                latent_dim=selected[name],
+                window_length=window,
+                test_metrics=metrics,
+                per_category_recall=categories.reset_index(names="category").to_dict("records"),
+                # calib + test scoring, the same span the other run scripts time.
+                inference_seconds=timings["calib"] + timings["test"],
                 sanity_check=synthetic,
                 manifest=os.path.relpath((root / "manifest.json").resolve(), directory.resolve()),
                 training=manifest["training"] if name == "mlp" else {"svd_solver": "full"},
@@ -309,11 +314,9 @@ def evaluate_run(root, window, *, results_root=None):
                         & (tuning_table.seed == seed)
                     ].train_seconds.iloc[0]
                 ),
-                parameter_count=sum(p.numel() for p in model.parameters())
-                if name == "mlp"
-                else None,
+                n_parameters=sum(p.numel() for p in model.parameters()) if name == "mlp" else None,
                 scored_rows={key: len(value) for key, value in inputs.items()},
-                calibration_alert_rate=float((arrays["calib"] > threshold).mean()),
+                calib_alert_rate=float((arrays["calib"] > threshold).mean()),
             )
             save_run(
                 directory,
@@ -321,9 +324,7 @@ def evaluate_run(root, window, *, results_root=None):
                 meta=meta,
                 feature_errors=np.concatenate(errors),
             )
-            per_category_recall(
-                parts["test"].labels.iloc[positions["test"]], arrays["test"] > threshold
-            ).to_csv(directory / "categories.csv")
+            categories.to_csv(directory / "categories.csv")
             pd.DataFrame(synthetic).to_csv(directory / "sanity_check.csv", index=False)
             rows.append(
                 dict(
@@ -331,7 +332,7 @@ def evaluate_run(root, window, *, results_root=None):
                     seed=seed,
                     threshold=threshold,
                     train_seconds=meta["train_seconds"],
-                    inference_seconds=timings["test"],
+                    inference_seconds=meta["inference_seconds"],
                     **metrics,
                 )
             )
