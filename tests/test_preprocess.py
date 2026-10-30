@@ -65,3 +65,23 @@ def test_transform_rejects_missing_column_even_with_extra_columns_present():
     swapped = FIT.drop(columns="a").assign(z=[1, 2, 3, 4])
     with pytest.raises(ValueError):
         pre.transform(swapped)
+
+
+@pytest.mark.slow
+def test_real_preprocessing_is_fit_on_fit_only(real_parts):
+    pre = Preprocessor().fit(real_parts["fit"].X)
+    assert len(pre.feature_names_) == 133
+    fitted = (list(pre.feature_names_), pre.mean_.copy(), pre.scale_.copy())
+
+    for name in ("tune", "calib", "test"):
+        pre.transform(real_parts[name].X)
+    assert pre.feature_names_ == fitted[0]
+    np.testing.assert_array_equal(pre.mean_, fitted[1])
+    np.testing.assert_array_equal(pre.scale_, fitted[2])
+
+    Z = pre.transform(real_parts["fit"].X)
+    np.testing.assert_allclose(Z.mean(axis=0), 0, atol=1e-3)
+    np.testing.assert_allclose(Z.std(axis=0), 1, atol=1e-3)
+    # Calendar features would learn the test injection schedule.
+    calendar = {"row", "hour", "weekday", "day", "dayofweek"}
+    assert not calendar & {name.lower() for name in pre.feature_names_}
