@@ -8,6 +8,7 @@ evaluation and charts.
 from __future__ import annotations
 
 import numpy as np
+from sklearn.decomposition import PCA
 
 
 class PCAScorer:
@@ -21,23 +22,32 @@ class PCAScorer:
     explained_variance_ratio_: np.ndarray
 
     def __init__(self, n_components: int) -> None:
-        raise NotImplementedError("Chen Lei, week 2: see docs/team-plan.md")
+        if isinstance(n_components, bool) or not isinstance(n_components, (int, np.integer)):
+            raise ValueError("n_components must be a positive integer")
+        if n_components < 1:
+            raise ValueError("n_components must be a positive integer")
+        self.pca = PCA(n_components=n_components, svd_solver="full", whiten=False)
 
+    # Fit on the fit part's preprocessed rows. Returns self
     def fit(self, X: np.ndarray) -> PCAScorer:
-        """Fit on the fit part's preprocessed rows. Returns self."""
-        raise NotImplementedError("Chen Lei, week 2: see docs/team-plan.md")
+        self.pca.fit(X)
+        self.explained_variance_ratio_ = self.pca.explained_variance_ratio_.copy()
+        return self
 
+    # Return ``(scores, feature_errors)`` for each row of ``X``
     def score(self, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Return ``(scores, feature_errors)`` for each row of ``X``.
 
         ``feature_errors`` is the squared error of ``inverse_transform(transform(X))``
         per feature, shape ``(rows, features)``; ``scores`` is its per-row mean.
         """
-        raise NotImplementedError("Chen Lei, week 2: see docs/team-plan.md")
+        reconstruction = self.pca.inverse_transform(self.transform(X))
+        feature_errors = (np.asarray(X) - reconstruction) ** 2
+        return feature_errors.mean(axis=1), feature_errors
 
     def transform(self, X: np.ndarray) -> np.ndarray:
         """Component coordinates ``(rows, n_components)``, for the latent-space plots.
 
         A plain centred projection onto the components (not whitened).
         """
-        raise NotImplementedError("Chen Lei, week 2: see docs/team-plan.md")
+        return self.pca.transform(X)
