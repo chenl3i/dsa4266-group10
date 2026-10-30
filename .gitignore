@@ -17,6 +17,7 @@ data/processed/*
 # Generated outputs
 reports/figures/*
 reports/results/*
+reports/runs-*/
 !reports/**/.gitkeep
 mlruns/
 *.joblib
