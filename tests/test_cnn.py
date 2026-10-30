@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import torch
 
-from ugr16ad.models.cnn_autoencoder import CNNAutoencoder
+from ugr16ad.models.cnn import CNNAutoencoder
 from ugr16ad.train import score_autoencoder
 
 
@@ -36,3 +36,19 @@ def test_cnn_works_with_shared_final_minute_scoring():
     assert scores.shape == (4,)
     assert errors.shape == (4, 3)
     np.testing.assert_allclose(scores, errors.mean(axis=1))
+
+
+def test_cnn_final_minute_depends_on_every_minute_of_the_window():
+    torch.manual_seed(0)
+    model = CNNAutoencoder(n_features=3)
+    windows = torch.randn(1, 20, 3, requires_grad=True)
+
+    model(windows)[0, -1].sum().backward()
+
+    assert (windows.grad[0].abs().sum(dim=1) > 0).all()
+
+
+def test_cnn_bottleneck_is_one_vector_per_window():
+    model = CNNAutoencoder(n_features=3, latent_dim=16)
+
+    assert model.encode(torch.randn(4, 20, 3)).shape == (4, 16)
