@@ -16,6 +16,7 @@ from torch import nn
 # covered only the last 7 minutes, which made the CNN a shorter-context model.
 _DILATIONS = (1, 2, 4, 8)
 _KERNEL = 3
+_REACH = 1 + (_KERNEL - 1) * sum(_DILATIONS)
 
 
 def _causal_conv(in_channels: int, out_channels: int, dilation: int) -> nn.Sequential:
@@ -36,6 +37,11 @@ class CNNAutoencoder(nn.Module):
     transposed-conv decoder gave the final minute a single edge tap. The linear layer
     is why the model needs ``window_length`` and rejects other lengths.
 
+    The defaults match the LSTM's bottleneck (``latent_dim=16``) but not its width:
+    32 channels give about half the LSTM's parameters (41k vs 82k on 133 features).
+    Both were fixed before any test result was seen and are not tuned, so the two
+    models get the same (zero) tuning budget.
+
     Args:
         n_features: features per minute.
         window_length: minutes per window.
@@ -53,6 +59,10 @@ class CNNAutoencoder(nn.Module):
         super().__init__()
         if min(n_features, window_length, hidden_channels, latent_dim) < 1:
             raise ValueError("Feature, window, channel and latent sizes must be positive")
+        if window_length > _REACH:
+            raise ValueError(
+                f"window_length {window_length} exceeds the encoder reach of {_REACH} minutes"
+            )
 
         self.n_features = n_features
         self.window_length = window_length

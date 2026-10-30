@@ -52,3 +52,8 @@ def test_cnn_bottleneck_is_one_vector_per_window():
     model = CNNAutoencoder(n_features=3, latent_dim=16)
 
     assert model.encode(torch.randn(4, 20, 3)).shape == (4, 16)
+
+
+def test_cnn_rejects_windows_longer_than_the_encoder_reach():
+    with pytest.raises(ValueError, match="reach"):
+        CNNAutoencoder(n_features=3, window_length=32)
