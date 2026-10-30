@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import torch
 
-from ugr16ad.models.windowed_mlp import WindowedMLPAutoencoder, embed_windows
+from ugr16ad.models.windowed_mlp import WindowedMLPAutoencoder
 from ugr16ad.train import score_autoencoder, set_seed, train_autoencoder
 
 W, F = 5, 6
@@ -10,7 +10,7 @@ W, F = 5, 6
 
 def make_model(seed: int = 0) -> WindowedMLPAutoencoder:
     set_seed(seed)  # train_autoencoder seeds after the model exists, so seed init here
-    return WindowedMLPAutoencoder(window_length=W, n_features=F, hidden_dim=32, latent_dim=4)
+    return WindowedMLPAutoencoder(n_features=F, window_length=W, hidden_dim=32, latent_dim=4)
 
 
 def low_rank_windows(n: int = 128) -> np.ndarray:
@@ -67,15 +67,8 @@ def test_same_seed_reproduces_the_scores():
     np.testing.assert_array_equal(runs[0], runs[1])
 
 
-def test_embed_windows_is_row_aligned_with_the_scores():
-    data = low_rank_windows()
-    model = make_model()
-    scores, _ = score_autoencoder(model, data)
-    assert embed_windows(model, data).shape == (len(scores), 4)
-
-
 def test_regularisers_are_off_by_default():
-    model = WindowedMLPAutoencoder(window_length=W, n_features=F)
+    model = WindowedMLPAutoencoder(n_features=F, window_length=W)
     model.train()
     x = torch.randn(4, W, F)
     assert torch.equal(model(x), model(x))
@@ -83,7 +76,7 @@ def test_regularisers_are_off_by_default():
 
 def test_noise_and_dropout_only_act_in_training_mode():
     torch.manual_seed(0)
-    model = WindowedMLPAutoencoder(W, F, hidden_dim=32, latent_dim=4, dropout=0.5, noise_std=0.5)
+    model = WindowedMLPAutoencoder(F, W, hidden_dim=32, latent_dim=4, dropout=0.5, noise_std=0.5)
     x = torch.randn(4, W, F)
     model.eval()
     assert torch.equal(model(x), model(x))
@@ -93,15 +86,15 @@ def test_noise_and_dropout_only_act_in_training_mode():
 
 def test_rejects_invalid_dropout_and_noise():
     with pytest.raises(ValueError):
-        WindowedMLPAutoencoder(W, F, dropout=1.0)
+        WindowedMLPAutoencoder(F, W, dropout=1.0)
     with pytest.raises(ValueError):
-        WindowedMLPAutoencoder(W, F, noise_std=-0.1)
+        WindowedMLPAutoencoder(F, W, noise_std=-0.1)
 
 
 def test_regularised_model_still_trains_against_the_clean_input():
     data = low_rank_windows()
     set_seed(0)
-    model = WindowedMLPAutoencoder(W, F, hidden_dim=32, latent_dim=4, dropout=0.1, noise_std=0.1)
+    model = WindowedMLPAutoencoder(F, W, hidden_dim=32, latent_dim=4, dropout=0.1, noise_std=0.1)
     result = train_autoencoder(
         model, data[:96], data[96:], epochs=80, batch_size=16, lr=1e-2, patience=100
     )

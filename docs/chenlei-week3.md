@@ -107,9 +107,8 @@ share them with teammates: `reports/results/` is ignored by the repository.
 
 Run final evaluation with the confirmed protocol above and discuss its results
 without retuning against test labels. Existing saved tuning runs can be reused;
-no retraining is needed just to update synthetic checks. The locally added
-`sanity_check` mirrors the teammate-provided callback interface and constants;
-reconcile it with their branch when merging rather than maintaining two versions.
+no retraining is needed just to update synthetic checks. `sanity_check` is the
+shared one from `ugr16ad.synthetic`, the same as every other model uses.
 
 
 ## Running from scratch
@@ -129,7 +128,8 @@ real test metrics; `summary.csv` gives means and sample standard deviations
 (neural models only; PCA standard deviation is undefined with one run). Each
 model/seed folder also contains `sanity_check.csv` for synthetic calibration
 ROC-AUC, separate from real test metrics. Inference times cover scoring already
-preprocessed eligible test rows, excluding preprocessing and model loading.
+preprocessed eligible calibration and test rows, excluding preprocessing and model
+loading, the same span the other models' run scripts time.
 
 
 ## Shared result layout

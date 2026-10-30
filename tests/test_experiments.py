@@ -74,7 +74,7 @@ def test_tune_then_frozen_evaluation(tmp_path, monkeypatch):
     assert np.isclose(run.meta["threshold"], np.quantile(calib, 0.99))
     assert len(run.scores[run.scores.part == "test"]) == 28
     assert run.feature_errors.shape == (64, 12)
-    assert sum(run.meta["metrics"][k] for k in ("tp", "fp", "tn", "fn")) == 28
+    assert sum(run.meta["test_metrics"][k] for k in ("tp", "fp", "tn", "fn")) == 28
 
 
 def test_sanity_grid_uses_full_calibration_copy_and_endpoint_labels():

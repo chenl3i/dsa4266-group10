@@ -6,11 +6,11 @@ Run: ./.venv/Scripts/python.exe scripts/run_lstm.py --seed 0 1 2
 from __future__ import annotations
 
 import argparse
+import time
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import torch
 
 from ugr16ad.data import Part, load_dataset
 from ugr16ad.evaluate import (
@@ -25,26 +25,17 @@ from ugr16ad.paths import RESULTS_DIR
 from ugr16ad.preprocess import Preprocessor
 from ugr16ad.results import run_dir, save_run
 from ugr16ad.synthetic import sanity_check
-from ugr16ad.train import score_autoencoder, set_seed, train_autoencoder
+from ugr16ad.train import (
+    encode_autoencoder,
+    score_autoencoder,
+    set_seed,
+    train_autoencoder,
+)
 from ugr16ad.windows import make_windows
 
 log = get_logger(__name__)
 
 PART_ORDER = ("fit", "tune", "calib", "test")
-
-
-def _encode(
-    model: LSTMAutoencoder, windows: np.ndarray, batch_size: int, device: str
-) -> np.ndarray:
-    """Latent vectors, batched so the full fit part never sits on the device at once."""
-    model.eval()
-    out = []
-    with torch.no_grad():
-        for batch in torch.from_numpy(np.ascontiguousarray(windows, dtype=np.float32)).split(
-            batch_size
-        ):
-            out.append(model.encode(batch.to(device)).cpu().numpy())
-    return np.concatenate(out, axis=0)
 
 
 def run(
@@ -99,12 +90,23 @@ def run(
     model = result.model
     log.info("%s seed %d: best epoch %d in %.1fs", cell, seed, result.best_epoch, result.seconds)
 
+    # inference_seconds times calib + test scoring only, the same span in every script.
+    started = time.perf_counter()
+    scored = {
+        name: score_autoencoder(model, windows[name], device=device) for name in ("calib", "test")
+    }
+    inference_seconds = time.perf_counter() - started
+    for name in ("fit", "tune"):
+        scored[name] = score_autoencoder(model, windows[name], device=device)
+
     frames, latents, errors, scores_by_part = [], [], [], {}
     for name in PART_ORDER:
-        scores, feature_errors = score_autoencoder(model, windows[name], device=device)
+        scores, feature_errors = scored[name]
         scores_by_part[name] = scores
         errors.append(feature_errors)
-        latents.append(_encode(model, windows[name], batch_size, device))
+        latents.append(
+            encode_autoencoder(model, windows[name], batch_size=batch_size, device=device)
+        )
         frames.append(
             pd.DataFrame(
                 {
@@ -143,7 +145,8 @@ def run(
         "best_epoch": result.best_epoch,
         "epochs_run": len(result.history),
         "train_seconds": result.seconds,
-        "n_params": sum(p.numel() for p in model.parameters()),
+        "inference_seconds": inference_seconds,
+        "n_parameters": sum(p.numel() for p in model.parameters()),
         # Sanity check that the frozen threshold alerts on about 1% of calib.
         "calib_alert_rate": float((scores_by_part["calib"] > threshold).mean()),
         "test_metrics": {

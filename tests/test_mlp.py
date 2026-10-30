@@ -35,9 +35,9 @@ def test_rejects_windows_or_wrong_features(shape):
 @pytest.mark.parametrize(
     "kwargs",
     [
-        {"input_dim": 0},
-        {"input_dim": 4, "latent_dim": 4},
-        {"input_dim": 4, "latent_dim": 2, "hidden_dims": (0,)},
+        {"n_features": 0},
+        {"n_features": 4, "latent_dim": 4},
+        {"n_features": 4, "latent_dim": 2, "hidden_dims": (0,)},
     ],
 )
 def test_invalid_dimensions(kwargs):

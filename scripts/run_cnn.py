@@ -15,7 +15,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import torch
 
 from ugr16ad.data import Part, load_dataset
 from ugr16ad.evaluate import (
@@ -30,24 +29,17 @@ from ugr16ad.paths import RESULTS_DIR
 from ugr16ad.preprocess import Preprocessor
 from ugr16ad.results import run_dir, save_run
 from ugr16ad.synthetic import sanity_check
-from ugr16ad.train import score_autoencoder, set_seed, train_autoencoder
+from ugr16ad.train import (
+    encode_autoencoder,
+    score_autoencoder,
+    set_seed,
+    train_autoencoder,
+)
 from ugr16ad.windows import make_windows
 
 log = get_logger(__name__)
 
 PART_ORDER = ("fit", "tune", "calib", "test")
-
-
-def _encode(model: CNNAutoencoder, windows: np.ndarray, batch_size: int, device: str) -> np.ndarray:
-    """Latent vectors, batched so the full fit part never sits on the device at once."""
-    model.eval()
-    out = []
-    with torch.no_grad():
-        for batch in torch.from_numpy(np.ascontiguousarray(windows, dtype=np.float32)).split(
-            batch_size
-        ):
-            out.append(model.encode(batch.to(device)).cpu().numpy())
-    return np.concatenate(out, axis=0)
 
 
 def run(
@@ -116,7 +108,9 @@ def run(
     for name in PART_ORDER:
         scores, feature_errors = scored[name]
         errors.append(feature_errors)
-        latents.append(_encode(model, windows[name], batch_size, device))
+        latents.append(
+            encode_autoencoder(model, windows[name], batch_size=batch_size, device=device)
+        )
         frames.append(
             pd.DataFrame(
                 {
@@ -157,7 +151,6 @@ def run(
         "epochs_run": len(result.history),
         "train_seconds": result.seconds,
         "inference_seconds": inference_seconds,
-        # The comparison table reads n_parameters.
         "n_parameters": sum(p.numel() for p in model.parameters()),
         # Sanity check that the frozen threshold alerts on about 1% of calib.
         "calib_alert_rate": float((calib_scores > threshold).mean()),
