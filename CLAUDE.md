@@ -44,6 +44,13 @@ python -m venv .venv
 ./.venv/Scripts/python.exe -m pytest
 ./.venv/Scripts/python.exe -m pytest tests/test_windows.py
 ./.venv/Scripts/python.exe -m pytest tests/test_windows.py::test_name
+./.venv/Scripts/python.exe -m pytest -m "not slow"   # skip the real-CSV checks
+
+# Model runs (write reports/results/<model>/seed<seed>/; see scripts/README.md)
+./.venv/Scripts/python.exe -m ugr16ad.experiments tune --output <dir>
+./.venv/Scripts/python.exe -m ugr16ad.experiments evaluate --output <dir> --window 20
+./.venv/Scripts/python.exe scripts/run_lstm.py --seed 0 1 2        # --cell gru for GRU
+./.venv/Scripts/python.exe scripts/make_comparison_table.py
 
 # Lint (CI runs both; `format --check` fails CI, plain `format` rewrites)
 ./.venv/Scripts/python.exe -m ruff check src tests
@@ -118,7 +125,9 @@ and Y.
 ## Conventions
 
 - Docstrings explain **why**, not what. Match that when adding code.
-- Tests use tiny synthetic fixtures; only the path tests touch the real CSVs.
+- Tests use tiny synthetic fixtures. Only the path tests and the `@pytest.mark.slow`
+  tests (real-data checks in `test_data`, `test_preprocess`, `test_windows`) touch the
+  real CSVs.
 - `data/raw`, `data/interim`, `data/processed` and `reports/*` are gitignored;
   `data/external/` is committed.
 - The earlier vulnerability-prioritisation project is archived at git tag

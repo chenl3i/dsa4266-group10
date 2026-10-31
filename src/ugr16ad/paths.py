@@ -12,9 +12,6 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 DATA_DIR = PROJECT_ROOT / "data"
-RAW_DIR = DATA_DIR / "raw"
-INTERIM_DIR = DATA_DIR / "interim"
-PROCESSED_DIR = DATA_DIR / "processed"
 EXTERNAL_DIR = DATA_DIR / "external"
 # The supplied UGR'16 v2 CSVs. Committed: the fixed copy the proposal is written against.
 UGR16_DIR = EXTERNAL_DIR / "ugr16v2"
@@ -22,12 +19,6 @@ UGR16_DIR = EXTERNAL_DIR / "ugr16v2"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 RESULTS_DIR = REPORTS_DIR / "results"
-
-
-def ensure_dir(path: Path) -> Path:
-    """Create ``path`` (and parents) if missing, then return it."""
-    path.mkdir(parents=True, exist_ok=True)
-    return path
 
 
 def resolve(path: str | Path) -> Path:
