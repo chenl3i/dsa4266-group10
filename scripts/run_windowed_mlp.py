@@ -6,8 +6,8 @@ Usage:
     python scripts/run_windowed_mlp.py --latent-dim 16 --smoke
     python scripts/run_windowed_mlp.py --latent-dim 16 --seed 1 2
 
-Train to convergence instead of stopping early (saved as a separate model):
-    python scripts/run_windowed_mlp.py --sweep --epochs 200 --patience 200 --tag converged
+All models use the shared protocol: up to 50 epochs, early-stopping patience 5.
+Convergence check only (early stopping off, saved separately, not a main result):
     python scripts/run_windowed_mlp.py --latent-dim 16 --epochs 200 --patience 200 --tag converged
 """
 
@@ -54,9 +54,9 @@ HIDDEN_DIM = 64
 DROPOUT = 0.2
 NOISE_STD = 0.1  # in fit-part standard deviations, applied during training only
 LR = 1e-4  # default; override with --lr
-# train_autoencoder's defaults. Raise both to train to convergence: with patience equal
-# to epochs, early stopping never fires and the whole loss curve is recorded. The
-# best-tune-loss weights are still the ones restored and scored.
+# The shared training protocol for every model (train_autoencoder's defaults). Raising
+# both is only for the convergence check: with patience equal to epochs, early stopping
+# never fires. The best-tune-loss weights are still the ones restored and scored.
 EPOCHS = 50
 PATIENCE = 5
 
