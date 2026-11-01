@@ -146,3 +146,13 @@ def test_main_stops_before_writing_when_runs_disagree(tmp_path):
     with pytest.raises(SystemExit, match="different test minutes"):
         table.main(tmp_path)
     assert not (tmp_path / "comparison_summary.csv").exists()
+
+
+def test_full_roc_auc_is_reported_next_to_the_partial_auc(tmp_path):
+    write_run(tmp_path, "a", 0, PERFECT)
+    write_run(tmp_path, "b", 0, MIXED)
+    _, summary, _ = table.build_tables(table.load_runs(tmp_path), LABELS, Y_TRUE)
+    # PERFECT ranks both attacks above every background minute.
+    assert summary.loc["a", "roc_auc_mean"] == 1.0
+    # MIXED: of the 8 attack/background pairs, 3 are ordered right and 2 tie (count 0.5).
+    assert summary.loc["b", "roc_auc_mean"] == pytest.approx(4 / 8)

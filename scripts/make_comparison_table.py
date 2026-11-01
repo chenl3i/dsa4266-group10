@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
+from sklearn.metrics import roc_auc_score
 
 from ugr16ad.data import make_part, read_split
 from ugr16ad.evaluate import per_category_recall, ranking_metrics, threshold_metrics
@@ -20,6 +21,7 @@ METRICS = [
     "average_precision",
     "recall_at_max_fpr",
     "partial_auc",
+    "roc_auc",
     "train_seconds",
     "inference_seconds",
 ]
@@ -69,6 +71,8 @@ def build_tables(
         row = {"model": model, "seed": seed}
         row |= threshold_metrics(y_true, scores, threshold)
         row |= ranking_metrics(y_true, scores)
+        # Full ROC-AUC: the usual summary, next to the stricter partial AUC over FPR 0-1%.
+        row["roc_auc"] = float(roc_auc_score(y_true, scores))
         row |= {k: meta.get(k) for k in ("train_seconds", "inference_seconds", "n_parameters")}
         rows.append(row)
         categories = per_category_recall(labels, scores > threshold).reset_index(names="category")

@@ -5,6 +5,10 @@ Usage:
     python scripts/run_windowed_mlp.py --sweep --lr 3e-4
     python scripts/run_windowed_mlp.py --latent-dim 16 --smoke
     python scripts/run_windowed_mlp.py --latent-dim 16 --seed 1 2
+
+Train to convergence instead of stopping early (saved as a separate model):
+    python scripts/run_windowed_mlp.py --sweep --epochs 200 --patience 200 --tag converged
+    python scripts/run_windowed_mlp.py --latent-dim 16 --epochs 200 --patience 200 --tag converged
 """
 
 from __future__ import annotations
@@ -14,6 +18,7 @@ import time
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import roc_auc_score
 
 from ugr16ad.data import load_dataset
 from ugr16ad.evaluate import (
@@ -49,6 +54,11 @@ HIDDEN_DIM = 64
 DROPOUT = 0.2
 NOISE_STD = 0.1  # in fit-part standard deviations, applied during training only
 LR = 1e-4  # default; override with --lr
+# train_autoencoder's defaults. Raise both to train to convergence: with patience equal
+# to epochs, early stopping never fires and the whole loss curve is recorded. The
+# best-tune-loss weights are still the ones restored and scored.
+EPOCHS = 50
+PATIENCE = 5
 
 
 def prepare() -> tuple[dict, dict]:
@@ -79,7 +89,9 @@ def window_part(parts: dict, features: dict, name: str) -> dict:
     }
 
 
-def build_and_train(fit: dict, tune: dict, latent_dim: int, seed: int, lr: float):
+def build_and_train(
+    fit: dict, tune: dict, latent_dim: int, seed: int, lr: float, epochs: int, patience: int
+):
     """One place that builds and trains the model, so the sweep and final runs agree."""
     set_seed(seed)  # before building the model, so initial weights are seeded too
     model = WindowedMLPAutoencoder(
@@ -91,19 +103,24 @@ def build_and_train(fit: dict, tune: dict, latent_dim: int, seed: int, lr: float
         noise_std=NOISE_STD,
     )
     # train_autoencoder prints nothing per epoch, so say that a long, quiet step began.
-    print(f"training latent_dim={latent_dim} seed={seed} lr={lr:g} (quiet until it finishes)...")
-    return train_autoencoder(model, fit["x"], tune["x"], lr=lr, seed=seed)
+    print(
+        f"training latent_dim={latent_dim} seed={seed} lr={lr:g} "
+        f"epochs={epochs} patience={patience} (quiet until it finishes)..."
+    )
+    return train_autoencoder(
+        model, fit["x"], tune["x"], lr=lr, seed=seed, epochs=epochs, patience=patience
+    )
 
 
-def sweep(parts: dict, features: dict, lr: float) -> None:
+def sweep(parts: dict, features: dict, lr: float, epochs: int, patience: int, name: str) -> None:
     """Seed 0, tune loss only. This never windows or scores calib or test."""
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     fit = window_part(parts, features, "fit")
     tune = window_part(parts, features, "tune")
     rows = []
     for latent_dim in LATENT_DIMS:
-        result = build_and_train(fit, tune, latent_dim, seed=0, lr=lr)
-        curve = RESULTS_DIR / f"{MODEL_NAME}_loss_latent{latent_dim}_lr{lr:g}.csv"
+        result = build_and_train(fit, tune, latent_dim, 0, lr, epochs, patience)
+        curve = RESULTS_DIR / f"{name}_loss_latent{latent_dim}_lr{lr:g}.csv"
         result.history.to_csv(curve, index=False)
         rows.append(
             {
@@ -117,7 +134,7 @@ def sweep(parts: dict, features: dict, lr: float) -> None:
         )
         print(rows[-1])
     table = pd.DataFrame(rows)
-    table.to_csv(RESULTS_DIR / f"{MODEL_NAME}_sweep_lr{lr:g}.csv", index=False)
+    table.to_csv(RESULTS_DIR / f"{name}_sweep_lr{lr:g}.csv", index=False)
     print(table.to_string(index=False))
     best = table["best_tune_loss"].min()
     within = table[table["best_tune_loss"] <= best * (1 + TOLERANCE)]
@@ -125,9 +142,18 @@ def sweep(parts: dict, features: dict, lr: float) -> None:
 
 
 def run_seed(
-    parts: dict, features: dict, fit: dict, tune: dict, seed: int, latent_dim: int, lr: float
+    parts: dict,
+    features: dict,
+    fit: dict,
+    tune: dict,
+    seed: int,
+    latent_dim: int,
+    lr: float,
+    epochs: int,
+    patience: int,
+    name: str,
 ) -> None:
-    result = build_and_train(fit, tune, latent_dim, seed, lr)
+    result = build_and_train(fit, tune, latent_dim, seed, lr, epochs, patience)
 
     # Calib and test are windowed only now, so they are not in memory during training,
     # and they are freed when this function returns.
@@ -147,7 +173,7 @@ def run_seed(
         return score_autoencoder(result.model, windows)[0], positions
 
     meta = {
-        "model": MODEL_NAME,
+        "model": name,
         "seed": seed,
         "threshold": threshold,
         "window_length": WINDOW_LENGTH,
@@ -156,6 +182,8 @@ def run_seed(
         "dropout": DROPOUT,
         "noise_std": NOISE_STD,
         "lr": lr,
+        "epochs": epochs,
+        "patience": patience,
         "best_epoch": result.best_epoch,
         "epochs_run": len(result.history),
         "train_seconds": result.seconds,
@@ -165,6 +193,8 @@ def run_seed(
         "test_metrics": {
             **threshold_metrics(test["y"], test_scores, threshold),
             **ranking_metrics(test["y"], test_scores),
+            # The usual full ROC-AUC, next to the stricter partial AUC over FPR 0-1%.
+            "roc_auc": float(roc_auc_score(test["y"], test_scores)),
         },
         "per_category_recall": per_category_recall(test["labels"], alerts)
         .reset_index(names="category")
@@ -184,7 +214,7 @@ def run_seed(
         ignore_index=True,
     )
     save_run(
-        run_dir(MODEL_NAME, seed),
+        run_dir(name, seed),
         scores=scores,
         meta=meta,
         latents=np.concatenate(
@@ -193,7 +223,7 @@ def run_seed(
         feature_errors=np.concatenate([calib_errors, test_errors]),
     )
     # The loss curve of every reported seed, next to its scores.
-    result.history.to_csv(run_dir(MODEL_NAME, seed) / "history.csv", index=False)
+    result.history.to_csv(run_dir(name, seed) / "history.csv", index=False)
     print(f"\nseed {seed}: calibration alert rate {calib_alert_rate:.4f}")
     print(f"  best epoch {result.best_epoch} of {len(result.history)}")
     print(f"  test: {meta['test_metrics']}")
@@ -207,11 +237,17 @@ if __name__ == "__main__":
     parser.add_argument("--lr", type=float, default=LR, help=f"learning rate (default {LR:g})")
     parser.add_argument("--smoke", action="store_true", help="run seed 0 only")
     parser.add_argument("--seed", type=int, nargs="+", help="seeds to run, e.g. --seed 1 2")
+    parser.add_argument("--epochs", type=int, default=EPOCHS, help="maximum epochs")
+    parser.add_argument("--patience", type=int, default=PATIENCE, help="early-stopping patience")
+    parser.add_argument(
+        "--tag", help="save as windowed_mlp_<tag> so a variant never overwrites the main runs"
+    )
     args = parser.parse_args()
+    name = f"{MODEL_NAME}_{args.tag}" if args.tag else MODEL_NAME
 
     parts, features = prepare()
     if args.sweep:
-        sweep(parts, features, args.lr)
+        sweep(parts, features, args.lr, args.epochs, args.patience, name)
     else:
         if not args.latent_dim:
             parser.error("run --sweep first, then pass --latent-dim")
@@ -219,4 +255,15 @@ if __name__ == "__main__":
         fit = window_part(parts, features, "fit")
         tune = window_part(parts, features, "tune")
         for seed in seeds:
-            run_seed(parts, features, fit, tune, seed, args.latent_dim, args.lr)
+            run_seed(
+                parts,
+                features,
+                fit,
+                tune,
+                seed,
+                args.latent_dim,
+                args.lr,
+                args.epochs,
+                args.patience,
+                name,
+            )
