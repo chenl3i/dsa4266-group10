@@ -86,3 +86,35 @@ def test_threshold_is_the_calib_quantile(run_path):
 def test_meta_records_sanity_check(run_path):
     checks = load_run(run_path).meta["sanity_check"]
     assert [(c["magnitude"], c["n_features"]) for c in checks] == [tuple(g) for g in SANITY_GRID]
+
+
+@pytest.fixture(scope="module")
+def blind_path(parts, tmp_path_factory):
+    out = tmp_path_factory.mktemp("blind")
+    return run_cnn.run(parts, seed=0, out_root=out, blind=True, **SETTINGS)
+
+
+def test_blind_run_never_touches_test(blind_path):
+    run = load_run(blind_path)
+    assert "test" not in set(run.scores.part)
+    for key in ("test_metrics", "per_category_recall", "sanity_check", "inference_seconds"):
+        assert key not in run.meta
+    assert run.meta["blind"] is True
+    assert run.latents is None and run.feature_errors is None
+
+
+def test_both_modes_record_the_selection_inputs(run_path, blind_path):
+    for path in (run_path, blind_path):
+        meta = load_run(path).meta
+        assert meta["best_tune_loss"] == pytest.approx(
+            pd.read_csv(path / "history.csv").tune_loss.min()
+        )
+        cells = [[c["magnitude"], c["n_features"]] for c in meta["tune_sanity"]]
+        assert cells == [list(g) for g in SANITY_GRID]
+        assert {"auc", "ap", "recall"} <= set(meta["tune_sanity"][0])
+        assert meta["threads"] >= 1
+
+
+def test_blind_run_refuses_results_dir(parts):
+    with pytest.raises(ValueError, match="blind"):
+        run_cnn.run(parts, seed=0, out_root=run_cnn.RESULTS_DIR / "x", blind=True, **SETTINGS)

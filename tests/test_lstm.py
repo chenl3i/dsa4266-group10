@@ -37,9 +37,40 @@ def test_gru_cell_uses_gru():
     assert not any(isinstance(m, nn.LSTM) for m in modules)
 
 
+def test_explicit_defaults_build_the_same_weights():
+    set_seed(0)
+    implicit = LSTMAutoencoder(n_features=133).state_dict()
+    set_seed(0)
+    explicit = LSTMAutoencoder(n_features=133, num_layers=1, dropout=0.0).state_dict()
+    assert list(implicit) == list(explicit)
+    for name in implicit:
+        torch.testing.assert_close(implicit[name], explicit[name], rtol=0, atol=0)
+    # The sweep's baseline row must be the model already reported.
+    assert sum(p.numel() for p in implicit.values()) == 81_621
+
+
+@pytest.mark.parametrize("cell", ["lstm", "gru"])
+def test_stacked_layers_keep_the_shapes(cell):
+    set_seed(0)
+    model = LSTMAutoencoder(F, hidden_dim=16, latent_dim=4, cell=cell, num_layers=2, dropout=0.2)
+    x = torch.randn(3, W, F)
+    assert model(x).shape == x.shape
+    assert model.encode(x).shape == (3, 4)
+
+
 @pytest.mark.parametrize(
     "kwargs",
-    [{"n_features": 0}, {"hidden_dim": 0}, {"latent_dim": 0}, {"cell": "rnn"}],
+    [
+        {"n_features": 0},
+        {"hidden_dim": 0},
+        {"latent_dim": 0},
+        {"cell": "rnn"},
+        {"num_layers": 0},
+        {"num_layers": 2, "dropout": 1.0},
+        {"num_layers": 2, "dropout": -0.1},
+        # PyTorch ignores dropout on a single layer, which would mislabel an ablation row.
+        {"dropout": 0.2},
+    ],
 )
 def test_rejects_bad_arguments(kwargs):
     with pytest.raises(ValueError):

@@ -1,0 +1,286 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Nonlinear and Temporal Autoencoders for Network Attack Detection}
+
+\author{\IEEEauthorblockN{Ang Chen Lei}
+\IEEEauthorblockA{\textit{DSA4266, Group 10} \\
+\textit{National University of Singapore}\\
+Singapore}
+\and
+\IEEEauthorblockN{Lu Phone Mon}
+\IEEEauthorblockA{\textit{DSA4266, Group 10} \\
+\textit{National University of Singapore}\\
+Singapore}
+\and
+\IEEEauthorblockN{Soon Huici Kesha}
+\IEEEauthorblockA{\textit{DSA4266, Group 10} \\
+\textit{National University of Singapore}\\
+Singapore}
+\and
+\IEEEauthorblockN{Vanessa Lim Dian Qin}
+\IEEEauthorblockA{\textit{DSA4266, Group 10} \\
+\textit{National University of Singapore}\\
+Singapore}
+}
+
+\maketitle
+
+\begin{abstract}
+Security Operations Centres must identify suspicious activity within large volumes of network traffic while also keeping false alarms low. This project investigates whether nonlinear and temporal models improve attack detection over a linear baseline on the UGR'16v2 benchmark. We compare a PCA baseline with a multilayer perceptron (MLP) autoencoder on individual minutes of traffic, and with LSTM and 1D convolutional autoencoders on 20-minute windows of consecutive minutes. A feedforward autoencoder on flattened windows serves as a control for the value of temporal structure. All models share one preprocessing, training and evaluation pipeline, are trained on background traffic only, and are scored by the reconstruction error of the final minute against a threshold frozen on a held-out calibration block. We do not assume that greater model complexity leads to better detection.
+% TODO: add one sentence on the main finding once results are locked (3 Nov).
+\end{abstract}
+
+\begin{IEEEkeywords}
+network intrusion detection, anomaly detection, autoencoder, PCA, LSTM, 1D-CNN, UGR'16
+\end{IEEEkeywords}
+
+\section{Introduction}
+Security Operations Centres must identify suspicious activity within large volumes of network traffic. Missed attacks can leave systems exposed, while excessive false alarms consume analysts' time. This project investigates whether nonlinear and temporal models can improve attack detection while keeping false alarms low.
+
+We compare a PCA baseline with autoencoders that reconstruct individual minutes or sequences of traffic. The study asks (i) whether nonlinear modelling improves on PCA, (ii) whether preceding minutes provide useful context, and (iii) whether recurrent or convolutional models make better use of that context.
+
+\section{Related Work}
+UGR'16 was introduced as a dataset for evaluating cyclostationarity-based network intrusion detection systems \cite{macia2018}. Earlier research on UGR'16 highlights the importance of data quality when comparing models \cite{camacho2023}, and data quality tools have since been proposed to enhance the benchmark, leading to the UGR'16v2 release used here \cite{camacho2025}. We therefore use a shared preprocessing and evaluation pipeline across all models and do not assume that greater model complexity leads to better detection.
+
+\section{Dataset}
+We use UGR'16v2, a processed version of the UGR'16 network traffic benchmark collected at a Spanish internet service provider \cite{camacho2025,macia2018}. Each observation summarises one minute of traffic using 134 numerical flow counters, including protocol, source and destination IP-address categories, port categories, TCP flags, type of service, and packet-count and byte-count categories.
+
+The supplied files contain 98,262 training observations from 19 March to 31 May 2016 and 43,200 test observations from 28 July to 26 August 2016. \texttt{Xtrain} and \texttt{Xtest} contain the traffic features, while \texttt{Ytrain} and \texttt{Ytest} contain eight corresponding label counts. A shared timestamp key (\texttt{Row}, local time) links each minute's features and labels.
+
+Seven labels describe DoS, two scanning scenarios, Neris botnet activity, UDP scanning, SSH scanning and spam. The remaining label identifies traffic involving blacklisted IPs. We exclude blacklist activity from the primary detection target because it reflects IP reputation and is non-zero in every minute of both files, including every attack minute. The training file has no positive minutes in any of the seven selected categories, so we learn from background traffic without assuming that it is entirely benign.
+
+The test file contains 1,364 attack minutes (3.16\%), summarised in Table~\ref{tab:categories}. All of them fall between 28 July and 9 August; the remaining 17 days contain no labelled attacks. SSH scanning and spam have no positive test minutes, and UDP scanning has only nine.
+
+\begin{table}[htbp]
+\caption{Test Attack Minutes by Category (Dataset Characterisation Only)}
+\begin{center}
+\begin{tabular}{|l|r|r|r|}
+\hline
+\textbf{Category} & \textbf{Minutes} & \textbf{Episodes} & \textbf{Median length} \\
+\hline
+DoS & 450 & 90 & 4 \\
+Scan (scan11) & 98 & 24 & 4 \\
+Scan (scan44) & 97 & 24 & 4 \\
+Neris botnet & 732 & 12 & 61 \\
+UDP scan (idpscan) & 9 & 5 & 1 \\
+SSH scan & 0 & 0 & -- \\
+Spam & 0 & 0 & -- \\
+\hline
+Any of the seven & 1,364 & 144 & 4 \\
+\hline
+\end{tabular}
+\label{tab:categories}
+\end{center}
+\end{table}
+
+\section{Data Cleaning and Preprocessing}
+
+\subsection{Cleaning and Exploratory Analysis}
+We parse the timestamp keys, sort each partition chronologically and align its feature and label files. The loader rejects any file whose feature and label keys differ, repeat or are out of order. Neither file has missing, negative or infinite values, duplicate timestamps or duplicate rows. Counter groups that should partition each minute's flows (source and destination IP, protocol, type of service and packet count) sum to the total flow count in at least 99.998\% of minutes. Port and TCP-flag groups sum to more than the total, which suggests overlapping bins rather than errors, so we keep them unchanged. We preserve genuine traffic spikes because they may contain the anomalies of interest.
+
+The training file has two recording gaps: the 02:00 hour on 27 March 2016, consistent with the daylight-saving change, and an outage from 1 April 00:02 to 6 April 17:19, together 8,298 missing minutes. Gaps are retained rather than filled with artificial traffic, and windows do not cross them. Traffic shows a daily cycle (hourly median flows vary by a factor of 1.4, peaking at 17:00) and higher weekday than weekend volume.
+
+The test period differs noticeably from the training period. Sixteen features separate training from test minutes with a univariate AUC above 0.8, and a logistic-regression classifier separates the two periods with an AUC of 0.996. A threshold calibrated on late training traffic is therefore unlikely to keep its 1\% alert rate on test, which is why we report the observed test false-positive rate.
+
+Test attacks follow a regular injection schedule (88--124 attack minutes per day, alternating between odd and even hours). The timestamp and anything derived from it, such as hour or weekday, are therefore never model inputs. Test-label inspection is dataset characterisation only; it does not set window length, thresholds or any other model setting.
+
+\subsection{Preprocessing}
+We apply $\log(1+x)$ to each count $x$ to reduce the effect of very large values, which lowers the median feature skewness from 6.0 to 0.8. We then standardise each feature using the mean and population standard deviation of the model-fitting rows, and apply these values unchanged to the validation and test sets. Features that are constant in the model-fitting rows are removed; this drops only \texttt{protocoligmp}, leaving 133 features. Features that are mostly zero (48 have more than 50\% zeros) are kept, as they may still help identify unusual traffic. Timestamps and label columns are not model inputs.
+
+\subsection{Target Definition}
+For evaluation, a minute is labelled as an attack if any of the seven non-blacklist label counts is greater than zero. Individual labels are retained to check how well the models detect each attack category. A minute with no positive labels is treated as background traffic, although this does not guarantee that all traffic in that minute is harmless.
+
+\section{Methodology}
+
+\subsection{Shared Pipeline}
+Every model passes through one pipeline to reduce differences caused by data handling, preprocessing and evaluation. The pipeline loads and splits the data, fits the preprocessing on the model-fitting rows, builds windows, trains or fits the model, fixes the threshold on the calibration block, and writes each run's scores and settings to a standard results format from which all tables and figures are produced. Each stage has unit tests on small synthetic data, and further tests on the real files pin the split sizes, gap dates and label alignment.
+
+\subsection{Training and Validation Protocol}
+The provided training and test sets are kept separate. Within the training set, the first 78,609 records (19 March to 18 May 08:26) are used to train the models and the remaining 19,653 records for validation. The validation portion is divided equally into an earlier tuning block of 9,826 minutes (to 25 May 04:12), used for early stopping and model selection, and a later calibration block of 9,827 minutes, used only for the threshold. Each block spans about 6.8 days, close to a full weekly cycle, so both see weekday and weekend traffic. All records stay in time order without shuffling; the training loop shuffles mini-batches only within the model-fitting rows.
+
+The validation data contains no labelled attacks in the selected categories, so it cannot be used to check how well the models detect attacks. We instead look at how closely each model reconstructs the input traffic and try a small number of model settings. Models are kept simple, since lower reconstruction loss does not necessarily imply better attack detection. For PCA, the number of components is chosen based on how much variation they capture in the model-fitting data, and nearby choices are compared on the tuning block.
+
+For each selected model, the threshold is set at the 99th percentile of its calibration scores, corresponding to approximately a 1\% calibration alert rate. The same preprocessing, trained models and thresholds are then applied to the test set without further changes. The false-alarm rate on the test set may differ because traffic patterns change over time.
+
+Model selection uses a rule fixed before any test result is seen and judged on tuning loss only. For the windowed MLP, the rule selects the smallest latent size in $\{8, 16, 32\}$ whose best tuning loss is within 5\% of the lowest.
+% NOTE: the proposal specified "the elbow of each model's validation loss curve".
+% The code on `working` uses the 5% tolerance rule for the windowed MLP; the LSTM
+% runs at fixed defaults. Team to confirm the wording for PCA, MLP and CNN.
+
+\subsection{Synthetic Sanity Check}
+Because validation has no labelled attacks, we check that each trained model reacts to unusual input before it sees test data. We inject synthetic anomalies into 1\% of the preprocessed calibration minutes by adding a shift of $m \in \{2, 4\}$ fit-period standard deviations to $k \in \{1, 5\}$ randomly chosen features per minute, and report the ROC-AUC of the model's scores on the injected minutes for each of the four settings. A fixed injection seed means every model and seed sees the same altered minutes, so the AUCs are comparable. The grid spans small to large shifts to show where each model starts to react. This check measures sensitivity to reconstruction errors, not attack detection, and it never touches test data.
+
+\subsection{Models}
+\textbf{PCA baseline.} Principal Component Analysis reconstructs each minute from a reduced set of components, fitted with a full SVD and no whitening. Its mean squared reconstruction error provides a simple linear anomaly score against which the autoencoders are compared.
+% TODO (Chen Lei, PR #10): selected number of components and variance explained.
+% Saved run meta.json records 59 components; variance explained not saved.
+
+\textbf{MLP autoencoder.} A feedforward autoencoder reconstructs individual minute-level feature vectors through ReLU hidden layers, a linear bottleneck and a linear output, since standardised features can be negative. Comparing it with PCA assesses whether nonlinear relationships between traffic features improve detection without using temporal context.
+% TODO (Chen Lei, PR #10): selected widths (starting point 64-32-8-32-64).
+% Saved run meta.json records latent_dim 16 and 22,485 parameters.
+
+\textbf{Recurrent autoencoder.} An LSTM autoencoder reconstructs windows of consecutive minutes to investigate whether temporal dependencies improve detection. The encoder's final hidden state is mapped to a 16-dimensional latent vector, which is repeated once per minute and decoded by a second recurrent layer (64 hidden units in both). The single-vector bottleneck prevents the model from copying the window through. A GRU variant uses the same architecture with only the recurrent cell changed.
+
+\textbf{1D convolutional autoencoder.} A 1D-CNN autoencoder is trained
+on the same 20-minute windows to capture local patterns over time. The
+133 features are treated as input channels and the 20 minutes as the
+sequence axis. The encoder has two convolutional layers with kernel
+size 3 and GELU activations, mapping 133 to 32 to 16 channels, with
+stride 2 in the first layer only. The bottleneck is therefore a
+16-channel feature map over [10] time steps ([160] values) rather than a
+single latent vector. The decoder [Conv1D then ConvTranspose1D; confirm
+layer sizes] ends in a linear output and reconstructs the full
+$20 \times 133$ window. The model has 28,821 trainable parameters
+[against M for the LSTM]. Its performance is compared with the recurrent
+model using the same scoring method, the reconstruction error of the
+final minute.
+% NOTE (Kesha): the saved CNN runs (reports/results/cnn) record 41,013
+% parameters, hidden_channels 32, latent_dim 16; the LSTM has 81,621.
+% Check this paragraph against the current models/cnn.py before submission.
+
+% TODO (Kesha, PR #6 not yet merged into working): architecture and settings.
+
+\textbf{Windowed MLP autoencoder.} As a control for the benefit of temporal structure, a feedforward autoencoder sees the same 20-minute windows flattened into a single vector of $20 \times 133$ values, with one 64-unit hidden layer on each side of the bottleneck. It has no recurrence or convolution, so any gain of the LSTM or CNN over it reflects how they use the order of minutes rather than simply having more minutes as input. A first version overfitted, with its lowest tuning loss at the first epoch, so we added dropout (0.2) on the encoder's hidden layer, Gaussian input noise (0.1 standard deviations, making it a denoising autoencoder) and a lower learning rate ($10^{-4}$). These settings were fixed together and judged on tuning loss only.
+
+\subsection{Training}
+All neural models share one training loop and one scoring rule. They minimise the mean squared reconstruction error over the whole input window with the Adam optimiser, in mini-batches of 256 for up to 50 epochs. Training stops when the tuning loss has not improved for five epochs, and the weights from the best tuning epoch are restored. The learning rate is $10^{-3}$ unless stated otherwise. Each run records its seed, settings, loss history, training time and inference time.
+
+\subsection{Temporal Windows}
+The window length was fixed at 20 minutes before any model was evaluated. A window ending at minute $t$ contains only that minute and the 19 before it, and never crosses a data gap or partition boundary, so the first 19 minutes of each contiguous segment have no window. Temporal models reconstruct their input windows, with the final minute's mean squared reconstruction error used as the detection score, so every alert refers to a single minute $t$, as it does for the single-minute models. All models, including PCA and the single-minute MLP, are evaluated on the same eligible minutes: 43,181 test minutes, of which 1,357 are attack minutes.
+
+\section{Experimental Setup}
+We use Python 3.11, Pandas and NumPy for data preparation; scikit-learn for PCA and metrics; PyTorch for neural models; and Matplotlib for visualisation. All models are trained on CPU. The code, configurations and tests are kept in a shared repository, with continuous integration running the test suite and linter on every change. Neural experiments use three recorded random seeds (0, 1 and 2); the synthetic sanity check uses its own fixed seed. No additional dataset is required for the core comparison.
+
+\section{Evaluation}
+All predefined comparisons are evaluated after model settings are fixed. Because attack minutes are uncommon, accuracy alone is not used to judge performance. The evaluation distinguishes performance at the frozen calibration threshold from comparisons across possible thresholds. Before building the comparison table, we check that every run scored exactly the same test minutes.
+
+\textbf{At the frozen threshold.} We report recall, precision, F1, observed false-positive rate and total alert rate. This shows how well each model detects labelled attacks and how its alert burden changes on later traffic.
+
+\textbf{Across thresholds.} Average precision summarises the precision--recall trade-off. We also report recall at a test FPR no greater than 1\% and standardised partial ROC-AUC over FPR 0--1\% as retrospective comparisons. These test-derived operating points do not replace the frozen threshold.
+
+\textbf{Per category and cost.} We report recall and sample counts for each attack category present in the test data, without expanding a single detected minute into a correctly detected entire episode. We report the mean and standard deviation across seeds, training time and inference time alongside detection performance.
+
+\section{Results and Discussion}
+% To be completed after results lock (3 Nov). Filled from
+% scripts/make_comparison_table.py (reports/results/, 30 Oct); not final.
+
+Table~\ref{tab:results} compares the models at the frozen threshold and across thresholds.
+
+\begin{table*}[htbp]
+\caption{Test Results on the 43,181 Eligible Minutes (Mean $\pm$ SD over Three Seeds for Neural Models)}
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|}
+\hline
+& \multicolumn{5}{c|}{\textbf{Frozen threshold}}
+& \multicolumn{3}{c|}{\textbf{Across thresholds (retrospective)}} \\
+\cline{2-9}
+\textbf{Model} & \textbf{Recall} & \textbf{Precision} & \textbf{F1} & \textbf{FPR} & \textbf{Alert rate}
+& \textbf{AP} & \textbf{Recall@FPR$\le$1\%} & \textbf{pAUC} \\
+\hline
+PCA & 0.2314 & 0.4701 & 0.3101 & 0.0085 & 0.0155
+    & 0.2406 & 0.2454 & 0.5846 \\
+MLP & $0.6622 \pm 0.0136$ & $0.3343 \pm 0.0133$ & $0.4442 \pm 0.0114$ & $0.0429 \pm 0.0028$ & $0.0623 \pm 0.0029$
+    & $0.4614 \pm 0.0095$ & $0.4331 \pm 0.0220$ & $0.6323 \pm 0.0070$ \\
+Windowed MLP & $0.5674 \pm 0.0092$ & $0.3922 \pm 0.0049$ & $0.4638 \pm 0.0014$ & $0.0285 \pm 0.0010$ & $0.0455 \pm 0.0013$
+    & $0.4333 \pm 0.0008$ & $0.3351 \pm 0.0036$ & $0.6041 \pm 0.0006$ \\
+LSTM & $0.5996 \pm 0.0129$ & $0.3653 \pm 0.0215$ & $0.4538 \pm 0.0181$ & $0.0339 \pm 0.0031$ & $0.0517 \pm 0.0030$
+    & $0.4261 \pm 0.0178$ & $0.3272 \pm 0.0184$ & $0.6025 \pm 0.0043$ \\
+GRU & $0.5419 \pm 0.0047$ & $0.3990 \pm 0.0128$ & $0.4594 \pm 0.0069$ & $0.0265 \pm 0.0016$ & $0.0427 \pm 0.0017$
+    & $0.4211 \pm 0.0085$ & $0.3240 \pm 0.0075$ & $0.5997 \pm 0.0032$ \\
+1D-CNN & $0.6109 \pm 0.0675$ & $0.3753 \pm 0.0344$ & $0.4622 \pm 0.0157$ & $0.0336 \pm 0.0088$ & $0.0518 \pm 0.0106$
+    & $0.4456 \pm 0.0138$ & $0.3461 \pm 0.0148$ & $0.6054 \pm 0.0023$ \\
+\hline
+\end{tabular}%
+}
+\label{tab:results}
+\end{center}
+\end{table*}
+
+\begin{table}[htbp]
+\caption{Test Recall by Attack Category at the Frozen Threshold (Mean over Seeds; $n$ = Eligible Attack Minutes)}
+\begin{center}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{DoS} & \textbf{scan11} & \textbf{scan44} & \textbf{Botnet} & \textbf{idpscan} \\
+ & ($n$=443) & ($n$=98) & ($n$=97) & ($n$=732) & ($n$=9) \\
+\hline
+PCA & 0.366 & 0.755 & 0.784 & 0.022 & 0.556 \\
+MLP & 0.552 & 0.922 & 0.990 & 0.663 & 0.556 \\
+Windowed MLP & 0.461 & 0.925 & 0.990 & 0.541 & 0.556 \\
+LSTM & 0.509 & 0.935 & 0.990 & 0.571 & 0.556 \\
+GRU & 0.448 & 0.922 & 0.990 & 0.502 & 0.556 \\
+1D-CNN & 0.541 & 0.942 & 0.997 & 0.569 & 0.667 \\
+\hline
+\end{tabular}%
+}
+\label{tab:percategory}
+\end{center}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Synthetic Sanity-Check ROC-AUC on Calibration (Mean over Seeds; Shift $m$ SD on $k$ Features)}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Model} & $m{=}2,k{=}1$ & $m{=}2,k{=}5$ & $m{=}4,k{=}1$ & $m{=}4,k{=}5$ \\
+\hline
+PCA & 0.578 & 0.881 & 0.798 & 0.982 \\
+MLP & 0.563 & 0.781 & 0.726 & 0.982 \\
+Windowed MLP & 0.546 & 0.744 & 0.700 & 0.974 \\
+LSTM & 0.557 & 0.749 & 0.706 & 0.973 \\
+GRU & 0.545 & 0.741 & 0.695 & 0.971 \\
+1D-CNN & 0.550 & 0.740 & 0.692 & 0.971 \\
+\hline
+\end{tabular}
+\label{tab:sanity}
+\end{center}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Model Size and CPU Time (Mean $\pm$ SD over Seeds; Inference Covers Calibration and Test Scoring)}
+\begin{center}
+\begin{tabular}{|l|r|c|c|}
+\hline
+\textbf{Model} & \textbf{Parameters} & \textbf{Train (s)} & \textbf{Inference (s)} \\
+\hline
+PCA & -- & 0.2 & 0.03 \\
+MLP & 22,485 & $3.2 \pm 0.8$ & $0.04 \pm 0.00$ \\
+Windowed MLP & 345,332 & $209.6 \pm 50.5$ & $0.31 \pm 0.02$ \\
+LSTM & 81,621 & $135.5 \pm 71.4$ & $2.56 \pm 0.32$ \\
+GRU & 63,637 & $84.7 \pm 11.7$ & $2.13 \pm 0.06$ \\
+1D-CNN & 41,013 & $679.2 \pm 362.8$ & $12.68 \pm 0.11$ \\
+\hline
+\end{tabular}
+\label{tab:cost}
+\end{center}
+\end{table}
+% NOTE: PCA parameter count not saved in meta.json. CNN times were measured
+% while other jobs were running and may be inflated; re-run before lock if needed.
+
+\section{Limitations and Risks}
+Minute-level aggregation may dilute brief or low-volume attacks and remove the ordering of flows within each minute. Temporal windows may help identify patterns across minutes, but cannot recover this lost detail. Background training traffic may contain unlabelled anomalies, and excluding blacklist activity narrows the scope of the evaluation.
+
+The strong shift between the training and test periods may increase false alarms even when the calibration alert rate is low. We report the observed test false-positive rate rather than assume that the calibration threshold transfers unchanged. Some attack categories have very few labelled examples (nine UDP-scan minutes) or are absent (SSH scan and spam), limiting conclusions about those categories. The 20-minute window also means the first 19 minutes after each data gap are never scored.
+
+The data represents one ISP environment in 2016. Results establish performance on this benchmark rather than demonstrate readiness for current networks or previously unseen attacks. Autoencoders may also reconstruct malicious traffic well. Our analysis therefore assesses whether the proposed models offer a useful improvement over PCA, including the possibility that they do not.
+
+\section{Conclusion}
+% To be completed.
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

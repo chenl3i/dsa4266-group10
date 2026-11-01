@@ -376,10 +376,17 @@ def main():
     )
     parser.add_argument("--tune-fraction", type=float, default=TUNE_FRACTION)
     parser.add_argument("--window", type=int)
+    parser.add_argument(
+        "--patience",
+        type=int,
+        default=TRAINING["patience"],
+        help="Early-stopping patience (tune only); set to the epoch count to train all epochs",
+    )
     args = parser.parse_args()
     if not 0 < args.tune_fraction < 1:
         parser.error("tune-fraction must be between 0 and 1")
     if args.mode == "tune":
+        TRAINING["patience"] = args.patience  # recorded in manifest.json
         tune_run(args.output, args.tune_fraction)
     else:
         if args.window is None or args.window < 1:
